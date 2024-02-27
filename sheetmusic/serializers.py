@@ -15,6 +15,3 @@ class SinglePostSerializer(ModelSerializer):
         # Implement your custom logic for creating the model instance
         instance = Post.objects.create(title=validated_data['title'], pdf_file=validated_data['pdf_file'])
         return instance
-
-
-        
