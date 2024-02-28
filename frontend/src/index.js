@@ -1,16 +1,17 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
-import PostListPage from './pages/PostListPage.js'
+import PostListPage from './pages/Homepage.js'
 import CreatePostPage from './pages/CreatePostPage.js'
 
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
 
+
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <PostListPage />,
+    element: <App />,
   },
   {
     path: '/create-post',
