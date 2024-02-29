@@ -1,18 +1,18 @@
-import PostListPage from './pages/Homepage';
+import PostListPage from './pages/HomePage.js';
 import CreatePostPage from './pages/CreatePostPage';
 
 import { Provider } from 'react-redux';
 import store from './store';
 
+import Register from './pages/RegisterPage.js'
+import Navbar from './components/Navbar';
+
 function App() {
   return (
-    // <Provider>
       <div className='App'>
-        <PostListPage />
-        <h3>Hellos</h3>
+        <Navbar />
+        <Register />
       </div>
-    // </Provider>
-    
   );
 }
 

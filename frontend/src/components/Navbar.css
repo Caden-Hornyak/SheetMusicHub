@@ -1,0 +1,19 @@
+#navbar {
+    background-color: white;
+    position: fixed;
+    top: 0;
+    left: 0;
+    padding: 10px;
+    width: 100vw;
+    height: 75px;
+    display: flex;
+    flex-direction: row;
+
+    box-shadow: 3px 3px 15px rgba(0, 0, 0, .8);
+}
+
+    .navbar-link {
+        margin: 10px;
+        text-decoration: none;
+        color: black;
+    }

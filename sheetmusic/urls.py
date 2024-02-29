@@ -10,7 +10,7 @@ urlpatterns = [
     path('posts/create-post/', PostAction.as_view(), name='create_post'),
 
     path('accounts/register/', RegisterView.as_view()),
-    path('csrf_cookie/', GetCSRFToken.as_view()),
+    path('accounts/csrf_cookie/', GetCSRFToken.as_view()),
     path('accounts/check_authenticated/', CheckAuthenticatedView.as_view()),
     path('login/', LoginView.as_view()),
     path('logout/', LogoutView.as_view()),

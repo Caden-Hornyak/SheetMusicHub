@@ -147,7 +147,8 @@ class PostAction(APIView):
     
 
 
-@method_decorator(ensure_csrf_cookie, name='dispatch')
+# @method_decorator(ensure_csrf_cookie, name='dispatch')
+@method_decorator(csrf_exempt, name='dispatch')
 class RegisterView(APIView):
     permission_classes = (permissions.AllowAny, )
 

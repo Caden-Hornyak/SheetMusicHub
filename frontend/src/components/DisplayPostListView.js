@@ -4,18 +4,20 @@ function DisplayPostListView(props) {
     
     let [posts, setPosts] = useState([])
 
-    useEffect(() => {
-        getPosts()
-    }, [])
+    
 
 
     let getPosts = async () => {
 
         let response = await fetch('posts/')
-        let data = await response.json()
+        let data = response.json();
         console.log(data);
         setPosts(data)
     }
+
+    useEffect(() => {
+        getPosts()
+    }, [])
 
     return(
         <div>
