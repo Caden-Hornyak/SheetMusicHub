@@ -163,7 +163,10 @@ CORS_ALLOW_METHODS = [
     'PUT',
 ]
 
-CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1:8000']
+CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1:8000', 
+                        'http://localhost:3000']
+
+# CSRF_HEADER_NAME = 'X-CSRFToken'
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [

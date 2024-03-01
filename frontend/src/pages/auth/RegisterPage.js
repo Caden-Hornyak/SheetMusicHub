@@ -1,11 +1,11 @@
 import React, { useState } from 'react'
 import { connect } from 'react-redux';
 import { Navigate, Link } from 'react-router-dom';
-import { register } from '../actions/auth.js';
-import CSRFToken from '../components/CSRFToken.js';
+import { register } from '../../actions/auth.js';
+import CSRFToken from '../../components/CSRFToken.js';
 
-import './RegisterPage.css';
-import background from '../images/auth_background.jpg';
+import './Auth.css';
+import background from '../../images/auth_background.jpg';
 
 const Register = ({ register }) => {
     const [formData, setFormData] = useState({
@@ -24,13 +24,14 @@ const Register = ({ register }) => {
         e.preventDefault();
 
         if (password === re_password) {
-
             register(username, password, re_password);
+            setAccountCreated(true);
         }
     }
 
-    if (accountCreated)
-        return <Navigate to='/' />
+    if (accountCreated) {
+        return <Navigate to='/login' />
+    }
 
     return(
         <>

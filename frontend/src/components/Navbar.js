@@ -1,16 +1,36 @@
 import { Link } from "react-router-dom";
 import './Navbar.css';
+import { connect } from 'react-redux';
+import { logout } from '../actions/auth';
 
-function Navbar() {
-    return (
-      <div id='navbar'>
-        <Link className='navbar-link' to='/'>Company Name :)</Link>
-        <Link className='navbar-link' to='/'>Sign Out</Link>
-        <Link className='navbar-link' to='/'>Create Post</Link>
+function Navbar( { isAuthenticated, logout }) {
+  const authLinks = (
+    <>
+      <Link className='navbar-link' to='/'>Company Name :)</Link>
+      <Link className='navbar-link' to='/' onClick={logout} >Sign Out</Link>
+      <Link className='navbar-link' to='/create-post'>Create Post</Link>
+      <Link className='navbar-link' to='/account'>Account</Link>
+    </>
+  )
 
-      </div>
-    );
+  const guestLinks = (
+    <>
+      <Link className='navbar-link' to='/'>Company Name :)</Link>
+      <Link className='navbar-link' to='/login'>Sign In</Link>
+      <Link className='navbar-link' to='/register'>Sign Up</Link>
+    </>
+  )
+
+  return (
+    <div id='navbar'>
+      { isAuthenticated ? authLinks : guestLinks }
+    </div>
+  );
   }
   
-  export default Navbar;
+  const mapStateToProps = state => ({
+    isAuthenticated: state.auth.isAuthenticated
+  });
+
+  export default connect(mapStateToProps, { logout })(Navbar);
   

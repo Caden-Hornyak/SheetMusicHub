@@ -23,8 +23,7 @@ const CSRFToken = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get(`${process.env.REACT_APP_API_URL}/accounts/csrf_cookie`)
-
+                const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/accounts/csrf_cookie/`)
                 setcsrftoken(getCookie('csrftoken'));
             } catch (err) {
                 console.log("error");

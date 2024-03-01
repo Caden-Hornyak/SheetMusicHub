@@ -1,19 +1,38 @@
-import React, { useState, useEffect} from 'react'
+import React, { useState, useEffect} from 'react';
+import axios from '../configs/axiosConfig';
 
-function DisplayPostListView(props) {
+function DisplayPostListView() {
     
-    let [posts, setPosts] = useState([])
+    let [posts, setPosts] = useState([]);
+    let [postfailmsg, setPostfailmsg] = useState(false);
 
     
-
-
     let getPosts = async () => {
+        let data;
+        let res;
 
-        let response = await fetch('posts/')
-        let data = response.json();
-        console.log(data);
-        setPosts(data)
+        try {
+            res = await axios.get(`${process.env.REACT_APP_API_URL}/api/posts/`);
+            
+            if (res.data.error) {
+                setPostfailmsg(true);
+            } else {
+                setPosts(res.data)
+            }
+        } catch (err) {
+            console.log(err);
+            setPostfailmsg(true);
+        }
     }
+
+    let post_map = posts.map((post, index) => (
+        <div>
+
+            <h3 key={index}>{post.title}</h3>
+            <img src={process.env.REACT_APP_API_URL+post.images[0].image}></img>
+        </div>
+        
+    ));
 
     useEffect(() => {
         getPosts()
@@ -22,9 +41,8 @@ function DisplayPostListView(props) {
     return(
         <div>
             <div className='post'>
-                {posts.map((post, index) => (
-                    <h3 key={props.index}>{props.title}</h3>
-                ))}
+
+                { postfailmsg ? <h1>No posts were found</h1> : post_map}
             </div>
         </div>
     );

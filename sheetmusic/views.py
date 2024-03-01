@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, parser_classes
-from .serializers import MultiplePostSerializer, SinglePostSerializer
+from .serializers import PostSerializer
 from .models import Post, SheetMusicImage, UserProfile
 from django.http import JsonResponse
 from rest_framework import status
@@ -62,21 +62,6 @@ def getRoutes(request):
     ]
     return Response(routes)
 
-@api_view(['GET'])
-def getPosts(request):
-    posts = Post.objects.all().order_by('-likes')[:50]
-    serializer = MultiplePostSerializer(posts, many=True)
-
-    return Response(serializer.data)
-
-
-@api_view(['GET'])
-def getPost(request, uuid):
-    post = get_object_or_404(Post, id=uuid)
-    serializer = SinglePostSerializer(post, many=True)
-
-    return Response(serializer.data)
-
 
 def save_uploaded_file(uploaded_file, target_path):
     # Generate a unique filename or use existing logic to determine the filename
@@ -88,10 +73,11 @@ def save_uploaded_file(uploaded_file, target_path):
             destination.write(chunk)
         return target_path
 
-@method_decorator(csrf_protect, name='dispatch')
-class PostAction(APIView):
 
+class Posts(APIView):
+    permission_classes = (permissions.AllowAny, )
     # create post
+    @method_decorator(csrf_protect, name='dispatch')
     @method_decorator(login_required)
     def post(self, request, format=None):
 
@@ -138,17 +124,14 @@ class PostAction(APIView):
     
     # get posts
     def get(self, request, format=None):
-        l = Post.objects.all()
-        for object in l:
-            print(object, file=sys.stderr)
-        # serializer = MultiplePostSerializer(l)
-        return Response({'hello': 'hello'})
+
+        serializer = PostSerializer(Post.objects.all(), many=True)
+        return Response(serializer.data)
 
     
 
 
-# @method_decorator(ensure_csrf_cookie, name='dispatch')
-@method_decorator(csrf_exempt, name='dispatch')
+@method_decorator(ensure_csrf_cookie, name='dispatch')
 class RegisterView(APIView):
     permission_classes = (permissions.AllowAny, )
 
@@ -166,10 +149,8 @@ class RegisterView(APIView):
                 return Response({ 'error': 'Password is less than 6 characters '})
             else:
                 user = User.objects.create_user(username=username, password=password)
-                user.save()
 
-                user_profile = UserProfile(user=user, first_name='', last_name='')
-                user_profile.save()
+                user_profile = UserProfile.objects.create(user=user, first_name='', last_name='')
 
                 return Response({ 'success': 'Account Created'})
         else:
@@ -191,7 +172,8 @@ class CheckAuthenticatedView(APIView):
             return Response({ 'success': 'User Authenticated'})
         else:
             return Response({ 'error': 'User Not Authenticated'})
-        
+
+@method_decorator(csrf_exempt, name='dispatch') 
 class LoginView(APIView):
     permission_classes = (permissions.AllowAny, )
 
@@ -209,7 +191,8 @@ class LoginView(APIView):
         else:
             return Response({ 'error', 'Error Authenticating User'})
         
-@method_decorator(csrf_protect, name='dispatch')
+        
+
 class LogoutView(APIView):
     def post(self, request, format=None):
         auth.logout(request)

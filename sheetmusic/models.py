@@ -4,7 +4,7 @@ import uuid
 
 
 class SheetMusicImage(models.Model):
-    image = models.ImageField(upload_to='media/sheetmusic/')
+    image = models.ImageField(upload_to='images/')
 
 # Create your models here.
 class Post(models.Model):
@@ -14,7 +14,7 @@ class Post(models.Model):
     likes = models.IntegerField(default=0)
     comment_count = models.IntegerField(default=0)
 
-    pdf_file = models.FileField(upload_to='media/pdfs/')
+    pdf_file = models.FileField(upload_to='pdfs/')
     images = models.ManyToManyField(SheetMusicImage, blank=True)
     
     comments = models.ManyToManyField('Comment', blank=True)

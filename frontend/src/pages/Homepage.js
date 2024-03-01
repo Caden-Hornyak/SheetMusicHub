@@ -1,5 +1,6 @@
 import React, { useState, useEffect} from 'react'
 import DisplayPostListView from '../components/DisplayPostListView';
+import Navbar from '../components/Navbar';
 
 function PostListPage() {
     
@@ -7,6 +8,7 @@ function PostListPage() {
 
     return(
         <div>
+            <Navbar />
             <DisplayPostListView />            
         </div>
     );
