@@ -5,9 +5,48 @@ import {
     LOGIN_SUCCESS,
     LOGIN_FAIL,
     LOGOUT_SUCCESS,
-    LOGOUT_FAIL
+    LOGOUT_FAIL,
+    AUTHENTICATED_SUCCESS,
+    AUTHENTICATED_FAIL,
+    I_WAS_RAN_FIRST
+    
 } from './types';
 import Cookies from 'js-cookie'
+import { load_user } from './profile';
+
+export const checkAuthenticated = () => async dispatch => {
+
+    const config = {
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
+    };
+
+    try {
+
+        const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/accounts/check-authenticated/`, config);
+
+        if (res.data.error) {
+
+            dispatch({
+                type: AUTHENTICATED_FAIL,
+                payload: false
+            });
+        } else {
+            dispatch({
+                type: AUTHENTICATED_SUCCESS,
+                payload: true
+            });
+        }
+
+    } catch (err) {
+        dispatch({
+            type: AUTHENTICATED_FAIL,
+            payload: false
+        });
+    }
+}
 
 export const register = (username, password, re_password) => async dispatch => {
 
@@ -67,11 +106,13 @@ export const login = (username, password) => async dispatch => {
             });
         } else {
             dispatch({
-                type: LOGIN_SUCCESS,
-                payload: res.data.username
-            })
+                type: LOGIN_SUCCESS
+            });
+
+            load_user();
         }
     } catch (err) {
+        console.log(err)
         dispatch({
             type: LOGIN_FAIL
         });
@@ -114,3 +155,13 @@ export const logout = () => async dispatch => {
         });
     }
 }
+
+
+export const i_was_ran_first = () => async dispatch => {
+
+        dispatch({
+            type: I_WAS_RAN_FIRST
+        });
+
+}
+

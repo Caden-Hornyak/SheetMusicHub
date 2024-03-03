@@ -1,0 +1,22 @@
+.like-btn:hover path {
+    fill: orange;
+}
+
+.dislike-btn:hover path {
+    fill: blue;
+}
+
+.post-listview {
+    display: flex
+
+}
+.post-listview-ind {
+    display: flex;
+    flex-direction: column;
+    margin: 20px;
+}
+
+    .post-listview-ind img {
+        height: 400px;
+        width: 300px;
+    }

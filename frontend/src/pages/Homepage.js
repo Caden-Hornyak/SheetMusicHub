@@ -1,5 +1,5 @@
 import React, { useState, useEffect} from 'react'
-import DisplayPostListView from '../components/DisplayPostListView';
+import DisplayPostListView from '../components/Post/DisplayPostListView';
 import Navbar from '../components/Navbar';
 
 function PostListPage() {

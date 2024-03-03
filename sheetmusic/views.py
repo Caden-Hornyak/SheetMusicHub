@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, parser_classes
-from .serializers import PostSerializer
+from .serializers import PostSerializer, UserProfileSerializer
 from .models import Post, SheetMusicImage, UserProfile
 from django.http import JsonResponse
 from rest_framework import status
@@ -62,23 +62,13 @@ def getRoutes(request):
     ]
     return Response(routes)
 
-
-def save_uploaded_file(uploaded_file, target_path):
-    # Generate a unique filename or use existing logic to determine the filename
-    # Here, I am using the original filename, but you might want to add some logic to prevent overwriting
-    file_name = uploaded_file.name
-
-    with open(target_path, 'wb+') as destination:
-        for chunk in uploaded_file.chunks():
-            destination.write(chunk)
-        return target_path
-
-
 class Posts(APIView):
     permission_classes = (permissions.AllowAny, )
     # create post
-    @method_decorator(csrf_protect, name='dispatch')
-    @method_decorator(login_required)
+
+    # @method_decorator(csrf_protect, name='dispatch')
+    # @method_decorator(login_required)
+    @method_decorator(csrf_exempt)
     def post(self, request, format=None):
 
         pdf_file = request.FILES.get('pdf_file')
@@ -86,8 +76,13 @@ class Posts(APIView):
         # if pdf file exists and is readable
         if pdf_file and isinstance(pdf_file, InMemoryUploadedFile):
 
-            file_path = os.path.join(settings.MEDIA_ROOT, "pdf", pdf_file.name)
-            saved_file_name = save_uploaded_file(pdf_file, file_path)
+            file_path = os.path.join(settings.MEDIA_ROOT, "pdfs", pdf_file.name)
+
+            # save pdf
+            with open(file_path, 'wb+') as destination:
+                for chunk in pdf_file.chunks():
+                    destination.write(chunk)
+                saved_file_name =  file_path
 
             # Create Post without images
             post = Post()
@@ -101,35 +96,40 @@ class Posts(APIView):
 
             pdf_document = fitz.open(post.pdf_file)
             for page_number in range(pdf_document.page_count):
-
                 # Get and convert page
                 page = pdf_document[page_number]
                 pixmap = page.get_pixmap() 
 
                 # Save page
-                image_filename = os.path.join(settings.MEDIA_ROOT, "image", f'{post.pdf_file.name}-%i.png' % page.number)
+                image_filename = os.path.join(settings.MEDIA_ROOT, "images", f'{pdf_file.name}-%i.png' % page.number)
                 image_file = pixmap.save(image_filename)
 
                 # update post
                 new_image = SheetMusicImage(image=image_file)
                 new_image.save()
                 post.images.add(new_image)
+                
             post.save()
             pdf_document.close()
 
 
-            return Response({'message': 'Post created successfully'})
+            return Response({'success': 'Post created successfully', 'id': post.id})
         
         return Response({'error': 'No file provided'}, status=400)
     
     # get posts
-    def get(self, request, format=None):
+    def get(self, request, type, format=None):
 
-        serializer = PostSerializer(Post.objects.all(), many=True)
+        if type == 'multiple':
+            serializer = PostSerializer(Post.objects.all(), many=True)
+        else:
+            try:
+                serializer = PostSerializer(Post.objects.get(id=type))
+            except:
+                return Response({ 'error': 'Post does not exist'})
+            
+
         return Response(serializer.data)
-
-    
-
 
 @method_decorator(ensure_csrf_cookie, name='dispatch')
 class RegisterView(APIView):
@@ -163,17 +163,23 @@ class GetCSRFToken(APIView):
     def get(self, request, format=None):
         return Response({ 'success': 'CSRF cookie set'})
 
-@method_decorator(csrf_protect, name='dispatch')
 class CheckAuthenticatedView(APIView):
-    def get(self, request, format=None):
-        isAuthenticated = User.is_authenticated
 
-        if isAuthenticated:
-            return Response({ 'success': 'User Authenticated'})
-        else:
+    def get(self, request, format=None):
+
+        try:
+            user = self.request.user
+
+            isAuthenticated = User.is_authenticated
+
+            if isAuthenticated:
+                return Response({ 'success': 'User Authenticated'})
+            else:
+                return Response({ 'error': 'User Not Authenticated'})
+        except:
             return Response({ 'error': 'User Not Authenticated'})
 
-@method_decorator(csrf_exempt, name='dispatch') 
+@method_decorator(ensure_csrf_cookie, name='dispatch') 
 class LoginView(APIView):
     permission_classes = (permissions.AllowAny, )
 
@@ -187,18 +193,17 @@ class LoginView(APIView):
 
         if user is not None:
             auth.login(request, user)
-            return Response({ 'success': 'User Authenticated', 'username': username})
+            return Response({ 'success': 'User Authenticated'})
         else:
             return Response({ 'error', 'Error Authenticating User'})
         
-        
-
 class LogoutView(APIView):
     def post(self, request, format=None):
         auth.logout(request)
         return Response({ 'success': 'Successfully logged out'})
     
 class DeleteAccountView(APIView):
+
     def delete(self, request, format=None):
         user = self.request.user
 
@@ -208,3 +213,33 @@ class DeleteAccountView(APIView):
             return Response({ 'success': 'User deleted successfully' })
         except:
             return Response({ 'error': 'User was not deleted successfully' })
+
+class UserProfiles(APIView):
+    def get(self, request, format=None):
+        try: 
+            user = self.request.user
+            user_profile = UserProfile.objects.get(user=user)
+            serializer = UserProfileSerializer(user_profile)
+
+            return Response({ 'profile': serializer.data, 'username': user.username})
+        except:
+            return Response({ 'error': "Something went wrong displaying User Profile."})
+        
+    def put(self, request, format=None):
+        try:
+            user = self.request.user
+            username= user.username
+
+            data = self.request.data
+            first_name = data['first_name']
+            last_name = data['last_name']
+
+            UserProfile.objects.filter(user=user).update(first_name=first_name, last_name=last_name)
+
+            user_profile = UserProfile.objects.get(user=user)
+            serializer = UserProfileSerializer(user_profile)
+
+            return Response({ 'profile ': serializer.data })
+        except Exception as e:
+            print(e, file=sys.stderr)
+            return Response({ 'error': 'There was an error updating the user profile.'})

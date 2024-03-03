@@ -1,18 +1,21 @@
 import React, { useState, useEffect} from 'react';
-import axios from '../configs/axiosConfig';
+import axios from '../../configs/axiosConfig';
+import { BiLike, BiDislike } from "react-icons/bi";
+import './DisplayPostListView.css'
+import { useNavigate } from 'react-router-dom';
 
 function DisplayPostListView() {
     
     let [posts, setPosts] = useState([]);
     let [postfailmsg, setPostfailmsg] = useState(false);
-
+    let navigate = useNavigate();
     
     let getPosts = async () => {
         let data;
         let res;
 
         try {
-            res = await axios.get(`${process.env.REACT_APP_API_URL}/api/posts/`);
+            res = await axios.get(`${process.env.REACT_APP_API_URL}/api/posts/multiple`);
             
             if (res.data.error) {
                 setPostfailmsg(true);
@@ -25,11 +28,19 @@ function DisplayPostListView() {
         }
     }
 
-    let post_map = posts.map((post, index) => (
-        <div>
+    const viewPost = (post) => {
+        
+        navigate(`/posts/${post.id}`)
+    }
 
+    let post_map = posts.map((post, index) => (
+        <div className="post-listview-ind" onClick={() => viewPost(post)}>
             <h3 key={index}>{post.title}</h3>
             <img src={process.env.REACT_APP_API_URL+post.images[0].image}></img>
+            <div>
+                <BiLike className='like-btn' />
+                <BiDislike className='dislike-btn' />
+            </div>
         </div>
         
     ));
@@ -40,7 +51,8 @@ function DisplayPostListView() {
 
     return(
         <div>
-            <div className='post'>
+            <link rel="stylesheet" href="path/to/boxicons/css/boxicons.min.css" />
+            <div className='post-listview'>
 
                 { postfailmsg ? <h1>No posts were found</h1> : post_map}
             </div>

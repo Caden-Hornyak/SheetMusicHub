@@ -10,16 +10,22 @@ import HomePage from './pages/HomePage.js'
 
 
 import store from './store.js'
-import { Provider } from 'react-redux'
+import { connect, Provider } from 'react-redux'
 
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-
-
+import InitialLoader from './components/InitialLoader.js';
+import ProfilePage from './pages/ProfilePage';
+import ViewPostPage from './pages/ViewPostPage'
+ 
 
 const router = createBrowserRouter([
   {
     path: '/',
     element: <HomePage />,
+  },
+  {
+    path: '/posts/:postid',
+    element: <ViewPostPage />
   },
   {
     path: '/create-post',
@@ -32,16 +38,22 @@ const router = createBrowserRouter([
   {
     path: '/register',
     element: <RegisterPage />
+  },
+  {
+    path: '/profile',
+    element: <ProfilePage />
   }
 ]);
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>
-    <Provider store={store}>
-      <RouterProvider router={router} />
-    </Provider>
-    
-  </React.StrictMode>
+<React.StrictMode>
+  <Provider store={store}>
+    <InitialLoader />
+    <RouterProvider router={router} />
+  </Provider>
+  
+</React.StrictMode>
 );
+
 

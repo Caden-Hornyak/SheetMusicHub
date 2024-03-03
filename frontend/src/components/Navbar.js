@@ -9,7 +9,7 @@ function Navbar( { isAuthenticated, logout }) {
       <Link className='navbar-link' to='/'>Company Name :)</Link>
       <Link className='navbar-link' to='/' onClick={logout} >Sign Out</Link>
       <Link className='navbar-link' to='/create-post'>Create Post</Link>
-      <Link className='navbar-link' to='/account'>Account</Link>
+      <Link className='navbar-link' to='/profile'>Account</Link>
     </>
   )
 
