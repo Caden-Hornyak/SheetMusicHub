@@ -8,9 +8,8 @@ const DisplayPostSingleView = (props) => {
     let [post, setPost] = useState({
         title: '',
         images: {0: ''},
+        comments: {0: ''}
     })
-
-    let [postExists, setPostExists] = useState(false);
 
     let getPost = async () => {
         let res;
@@ -21,9 +20,8 @@ const DisplayPostSingleView = (props) => {
             if (res.data.error) {
                 console.log("Post not found")
             } else {
-                setPost({...post, title: res.data.title, images: res.data.images })
-
-                setPostExists(true)
+                setPost({...post, title: res.data.title, images: res.data.images, comments: res.data.comments })
+                console.log(post)
             }
         } catch (err) {
             console.log(err);
@@ -33,10 +31,22 @@ const DisplayPostSingleView = (props) => {
     useEffect(() => {
         getPost()
     }, [])
+
+    // let createComments = (comment) => {
+    //     if (comment.child_comment.length == 0) {
+    //         return
+    //     }
+
+    //     return (
+    //         <div>
+    //             <p>{comment.text}</p>
+    //             {createComments(comment.child_comment)}
+    //         </div>
+    //     )
+    // }
     
   return (
     <div>
-        { postExists &&
         <div className='singlepost-wrapper'>
             <div className="singlepost-post">
                 <h3>{post.title}</h3>
@@ -46,9 +56,11 @@ const DisplayPostSingleView = (props) => {
                     <BiDislike className='dislike-btn' />
                 </div>
             </div>
-        </div>}
+            <div className="singlepost-comments-wrapper">
+                {/* {createComments(post.comments)} */}
+            </div>
+        </div>
 
-        { !postExists && <h1>Post does not exist</h1>}
     </div>
   )
 }

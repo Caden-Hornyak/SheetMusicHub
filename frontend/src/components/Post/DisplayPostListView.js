@@ -16,7 +16,7 @@ function DisplayPostListView() {
 
         try {
             res = await axios.get(`${process.env.REACT_APP_API_URL}/api/posts/multiple`);
-            
+
             if (res.data.error) {
                 setPostfailmsg(true);
             } else {

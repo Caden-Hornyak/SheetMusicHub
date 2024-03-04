@@ -1,8 +1,10 @@
 from django.shortcuts import render, get_object_or_404
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, parser_classes
-from .serializers import PostSerializer, UserProfileSerializer
-from .models import Post, SheetMusicImage, UserProfile
+from .serializers import (PostSerializerSingle, PostSerializerMultiple, 
+                          UserProfileSerializer, CommentSerializer)
+from .models import (Post, SheetMusicImage, UserProfile, 
+                     Comment)
 from django.http import JsonResponse
 from rest_framework import status
 import sys
@@ -105,7 +107,8 @@ class Posts(APIView):
                 image_file = pixmap.save(image_filename)
 
                 # update post
-                new_image = SheetMusicImage(image=image_file)
+                new_image = SheetMusicImage(image=image_filename)
+                
                 new_image.save()
                 post.images.add(new_image)
                 
@@ -121,11 +124,13 @@ class Posts(APIView):
     def get(self, request, type, format=None):
 
         if type == 'multiple':
-            serializer = PostSerializer(Post.objects.all(), many=True)
+            serializer = PostSerializerMultiple(Post.objects.all(), many=True)
         else:
             try:
-                serializer = PostSerializer(Post.objects.get(id=type))
-            except:
+                serializer = PostSerializerSingle(Post.objects.get(id=type))
+                # print(serializer.data, file=sys.stderr)
+            except Exception as e:
+                print(e, file=sys.stderr)
                 return Response({ 'error': 'Post does not exist'})
             
 
@@ -243,3 +248,6 @@ class UserProfiles(APIView):
         except Exception as e:
             print(e, file=sys.stderr)
             return Response({ 'error': 'There was an error updating the user profile.'})
+
+
+

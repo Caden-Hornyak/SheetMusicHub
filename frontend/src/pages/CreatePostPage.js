@@ -10,29 +10,40 @@ const CreatePostPage = () => {
         // Initialize form fields here
         // For example:
         title: '',
-        pdf_file: '',
+        pdf_file: null,
     });
 
     const handleChange = (e) => {
-        setFormData({
-          ...formData,
-          [e.target.name]: e.target.value,
-        });
+        const { name, value, files } = e.target;
+
+        if (name === 'pdf_file') {
+            console.log(files)
+            setFormData({
+                ...formData,
+                [name]: files[0],  // Use files[0] to get the selected file
+            });
+        } else {
+            // If it's not a file input, update as usual
+            setFormData({
+                ...formData,
+                [name]: value,
+            });
+        }
       };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         try {
-            const formDataToSend = new FormData();
+            let formDataToSend = new FormData();
             formDataToSend.append('title', formData.title); 
+            console.log(formData.pdf_file)
             formDataToSend.append('pdf_file', formData.pdf_file);
 
-            console.log(formDataToSend.get('title'), formDataToSend.get('pdf_file'))
+            console.log(formData.pdf_file)
 
             const config = {
                 headers: {
-                    'Content-Type': 'multipart/form-data',
                     'X-CSRFToken': Cookies.get('csrftoken')
                 },
             }
