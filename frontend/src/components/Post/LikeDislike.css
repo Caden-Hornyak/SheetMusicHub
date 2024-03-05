@@ -1,0 +1,24 @@
+.like-btn path {
+    fill: black;
+}
+
+.like-btn-active path {
+    fill: orange;
+}
+
+.like-btn:hover path {
+    fill: orange;
+}
+
+
+.dislike-btn path {
+    fill: black;
+}
+
+.dislike-btn-active path {
+    fill: blue;
+}
+
+.dislike-btn:hover path {
+    fill: blue;
+}

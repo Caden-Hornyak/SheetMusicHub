@@ -37,10 +37,8 @@ const CreatePostPage = () => {
         try {
             let formDataToSend = new FormData();
             formDataToSend.append('title', formData.title); 
-            console.log(formData.pdf_file)
-            formDataToSend.append('pdf_file', formData.pdf_file);
 
-            console.log(formData.pdf_file)
+            formDataToSend.append('pdf_file', formData.pdf_file);
 
             const config = {
                 headers: {

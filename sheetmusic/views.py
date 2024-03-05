@@ -4,7 +4,7 @@ from rest_framework.decorators import api_view, parser_classes
 from .serializers import (PostSerializerSingle, PostSerializerMultiple, 
                           UserProfileSerializer, CommentSerializer)
 from .models import (Post, SheetMusicImage, UserProfile, 
-                     Comment)
+                     Comment, Vote)
 from django.http import JsonResponse
 from rest_framework import status
 import sys
@@ -121,13 +121,13 @@ class Posts(APIView):
         return Response({'error': 'No file provided'}, status=400)
     
     # get posts
-    def get(self, request, type, format=None):
+    def get(self, request, id, format=None):
 
-        if type == 'multiple':
+        if id == 'multiple':
             serializer = PostSerializerMultiple(Post.objects.all(), many=True)
         else:
             try:
-                serializer = PostSerializerSingle(Post.objects.get(id=type))
+                serializer = PostSerializerSingle(Post.objects.get(id=id), context={ 'request': request })
                 # print(serializer.data, file=sys.stderr)
             except Exception as e:
                 print(e, file=sys.stderr)
@@ -135,6 +135,10 @@ class Posts(APIView):
             
 
         return Response(serializer.data)
+
+
+
+
 
 @method_decorator(ensure_csrf_cookie, name='dispatch')
 class RegisterView(APIView):
@@ -249,5 +253,56 @@ class UserProfiles(APIView):
             print(e, file=sys.stderr)
             return Response({ 'error': 'There was an error updating the user profile.'})
 
+class Votes(APIView):
+    # update comment/post comment
+    def post(self, request, object_type, id, format=None):
+        try:
+            value = request.data['value']
 
+            if abs(value) != 1:
+                raise Exception('Invalid Vote Value')
 
+            user = self.request.user
+            user_prof = UserProfile.objects.get(user=user)
+
+            if object_type == 'post':
+                object = Post.objects.get(id=id)
+                vote_object = Vote.objects.filter(post=object, user=user_prof).first()
+            elif object_type == 'comment':
+                object = Comment.objects.get(id=id)
+                vote_object = Vote.objects.filter(comment=object, user=user_prof).first()
+            else:
+                raise Exception('Invalid Object Vote Type')
+            
+            # if already voted on
+            if vote_object:
+                # if change in value
+                if value != vote_object.value:
+                    update = 2 * value
+                    object.likes += update
+                    vote_object.value = value
+                    vote_object.save()
+                # if undo of previous vote, delete vote
+                else:
+                    update = -value
+                    object.likes += update
+                    vote_object.delete()
+
+            # if not already voted on, create vote  
+            else:
+                if object_type == 'post':
+                    new_vote_object = Vote(post=object, user=user_prof, value=value)
+                else:
+                    new_vote_object = Vote(comment=object, user=user_prof, value=value)
+                new_vote_object.save()
+                update = value
+                object.likes += update
+
+            object.save()
+
+        except Exception as e:
+            print(e, file=sys.stderr)
+            error_message = f"An exception occurred: {type(e).__name__}"
+            return Response({'error': error_message}, status=500)
+        
+        return Response({ 'update': update })

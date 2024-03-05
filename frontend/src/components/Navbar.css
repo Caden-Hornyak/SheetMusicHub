@@ -1,11 +1,17 @@
+:root {
+    --navbar-height: 75px;
+    
+}
+
 #navbar {
+    
     background-color: white;
     position: fixed;
     top: 0;
     left: 0;
     padding: 10px;
     width: 100vw;
-    height: 75px;
+    height: var(--navbar-height);
     display: flex;
     flex-direction: row;
 
@@ -13,7 +19,7 @@
 }
 
     .navbar-link {
-        margin: 10px;
+        margin: 15px;
         text-decoration: none;
         color: black;
     }

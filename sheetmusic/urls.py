@@ -1,13 +1,13 @@
 from django.contrib import admin
 from django.urls import path, include
 from . import views
-from .views import LoginView, GetCSRFToken, CheckAuthenticatedView, RegisterView, LogoutView, Posts, UserProfiles
+from .views import LoginView, GetCSRFToken, CheckAuthenticatedView, RegisterView, LogoutView, Posts, UserProfiles, Votes
 
 urlpatterns = [
     
     path('', views.getRoutes),
     path('posts/create-post/', Posts.as_view(), name='create_post'),
-    path('posts/<str:type>/', Posts.as_view(), name='posts'),
+    path('posts/<str:id>/', Posts.as_view(), name='posts'),
 
     
     path('accounts/register/', RegisterView.as_view()),
@@ -17,7 +17,9 @@ urlpatterns = [
     path('accounts/login/', LoginView.as_view()),
 
     path('profile/get-profile/', UserProfiles.as_view()),
-    path('profile/update-profile/', UserProfiles.as_view())
+    path('profile/update-profile/', UserProfiles.as_view()),
+
+    path('votes/<str:object_type>/<str:id>', Votes.as_view()),
     
     
 ]
