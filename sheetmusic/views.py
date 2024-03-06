@@ -136,10 +136,6 @@ class Posts(APIView):
 
         return Response(serializer.data)
 
-
-
-
-
 @method_decorator(ensure_csrf_cookie, name='dispatch')
 class RegisterView(APIView):
     permission_classes = (permissions.AllowAny, )
@@ -306,3 +302,35 @@ class Votes(APIView):
             return Response({'error': error_message}, status=500)
         
         return Response({ 'update': update })
+
+class Comments(APIView):
+    def post(self, request, format=None):
+        try:
+            data = self.request.data
+
+            object_type = data['object_type']
+            poster = UserProfile.objects.get(user=self.request.user)
+    
+            text = data['text']
+
+            
+            comment = Comment(poster=poster, text=text)
+            comment.save()
+
+            object_id = data['object_id']
+
+            if object_type == 'Post':
+                object = Post.objects.get(id=object_id)
+                object.comments.add(comment)
+            elif object_type == 'Comment':
+                object = Comment.objects.get(id=object_id)
+                object.child_comment.add(comment)
+
+            object.save()
+
+            serializer = CommentSerializer(comment, context={ 'request': request })
+            return Response({ 'comment': serializer.data })
+        
+        except Exception as e:
+            print(e, file=sys.stderr)
+            return Response({ 'error': 'Unable to create comment'})

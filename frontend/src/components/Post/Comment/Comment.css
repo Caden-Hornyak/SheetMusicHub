@@ -1,0 +1,17 @@
+/* span {
+    margin: 5px;
+} */
+
+.comment {
+    border-left: 1px solid black;
+    padding: 5px;
+}
+
+.comment button {
+    border: none;
+    background-color: transparent;
+}
+
+textarea {
+    resize: vertical;
+}

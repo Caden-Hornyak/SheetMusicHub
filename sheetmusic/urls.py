@@ -1,7 +1,8 @@
 from django.contrib import admin
 from django.urls import path, include
 from . import views
-from .views import LoginView, GetCSRFToken, CheckAuthenticatedView, RegisterView, LogoutView, Posts, UserProfiles, Votes
+from .views import (LoginView, GetCSRFToken, CheckAuthenticatedView, 
+                    RegisterView, LogoutView, Posts, UserProfiles, Votes, Comments)
 
 urlpatterns = [
     
@@ -20,6 +21,8 @@ urlpatterns = [
     path('profile/update-profile/', UserProfiles.as_view()),
 
     path('votes/<str:object_type>/<str:id>', Votes.as_view()),
+
+    path('comments/create-comment/', Comments.as_view()),
     
     
 ]

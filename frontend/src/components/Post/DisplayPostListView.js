@@ -33,9 +33,9 @@ function DisplayPostListView() {
         navigate(`/posts/${post.id}`)
     }
 
-    let post_map = posts.map((post, index) => (
-        <div className="post-listview-ind" onClick={() => viewPost(post)}>
-            <h3 key={index}>{post.title}</h3>
+    let post_map = posts.map((post) => (
+        <div key={post.id} className="post-listview-ind" onClick={() => viewPost(post)}>
+            <h3>{post.title}</h3>
             <img src={process.env.REACT_APP_API_URL+post.images[0].image}></img>
             <div>
                 <BiLike className='like-btn' />

@@ -28,6 +28,7 @@ class Post(models.Model):
         return self.title
 
 class Comment(models.Model):
+    poster = models.ForeignKey("UserProfile", on_delete=models.CASCADE, null=True)
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     text = models.CharField(max_length=500)
     child_comment = models.ManyToManyField('self', blank=True, symmetrical=False)
@@ -53,7 +54,7 @@ class UserProfile(models.Model):
         return str(self.user)
     
 class Vote(models.Model):
-    user = models.ForeignKey("UserProfile", on_delete=models.CASCADE)
+    user = models.ForeignKey("UserProfile", on_delete=models.CASCADE, null=True)
     post = models.ForeignKey("Post", on_delete=models.CASCADE, null=True)
     comment = models.ForeignKey("Comment", on_delete=models.CASCADE, null=True)
     value = models.IntegerField(default=0)

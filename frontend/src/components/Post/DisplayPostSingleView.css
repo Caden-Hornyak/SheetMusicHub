@@ -1,15 +1,23 @@
-
-
-.singlepost-wrapper {
+.singlepost-body {
     position: absolute;
-    top: calc(var(--navbar-height) + 10px);
+    top: calc(var(--navbar-height));
     left: 0;
     
-    height: calc(100vh - var(--navbar-height) - 20px);
+}
+
+.singlepost-wrapper {
+    /* position: absolute;
+    top: calc(var(--navbar-height) + 10px);
+    left: 0; */
+    
+    height: calc(100vh - var(--navbar-height));
     width: 100vw;
 
     overflow-x: hidden;
     display: flex;
+    padding-left: 15px;
+    padding-right: 15px;
+    min-width: var(--min-width);
 }
 
 h3 {
@@ -22,6 +30,9 @@ h3 {
         width: 50%;
         display: flex;
         flex-direction: column;
+        justify-content: center;
+        margin-left: 15px;
+        margin-right: 15px;
     }
 
         /* .singlepost-post img {

@@ -1,76 +1,87 @@
 import React, { useEffect, useState } from 'react'
 import axios from '../../configs/axiosConfig'
 import LikeDislike from './LikeDislike'
-import { BiLike, BiDislike } from "react-icons/bi";
+import { BiLike, BiDislike, BiArrowBack } from "react-icons/bi";
 import './DisplayPostSingleView.css'
+import { useNavigate } from 'react-router-dom';
+import Comment from './Comment/Comment'
+import Cookies from 'js-cookie'
+import RelativeTime from './RelativeTime'
 
 const DisplayPostSingleView = (props) => {
-    let postid = props.postid
+
+    let post_id = props.postid
+    let navigate = useNavigate();
     
     let [post, setPost] = useState({
         title: '',
         images: {0: ''},
         comments: [{ child_comment: [], text: "", likes: 0 }],
         likes: 0,
-        id: '-'
+        id: '-',
+        user_vote: 0,
+        date_created: '-'
     })
 
-    let [comment, setComment] = useState({
 
-    })
-
-    let getPost = async () => {
-        let res;
-
-        try {
-            res = await axios.get(`${process.env.REACT_APP_API_URL}/api/posts/${postid}`);
-            console.log(res.data)
-            
-            if (res.data.error) {
-                console.log("Post not found")
-            } else {
-                setPost({...post, title: res.data.title, images: res.data.images, 
-                        comments: res.data.comments, likes: res.data.likes, 
-                        id: res.data.id })
-            }
-        } catch (err) {
-            console.log(err);
-        }
+    let goBack = () => {
+        navigate('/')
     }
 
     useEffect(() => {
         getPost()
     }, [])
 
-    let createComments = (create_comment) => {
+    let getPost = async () => {
+        let res;
 
-        const createCommentMap = create_comment.map((curr_comment) => {
-            let child_comment = curr_comment['child_comment']
+        try {
+            res = await axios.get(`${process.env.REACT_APP_API_URL}/api/posts/${post_id}`);
             
+            if (res.data.error) {
+                console.log("Post not found")
+            } else {
+                setPost({...post, title: res.data.title, images: res.data.images, 
+                        comments: res.data.comments, likes: res.data.likes, 
+                        id: res.data.id, user_vote: res.data.user_vote, 
+                        date_created: res.data.date_created })
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    let getComments = (create_comment) => {
+
+        const getCommentMap = create_comment.map((curr_comment) => {
             return (
-                <div className='comment'>
-                    <p>{curr_comment['text']}<LikeDislike object="comment" object_id={curr_comment.id} likes={curr_comment.likes}/></p> 
-                    { child_comment.length > 0 && (createComments(child_comment))}
-                </div>
+                <Comment key={curr_comment.id} comment={curr_comment} getComments={getComments} />
             )
         });
-        return createCommentMap
+        return getCommentMap
     }
+
+    
     
   return (
+    <div className='singlepost-body'>
         <div className='singlepost-wrapper'>
+            <BiArrowBack onClick={() => goBack()}/>
             <div className="singlepost-post-wrapper">
                 <div><h3>{post.title}</h3></div>
-                <img src={process.env.REACT_APP_API_URL+post.images[0].image}></img>
+                <div><RelativeTime object_date={post.date_created}/></div>
+                <img src={post.images[0].image}></img>
                 <div>
-                    <LikeDislike object="post" object_id={post.id} likes={post.likes}/>
+                    <LikeDislike object="post" object_id={post.id} likes={post.likes} user_vote={post.user_vote}/>
                 </div>
+                <textarea></textarea>
+                <button >Reply</button>
             </div>
             <div className="singlepost-comments-wrapper">
-                {/* {console.log(post)} */}
-                {createComments(post.comments)}
+                {getComments(post.comments)}
             </div>
         </div>
+    </div>
   )
 }
 

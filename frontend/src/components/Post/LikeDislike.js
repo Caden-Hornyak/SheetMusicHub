@@ -4,8 +4,8 @@ import Cookies from 'js-cookie'
 import axios from '../../configs/axiosConfig'
 import './LikeDislike.css'
 
-const LikeDislike = ({ object, object_id, likes }) => {
-    
+const LikeDislike = ({ object, object_id, likes, user_vote }) => {
+
     let [curr_likes, setcurr_likes] = useState(likes)
     let [liked, setliked] = useState(false)
     let [disliked, setdisliked] = useState(false)
@@ -13,6 +13,8 @@ const LikeDislike = ({ object, object_id, likes }) => {
     useEffect(() => {
         // This effect will run whenever the 'likes' prop changes
         setcurr_likes(likes);
+        setliked(user_vote === 1)
+        setdisliked(user_vote === -1)
       }, [likes]);
 
     let alterlikes = async (value, vote) => {
