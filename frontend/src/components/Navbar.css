@@ -1,6 +1,9 @@
 :root {
     --navbar-height: 75px;
-    --min-width: 700px
+    --min-width: 900px;
+    --background-color: transparent;
+    --ten-color: orange;
+    --thirty-color: #FAE5DB;
 }
 
 #navbar {
@@ -17,6 +20,7 @@
 
     box-shadow: 3px 3px 15px rgba(0, 0, 0, .8);
     min-width: var(--min-width);
+    z-index: 1;
 }
 
     .navbar-link {

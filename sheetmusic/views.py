@@ -89,6 +89,7 @@ class Posts(APIView):
             # Create Post without images
             post = Post()
             post.title = request.data.get('title', '')
+            post.description = request.data.get('description', '')
             post.pdf_file = saved_file_name 
             post.save()
             

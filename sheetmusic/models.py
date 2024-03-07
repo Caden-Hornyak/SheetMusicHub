@@ -12,6 +12,7 @@ class SheetMusicImage(models.Model):
 
 # Create your models here.
 class Post(models.Model):
+    poster = models.ForeignKey("UserProfile", on_delete=models.SET_NULL, null=True)
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=50)
 
@@ -20,9 +21,11 @@ class Post(models.Model):
 
     pdf_file = models.FileField(upload_to='pdfs/')
     images = models.ManyToManyField(SheetMusicImage, blank=True)
+    description = models.TextField(default='')
     
     comments = models.ManyToManyField('Comment', blank=True)
     date_created = models.DateTimeField(auto_now_add=True)
+
 
     def __str__(self):
         return self.title

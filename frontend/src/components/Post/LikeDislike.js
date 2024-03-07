@@ -56,11 +56,11 @@ const LikeDislike = ({ object, object_id, likes, user_vote }) => {
 
 
   return (
-    <span>
+    <div id='vote-container' >
         <span>{curr_likes}</span>
         <BiLike className={liked ? 'like-btn-active': 'like-btn'} onClick={() => alterlikes(1, 'like')}/>
         <BiDislike className={disliked ? 'dislike-btn-active': 'dislike-btn'} onClick={() => alterlikes(-1, 'dislike')}/>
-    </span>
+    </div>
     
   )
 }

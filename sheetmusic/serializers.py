@@ -9,12 +9,6 @@ class SheetMusicImageSerializer(ModelSerializer):
         model = SheetMusicImage
         fields = '__all__'
 
-class PostSerializerMultiple(ModelSerializer):
-    images = SheetMusicImageSerializer(many=True)
-    class Meta:
-        model = Post
-        fields = ('id', 'title', 'likes', 'comment_count', 'images', 'comments', 'date_created')
-
 class UserProfileSerializer(ModelSerializer):
     class Meta:
         model = UserProfile
@@ -51,13 +45,23 @@ class CommentSerializer(ModelSerializer):
             return 0
         
     def get_poster(self, obj):
-        return obj.poster.user.username
+        if obj.poster:
+            return obj.poster.user.username
+        else:
+            return "User Not Found"
         
-    
+
+class PostSerializerMultiple(ModelSerializer):
+    images = SheetMusicImageSerializer(many=True)
+    class Meta:
+        model = Post
+        fields = ('id', 'title', 'likes', 'comment_count', 'images', 'comments', 'date_created')
+
 class PostSerializerSingle(ModelSerializer):
     user_vote = serializers.SerializerMethodField()
     images = SheetMusicImageSerializer(many=True)
     comments = serializers.SerializerMethodField()
+    poster = serializers.SerializerMethodField()
 
     class Meta:
         model = Post
@@ -82,4 +86,11 @@ class PostSerializerSingle(ModelSerializer):
         except Exception as e:
             print(e, file=sys.stderr)
             return 0
+        
+    def get_poster(self, obj):
+        if obj.poster:
+            return obj.poster.user.username
+        else:
+            return "User Not Found"
 
+    

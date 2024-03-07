@@ -1,24 +1,68 @@
+:root {
+    --vote_btn_size: 20px;
+}
+
+.like-btn {
+    width: var(--vote_btn_size);
+    height: var(--vote_btn_size);
+}
+
 .like-btn path {
     fill: black;
+    transform: scale(1);
+    transition: all ease .25s;
+}
+
+.like-btn-active:hover path {
+    fill: rgb(255, 191, 73);
+}
+
+.like-btn-active {
+    width: var(--vote_btn_size);
+    height: var(--vote_btn_size);
 }
 
 .like-btn-active path {
-    fill: orange;
+    fill: var(--ten-color);
 }
 
 .like-btn:hover path {
-    fill: orange;
+    fill: var(--ten-color);
+    transform: scale(1.1);
 }
 
+.dislike-btn {
+    width: var(--vote_btn_size);
+    height: var(--vote_btn_size);
+}
+
+.dislike-btn-active {
+    width: var(--vote_btn_size);
+    height: var(--vote_btn_size);
+}
+
+.dislike-btn-active:hover path {
+    fill: rgb(61, 61, 255);
+}
 
 .dislike-btn path {
     fill: black;
+    transform: scale(1);
+    transition: all ease .25s;
 }
 
 .dislike-btn-active path {
     fill: blue;
+    transform: scale(1);
 }
 
 .dislike-btn:hover path {
     fill: blue;
+    transform: scale(1.1);
+}
+
+#vote-container {
+    display: flex;
+    align-items: center;
+    padding: 5px;
 }

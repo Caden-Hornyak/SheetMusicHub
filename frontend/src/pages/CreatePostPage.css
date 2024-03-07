@@ -1,0 +1,35 @@
+#createpost-body {
+    background-color: var(--background-color);
+    height: calc(100vh - var(--navbar-height));
+    width: 100vw;
+
+    position: absolute;
+    top: calc(var(--navbar-height));
+    left: 0;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#createpost-form {
+    display: flex;
+    flex-direction: column;
+
+    border: solid 2px black;
+    border-radius: 15px;
+    padding: 10px;
+
+    height: 800px;
+    width: 500px;
+}
+
+    #createpost-form button {
+        background-color: white;
+        border: none;
+        border-radius: 15px;
+    }
+
+    .createpost-input {
+        margin: 10px;
+    }

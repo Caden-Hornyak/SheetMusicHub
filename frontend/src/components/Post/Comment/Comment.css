@@ -1,17 +1,35 @@
-/* span {
-    margin: 5px;
-} */
+span {
+    margin-left: 3px;
+    margin-right: 3px
+}
 
 .comment {
-    border-left: 1px solid black;
+    position: relative;
+    display: flex;
     padding: 5px;
 }
 
-.comment button {
-    border: none;
-    background-color: transparent;
-}
+    .comment button {
+        border: none;
+        background-color: transparent;
+    }
 
 textarea {
     resize: vertical;
+}
+
+.comment-thread {
+    width: 5px;
+    background-color: black;
+    margin: 5px;
+    transition: all ease .25s;
+}
+
+.comment-thread:hover {
+    background-color: var(--ten-color);
+}
+
+.toggle-div {
+    display: flex;
+    flex-direction: column;
 }

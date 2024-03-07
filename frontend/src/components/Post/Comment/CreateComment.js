@@ -2,11 +2,9 @@ import React, { useState } from 'react'
 import axios from '../../../configs/axiosConfig'
 import Cookies from 'js-cookie'
 
-const CreateComment = ({ object_type, object_id, update_comment, par_comment_state, close_reply }) => {
+const CreateComment = ({ object_type, object_id, update_object, par_state, close_reply }) => {
 
   let [written_text, setwritten_text] = useState("")
-
-
 
   let create_comment = async () => {
     const config = {
@@ -31,7 +29,12 @@ const CreateComment = ({ object_type, object_id, update_comment, par_comment_sta
         if (res.data.error) {
             console.log(res.data.error)
         } else {
-            update_comment({...par_comment_state, child_comment: par_comment_state.child_comment.concat(res.data.comment)})
+          if (object_type === 'Comment') {
+            update_object({...par_state, child_comment: par_state.child_comment.concat(res.data.comment)})
+          } else {
+            update_object({...par_state, comments: par_state.concat(res.data.comment)})
+          }
+            
             setwritten_text('')
             close_reply()
         }

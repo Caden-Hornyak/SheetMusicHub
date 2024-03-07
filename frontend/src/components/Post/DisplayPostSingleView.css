@@ -1,45 +1,72 @@
 .singlepost-body {
     position: absolute;
-    top: calc(var(--navbar-height));
+    top: calc(var(--navbar-height) + 20px);
     left: 0;
-    
-}
+    width: 100%;
 
-.singlepost-wrapper {
-    /* position: absolute;
-    top: calc(var(--navbar-height) + 10px);
-    left: 0; */
-    
-    height: calc(100vh - var(--navbar-height));
-    width: 100vw;
-
-    overflow-x: hidden;
     display: flex;
-    padding-left: 15px;
-    padding-right: 15px;
-    min-width: var(--min-width);
+    justify-content: center;
+    
 }
 
-h3 {
-    margin: 0;
+hr {
+    z-index: 2;
+    width: 99%;
+    height: 5px;
+    border: white;
+    background-color: white;
+    border-radius: 2px;
 }
-    .singlepost-post-wrapper {
-        position: relative;
-        border: 1px solid black;
-        height: 100%;
-        width: 50%;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        margin-left: 15px;
-        margin-right: 15px;
+
+.back-arrow {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+
+    height: 25px;
+    width: 25px;
+    transition: all ease .5s;
+}
+
+    .back-arrow:hover {
+        transform: scale(1.5);
+        fill: var(--ten-color);
     }
 
-        /* .singlepost-post img {
-        } */
+    .singlepost-post-wrapper {
+        position: relative;
+        background-color: var(--thirty-color);
+        box-shadow: 7px 7px 30px black;
+        border-radius: 15px;
+        height: 100%;
+        width: 650px;
+        display: flex;
+        flex-direction: column;
+        margin: 30px;
+        margin-top: 15px;
+        padding: 10px;
+
+        overflow-y: auto;
+        overflow-x: hidden;
+
+        max-height: 800px;
+        min-width: 500px;
+    }
+
+        .singlepost-post-wrapper img {
+            height: 650px;
+            width: 500px;
+            margin: 10px;
+        }
 
     .singlepost-comments-wrapper {
-        width: 50%;
+        margin: 30px;
+        margin-top: 15px;
+        width: 500px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        background-color: var(--thirty-color);
+
         overflow-y: auto;
         overflow-x: hidden;
     }
@@ -47,3 +74,57 @@ h3 {
     .comment:not(:first-child) {
         margin-left: 30px;
     }
+
+    .post-content {
+        display: flex;
+        justify-content: center;
+    }
+
+.background {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    filter: blur(5px);
+}
+
+#post-cmt-btn {
+    border: none;
+    background-color: transparent;
+    width: 130px;
+    height: 30px;  
+    font-size: 1.1rem;
+    transition: all .25s ease;
+
+    margin-left: auto;
+}
+
+    #post-cmt-btn path {
+        transform: scale(1.25);
+    }
+
+#post-cmt-btn:hover {
+    color: var(--ten-color);
+    transform: scale(1.1);
+}
+
+#singlepost-lower {
+    padding: 10px;
+    height: 30px;
+    display: flex;
+
+    align-items: center;
+    background-color: none;
+}
+
+#singlepost-title {
+    margin: 10px;
+    margin-bottom: 7px;
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+#date-and-user {
+    margin-left: 10px;
+    margin-right: 10px;
+}
