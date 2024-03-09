@@ -1,3 +1,7 @@
+:root {
+    --thirty-color-alt: #424242;
+}
+
 span {
     margin-left: 3px;
     margin-right: 3px
@@ -6,30 +10,92 @@ span {
 .comment {
     position: relative;
     display: flex;
+    flex-direction: column;
     padding: 5px;
+    padding-bottom: 0;
+    margin: 5px;
+    margin-bottom: 0;
 }
 
-    .comment button {
-        border: none;
-        background-color: transparent;
+.upper-comment {
+    display: flex;
+    align-items: center;
+}
+
+    .upper-comment div {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-left: 5px;   
     }
 
+    #comment-image {
+        margin: 0;
+        width: 20px
+    }
+
+.lower-comment {
+    display: flex;
+}
+
+    #comment-body {
+        margin-left: 5px;
+        width: 95%;
+    }
+
+        #comment-btn {
+            display: flex;
+        }
+
+        #comment-text {
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+    #thread-container {
+        width: 20px;
+        /* height: 90%; */
+        display: flex;
+        justify-content: center;
+    }
+
+    .comment-thread {
+        width: 5px;
+        background-color: var(--thirty-color-alt);
+        margin: 5px;
+        transition: all ease .25s;
+        height: 100%;
+    }
+    
+    #thread-container:hover .comment-thread {
+        background-color: var(--ten-color);
+    }
+
+.comment-button {
+    border: none;
+    background-color: transparent;
+    transition: all .25s ease;
+    color: var(--text-color);
+}
+
+    .comment-button path {
+        transform: scale(1.25);
+    }
+
+    .comment-button:hover {
+    color: var(--ten-color);
+    transform: scale(1.1);
+    }
+    
 textarea {
     resize: vertical;
 }
 
-.comment-thread {
-    width: 5px;
-    background-color: black;
-    margin: 5px;
-    transition: all ease .25s;
-}
 
-.comment-thread:hover {
-    background-color: var(--ten-color);
-}
 
 .toggle-div {
+    position: relative;
     display: flex;
     flex-direction: column;
+    width: 100%;
 }

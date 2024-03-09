@@ -3,8 +3,10 @@
     --min-width: 900px;
     --background-color: transparent;
     --ten-color: orange;
-    --thirty-color: #FAE5DB;
+    --thirty-color: #212121;
+    --text-color: #dddddd;
 }
+
 
 #navbar {
     

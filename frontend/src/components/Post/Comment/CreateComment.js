@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
 import axios from '../../../configs/axiosConfig'
 import Cookies from 'js-cookie'
+import './CreateComment.css'
+import { BiImageAdd } from "react-icons/bi";
 
-const CreateComment = ({ object_type, object_id, update_object, par_state, close_reply }) => {
-
-  let [written_text, setwritten_text] = useState("")
+const CreateComment = ({ object_type, object_id, update_object, par_state, close_reply, written_text, setwritten_text}) => {
 
   let create_comment = async () => {
     const config = {
@@ -36,7 +36,7 @@ const CreateComment = ({ object_type, object_id, update_object, par_state, close
           }
             
             setwritten_text('')
-            close_reply()
+            close_reply(false)
         }
 
     } catch (err) {
@@ -45,9 +45,19 @@ const CreateComment = ({ object_type, object_id, update_object, par_state, close
   }
 
   return (
-    <div>
-      <textarea onChange={(e) => setwritten_text(e.target.value)} ></textarea>
-      <button onClick={() => create_comment(written_text)}>Send</button>
+    <div id='create-cmt-wrapper'>
+      <div id='reply-cont'>
+        <textarea placeholder="Comment" onChange={(e) => setwritten_text(e.target.value)} defaultValue={written_text} ></textarea>
+        <div id="comment-reply-lower" >
+          <BiImageAdd id="comment-addimage"/>
+          <button className="comment-reply-buttons" onClick={() => close_reply(false)} >Close</button>
+          <button className={`comment-reply-buttons ${written_text === '' ? 'disabled' : ''}`} onClick={() => create_comment(written_text)} disabled={written_text === ''} >Send</button>
+        </div>
+      </div>
+      <div id="endbar-deco">
+        <div id='thin-line' ></div>
+        <div id='thick-line' ></div>
+      </div>
     </div>
   )
 }

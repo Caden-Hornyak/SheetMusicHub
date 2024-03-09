@@ -41,7 +41,7 @@ class CommentSerializer(ModelSerializer):
             # Check if a vote exists for the current user and comment
             vote = Vote.objects.get(user=user_prof, comment=obj)
             return vote.value
-        except Vote.DoesNotExist:
+        except Exception as e:
             return 0
         
     def get_poster(self, obj):

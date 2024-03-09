@@ -8,7 +8,7 @@
 }
 
 .like-btn path {
-    fill: black;
+    fill: var(--text-color);
     transform: scale(1);
     transition: all ease .25s;
 }
@@ -46,7 +46,7 @@
 }
 
 .dislike-btn path {
-    fill: black;
+    fill: var(--text-color);
     transform: scale(1);
     transition: all ease .25s;
 }
@@ -65,4 +65,10 @@
     display: flex;
     align-items: center;
     padding: 5px;
+    padding-left: 0;
 }
+
+    #vote-container span {
+        margin: 0;
+        margin-right: 5px;
+    }
