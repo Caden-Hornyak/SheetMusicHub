@@ -1,12 +1,22 @@
 from rest_framework.serializers import ModelSerializer
-from .models import Post, SheetMusicImage, UserProfile, Comment, Vote, User
+from .models import Post, Image, UserProfile, Comment, Vote, User, Video, PDF
 from rest_framework import serializers
 import sys
 
 
-class SheetMusicImageSerializer(ModelSerializer):
+class ImageSerializer(ModelSerializer):
     class Meta:
-        model = SheetMusicImage
+        model = Image
+        fields = '__all__'
+
+class PDFSerializer(ModelSerializer):
+    class Meta:
+        model = PDF
+        fields = '__all__'
+
+class VideoSerializer(ModelSerializer):
+    class Meta:
+        model = Video
         fields = '__all__'
 
 class UserProfileSerializer(ModelSerializer):
@@ -52,14 +62,16 @@ class CommentSerializer(ModelSerializer):
         
 
 class PostSerializerMultiple(ModelSerializer):
-    images = SheetMusicImageSerializer(many=True)
+    images = ImageSerializer(many=True)
+    pdf_files = PDFSerializer(many=True)
+    videos = VideoSerializer(many=True)
     class Meta:
         model = Post
-        fields = ('id', 'title', 'likes', 'comment_count', 'images', 'comments', 'date_created')
+        fields = ('id', 'title', 'likes', 'comment_count', 'images', 'pdf_files', 'videos', 'comments', 'date_created')
 
 class PostSerializerSingle(ModelSerializer):
     user_vote = serializers.SerializerMethodField()
-    images = SheetMusicImageSerializer(many=True)
+    images = ImageSerializer(many=True)
     comments = serializers.SerializerMethodField()
     poster = serializers.SerializerMethodField()
 

@@ -3,12 +3,26 @@ from django.contrib.auth.models import User
 import uuid
 
 
-class SheetMusicImage(models.Model):
-    image = models.ImageField(upload_to='images/')
+class Image(models.Model):
+    file = models.ImageField(upload_to='images/')
     name = models.CharField(max_length=50, blank=True)
 
     def __str__(self):
-        return 'TODO Fix this naming'
+        return self.name
+    
+class Video(models.Model):
+    file = models.FileField(upload_to='videos/')
+    name = models.CharField(max_length=50, blank=True)
+
+    def __str__(self):
+        return self.name
+
+class PDF(models.Model):
+    file = models.FileField(upload_to='pdfs/')
+    name = models.CharField(max_length=50, blank=True)
+
+    def __str__(self):
+        return self.name
 
 # Create your models here.
 class Post(models.Model):
@@ -19,8 +33,9 @@ class Post(models.Model):
     likes = models.IntegerField(default=0)
     comment_count = models.IntegerField(default=0)
 
-    pdf_file = models.FileField(upload_to='pdfs/')
-    images = models.ManyToManyField(SheetMusicImage, blank=True)
+    pdf_files = models.ManyToManyField('Pdf', blank=True)
+    images = models.ManyToManyField('Image', blank=True)
+    videos = models.ManyToManyField('Video', blank=True)
     description = models.TextField(default='')
     
     comments = models.ManyToManyField('Comment', blank=True)

@@ -1,0 +1,49 @@
+.file-viewer {
+    position: relative;
+    width: 400px;
+}
+
+.file-viewer img {
+    width: 400px;
+}
+
+.file-viewer video {
+    width: 400px;
+}
+
+.scroll-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+
+    border: none;
+    background-color: transparent;
+    color: color-mix(in srgb, white, var(--ten-color));
+
+    width: 40px;
+    height: 40px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+}
+
+.file-viewer svg {
+
+    transform: scale(3);
+
+}
+
+
+.file-viewer button:hover path {
+    fill: var(--ten-color);
+}
+
+#prev-img-btn {
+    left: 10px;
+}
+
+#next-img-btn {
+    right: 10px;
+}

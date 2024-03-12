@@ -16,7 +16,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import InitialLoader from './components/InitialLoader.js';
 import ProfilePage from './pages/ProfilePage';
 import ViewPostPage from './pages/ViewPostPage'
-import Piano from './components/Piano/Piano'
+import PianoPage from './pages/PianoPage.js'
  
 
 const router = createBrowserRouter([
@@ -46,7 +46,7 @@ const router = createBrowserRouter([
   },
   {
     path: '/piano',
-    element: <Piano />
+    element: <PianoPage />
   }
 ]);
 

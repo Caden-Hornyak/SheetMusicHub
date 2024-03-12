@@ -10,6 +10,9 @@
     display: flex;
     justify-content: center;
     align-items: center;
+
+    /* background-color: var(--thirty-color);
+    color: white; */
 }
 
 #createpost-form {
@@ -18,17 +21,11 @@
 
     border: solid 2px black;
     border-radius: 15px;
-    padding: 10px;
+    padding: 40px;
 
-    height: 800px;
-    width: 500px;
+    /* height: 800px;
+    width: 500px; */
 }
-
-    #createpost-form button {
-        background-color: white;
-        border: none;
-        border-radius: 15px;
-    }
 
     .createpost-input {
         margin: 10px;

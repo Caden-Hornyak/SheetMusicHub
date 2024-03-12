@@ -10,6 +10,7 @@ function Navbar( { isAuthenticated, logout }) {
       <Link className='navbar-link' to='/' onClick={logout} >Sign Out</Link>
       <Link className='navbar-link' to='/create-post'>Create Post</Link>
       <Link className='navbar-link' to='/profile'>Account</Link>
+      <Link className='navbar-link' to='/piano'>Piano</Link>
     </>
   )
 
@@ -18,6 +19,7 @@ function Navbar( { isAuthenticated, logout }) {
       <Link className='navbar-link' to='/'>Company Name :)</Link>
       <Link className='navbar-link' to='/login'>Sign In</Link>
       <Link className='navbar-link' to='/register'>Sign Up</Link>
+      <Link className='navbar-link' to='/piano'>Piano</Link>
     </>
   )
 

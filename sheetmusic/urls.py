@@ -5,8 +5,6 @@ from .views import (LoginView, GetCSRFToken, CheckAuthenticatedView,
                     RegisterView, LogoutView, Posts, UserProfiles, Votes, Comments)
 
 urlpatterns = [
-    
-    path('', views.getRoutes),
     path('posts/create-post/', Posts.as_view(), name='create_post'),
     path('posts/<str:id>/', Posts.as_view(), name='posts'),
 

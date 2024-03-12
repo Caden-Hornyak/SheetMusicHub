@@ -1,63 +1,83 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import axios from '../configs/axiosConfig';
 import Cookies from 'js-cookie';
 import Navbar from '../components/Navbar';
 import { useNavigate } from 'react-router-dom'
 import './CreatePostPage.css'
 import { BiX } from 'react-icons/bi'
+import DropBox from '../components/DropBox.js'
 
 const CreatePostPage = () => {
 
-    let navigate = useNavigate();
+    let navigate = useNavigate()
 
-    const [formData, setFormData] = useState({
+    const [form_data, set_form_data] = useState({
         title: '',
         description: '',
-        pdf_file: null,
-        images: null,
     });
+    const [form_files, set_form_files] = useState([])
 
-    // when user uploads one file, the other dissapears
-    const [is_pdf, setis_pdf] = useState(true)
-    const [is_image, setis_image] = useState(true)
+    const [upload_count, set_upload_count] = useState(0)
 
-    // refs to files for clearing file uploads
-    const pdf_ref = useRef(null)
-    const image_ref = useRef(null)
+    const handle_change = (e) => {
+        
+        // update files
+        if (e.target.files || e.dataTransfer) {
+            const file_array = extract_file_info(e)
 
-    const handleChange = (e) => {
-        const { name, value, files } = e.target;
+            for (let file_key in file_array) {
+                let file = file_array[file_key]
 
-        if (name === 'pdf_file' || name === 'image_upload') {
+                if (upload_count >= 10) {
+                    alert("More than 10 files uploaded. Only uploaded the first ten")
+                    break
+                }
 
-            setFormData({
-                ...formData,
-                [name]: files[0],
-            });
+                set_form_files(prev_state => [...prev_state, file])
+                set_upload_count(prev_state => prev_state + 1)
 
-            if (name === 'image_upload') {
-                setis_pdf(false)
-            } else {
-                setis_image(false)
             }
-            
         } else {
             // If it's not a file input, update as usual
-            setFormData({
-                ...formData,
-                [name]: value,
-            });
+            set_form_data({
+                ...form_data,
+                [e.target.name]: e.target.value,
+            })
         }
-      };
+      }
+
+      const extract_file_info = (e) => {
+        if (e.dataTransfer && e.dataTransfer.files) {
+            console.log("Drag and drop")
+            // For drag-and-drop
+            const file_array = Array.from(e.dataTransfer.files).map((file) => {
+                return file
+            })
+            return file_array
+          } else {
+            console.log("Normal File Upload")
+            // For regular file input
+            const file_array = Array.from(e.target.files).map((file) => {
+                return file
+            })
+            return file_array
+          }
+      }
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         try {
-            let formDataToSend = new FormData();
-            formDataToSend.append('title', formData.title); 
-            formDataToSend.append('pdf_file', formData.pdf_file);
-            formDataToSend.append('description', formData.description);
+            let type_list = []
+            let post_form_data = new FormData()
+            post_form_data.append('title', form_data.title)
+            post_form_data.append('description', form_data.description)
+
+            form_files.forEach(file => {
+                post_form_data.append('files', file)
+                type_list.push(file.type)
+              });
+            post_form_data.append('file_types', JSON.stringify(type_list))
 
             const config = {
                 headers: {
@@ -66,7 +86,7 @@ const CreatePostPage = () => {
             }
 
             const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/posts/create-post/`,
-                formDataToSend,
+                post_form_data,
                 config 
                 );
             
@@ -80,36 +100,27 @@ const CreatePostPage = () => {
             // Handle errors (e.g., show an error message)
             console.error('Error uploading file:', error);
         }
-    };
+    }
 
-    let wipe_upload = () => {
-
-        pdf_ref.current.value = ''
-        image_ref.current.value = ''
-
-        setis_image(true)
-        setis_pdf(true)
+    let wipe_upload = (file=null) => {
+        if (file === null) {
+            set_form_files([])
+            set_upload_count(0)
+        } else {
+            set_form_files(prev_state => prev_state.filter(curr_file => curr_file !== file))
+            set_upload_count(prev_state => prev_state - 1)
+        }
     }
 
     return(
         <div>
             <Navbar />
+            
             <div id="createpost-body">
+                <DropBox uploaded_files={form_files} handle_change={handle_change} wipe_upload={wipe_upload} />
                 <form onSubmit={handleSubmit} id='createpost-form'>
-                    <input className='createpost-input' type="text" id="title" name="title" placeholder="Title" onChange={handleChange}/>
-                    <textarea className='createpost-input' type="text" id='description' name='description' placeholder='Description' onChange={handleChange} />
-
-                    {is_pdf && <input className='createpost-input' type="file" 
-                    id="pdf_file" name="pdf_file"  accept="application/pdf" onChange={handleChange} ref={pdf_ref} />}
-                    {is_image && <input
-                        type="file"
-                        id="image_upload"
-                        name="image_upload"
-                        accept="image/*"
-                        onChange={handleChange}
-                        ref={image_ref}
-                    />}
-                    {(!is_image || !is_pdf) && <button onClick={wipe_upload}><BiX /></button>}
+                    <input className='createpost-input' type="text" id="title" name="title" placeholder="Title" onChange={handle_change}/>
+                    <textarea className='createpost-input' type="text" id='description' name='description' placeholder='Description' onChange={handle_change} />
                     <button type="submit">Submit</button>
                 </form>
             </div>
