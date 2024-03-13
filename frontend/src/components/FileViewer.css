@@ -34,7 +34,7 @@
     transform: scale(3);
 
 }
-
+    
 
 .file-viewer button:hover path {
     fill: var(--ten-color);

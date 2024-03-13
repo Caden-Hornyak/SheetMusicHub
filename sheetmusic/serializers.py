@@ -5,19 +5,34 @@ import sys
 
 
 class ImageSerializer(ModelSerializer):
+    type = serializers.SerializerMethodField()
+
     class Meta:
         model = Image
         fields = '__all__'
 
+    def get_type(self, obj):
+        return 'image'
+
 class PDFSerializer(ModelSerializer):
+    type = serializers.SerializerMethodField()
+
     class Meta:
         model = PDF
         fields = '__all__'
 
+    def get_type(self, obj):
+        return 'pdf'
+
 class VideoSerializer(ModelSerializer):
+    type = serializers.SerializerMethodField()
+
     class Meta:
         model = Video
         fields = '__all__'
+
+    def get_type(self, obj):
+        return 'video'
 
 class UserProfileSerializer(ModelSerializer):
     class Meta:
@@ -72,6 +87,8 @@ class PostSerializerMultiple(ModelSerializer):
 class PostSerializerSingle(ModelSerializer):
     user_vote = serializers.SerializerMethodField()
     images = ImageSerializer(many=True)
+    videos = VideoSerializer(many=True)
+    pdf_files = PDFSerializer(many=True)
     comments = serializers.SerializerMethodField()
     poster = serializers.SerializerMethodField()
 
@@ -96,7 +113,6 @@ class PostSerializerSingle(ModelSerializer):
             vote = Vote.objects.get(user=user_prof, post=obj)
             return vote.value
         except Exception as e:
-            print(e, file=sys.stderr)
             return 0
         
     def get_poster(self, obj):

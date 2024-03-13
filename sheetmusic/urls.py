@@ -9,7 +9,7 @@ urlpatterns = [
     path('posts/<str:id>/', Posts.as_view(), name='posts'),
 
     
-    path('accounts/register/', RegisterView.as_view()),
+    path('accounts/register/<str:type>', RegisterView.as_view()),
     path('accounts/csrf_cookie/', GetCSRFToken.as_view()),
     path('accounts/check-authenticated/', CheckAuthenticatedView.as_view()),
     path('accounts/logout/', LogoutView.as_view()),

@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './DropBox.css'
 import FileViewer from './FileViewer.js'
 
 const DragAndDropBox = ({ uploaded_files, handle_change, wipe_upload}) => {
 
   const [dragging, set_dragging] = useState(false);
+  const [formatted_files, set_formatted_files] = useState([])
 
   const handle_drag_enter = (e) => {
     e.preventDefault()
@@ -26,9 +27,18 @@ const DragAndDropBox = ({ uploaded_files, handle_change, wipe_upload}) => {
     handle_change(e)
   };
 
+  useEffect(() => {
+    set_formatted_files(uploaded_files.map((file) => {
+      return {
+        'file': URL.createObjectURL(file),
+        'type': file.type.slice(0, file.type.indexOf('/'))
+      }
+    }))
+  }, [uploaded_files])
+
   return (
     <div>
-        {uploaded_files.length === 0 ? 
+        {formatted_files.length === 0 ? 
             <div
             className={`drop-box ${dragging ? 'dragging' : ''}`}
             onDragEnter={handle_drag_enter}
@@ -46,7 +56,7 @@ const DragAndDropBox = ({ uploaded_files, handle_change, wipe_upload}) => {
             </div> 
         :
             <div className='file-preview' >
-                <FileViewer uploaded_files={uploaded_files} wipe_upload={wipe_upload} />
+                <FileViewer uploaded_files={formatted_files} wipe_upload={wipe_upload} />
             </div> 
         }
     </div>

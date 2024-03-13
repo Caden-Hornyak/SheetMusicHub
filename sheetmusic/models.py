@@ -6,6 +6,7 @@ import uuid
 class Image(models.Model):
     file = models.ImageField(upload_to='images/')
     name = models.CharField(max_length=50, blank=True)
+    order = models.IntegerField(default=0)
 
     def __str__(self):
         return self.name
@@ -13,6 +14,7 @@ class Image(models.Model):
 class Video(models.Model):
     file = models.FileField(upload_to='videos/')
     name = models.CharField(max_length=50, blank=True)
+    order = models.IntegerField(default=0)
 
     def __str__(self):
         return self.name
@@ -20,6 +22,7 @@ class Video(models.Model):
 class PDF(models.Model):
     file = models.FileField(upload_to='pdfs/')
     name = models.CharField(max_length=50, blank=True)
+    order = models.IntegerField(default=0)
 
     def __str__(self):
         return self.name

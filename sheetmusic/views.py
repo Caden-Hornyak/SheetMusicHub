@@ -17,6 +17,7 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 import json
 from django.core.files.storage import default_storage
+from django.core.files.base import File
 
 
 class Posts(APIView):
@@ -29,12 +30,15 @@ class Posts(APIView):
     @method_decorator(csrf_exempt)
     def post(self, request, format=None):
         try:
+            
             max_uploads = 10
 
             data = request.data
 
             uploaded_files = request.FILES.getlist('files')
             file_types = json.loads(data['file_types'])
+
+            # image = Image(name=uploaded_files[0].name, )
 
             user_prof = UserProfile.objects.get(user=request.user)
             post = Post(title=data['title'], description=data['description'], poster=user_prof)
@@ -44,23 +48,31 @@ class Posts(APIView):
                 if file_type.startswith('image'): file_type='image'
                 elif file_type.startswith('video'): file_type='video'
                 elif file_type == 'application/pdf': file_type='pdf'
-                else: file_type='-'
+                else: pass
                 
-                file_path = os.path.join(settings.MEDIA_ROOT, file_type, uploaded_file.name)
-                file_path = default_storage.save(file_path, uploaded_file)
+                file_path = os.path.join(settings.MEDIA_ROOT, (file_type+'s'), uploaded_file.name)
+                default_storage.save(file_path, uploaded_file)
+
+                print(file_path, file=sys.stderr)
 
                 if file_type == 'image':
-                    image = Image(file=file_path)
+                    image = Image(name=uploaded_file.name)
+                    with open(file_path, 'rb') as f:
+                        image.file.save(uploaded_file.name, File(f), save=True)
                     image.save()
                     post.images.add(image)
 
                 elif file_type == 'video':
-                    video = Video(file=file_path)
+                    video = Video(name=uploaded_file.name)
+                    with open(file_path, 'rb') as f:
+                        video.file.save(uploaded_file.name, File(f), save=True)
                     video.save()
                     post.videos.add(video)
 
                 elif file_type == 'pdf':
-                    pdf = PDF(file=file_path)
+                    pdf = PDF(name=uploaded_file.name)
+                    with open(file_path, 'rb') as f:
+                        pdf.file.save(uploaded_file.name, File(f), save=True)
                     pdf.save()
                     post.pdf_files.add(pdf)
 
@@ -87,7 +99,7 @@ class Posts(APIView):
                 serializer = PostSerializerSingle(Post.objects.get(id=id), context={ 'request': request })
                 # print(serializer.data, file=sys.stderr)
             except Exception as e:
-                print(e, file=sys.stderr)
+                print("Post:get ", e, file=sys.stderr)
                 return Response({ 'error': 'Post does not exist'})
             
 
@@ -97,26 +109,39 @@ class Posts(APIView):
 class RegisterView(APIView):
     permission_classes = (permissions.AllowAny, )
 
-    def post(self, request, format=None):
-        data = self.request.data
+    def post(self, request, type, format=None):
+        try:
+            data = self.request.data
+            username = data['username']
 
-        username = data['username']
-        password = data['password']
-        re_password = data['re_password']
+            if type == 'piano':
+                
+                piano_password = data['piano_password']
+                print(piano_password, file=sys.stderr)
+                
+            elif type == 'normal':
+                
+                password = data['password']
+                re_password = data['re_password']
 
-        if password == re_password:
-            if User.objects.filter(username=username).exists():
-                return Response({ 'error': 'Username already exists '})
-            elif len(password) < 6:
-                return Response({ 'error': 'Password is less than 6 characters '})
+                if password == re_password:
+                    if User.objects.filter(username=username).exists():
+                        return Response({ 'error': 'Username already exists '})
+                    elif len(password) < 6:
+                        return Response({ 'error': 'Password is less than 6 characters '})
+                    else:
+                        user = User.objects.create_user(username=username, password=password)
+
+                        user_profile = UserProfile.objects.create(user=user, first_name='', last_name='')
+
+                        return Response({ 'success': 'Account Created'})
+                else:
+                    return Response({ 'error': 'Passwords do not match'})
             else:
-                user = User.objects.create_user(username=username, password=password)
-
-                user_profile = UserProfile.objects.create(user=user, first_name='', last_name='')
-
-                return Response({ 'success': 'Account Created'})
-        else:
-            return Response({ 'error': 'Passwords do not match'})
+                raise Exception('Invalid Password Type')
+            
+        except Exception as e:
+            print("RegisterView-POST: ", e, file=sys.stderr)
         
 @method_decorator(ensure_csrf_cookie, name='dispatch')
 class GetCSRFToken(APIView):

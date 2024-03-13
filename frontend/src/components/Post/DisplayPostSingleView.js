@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import Comment from './Comment/Comment'
 import RelativeTime from './RelativeTime'
 import CreateComment from './Comment/CreateComment'
+import FileViewer from '../FileViewer';
 
 const DisplayPostSingleView = (props) => {
 
@@ -15,7 +16,7 @@ const DisplayPostSingleView = (props) => {
     
     let [post, setPost] = useState({
         title: '',
-        images: {0: ''},
+        files: [],
         likes: 0,
         id: '-',
         user_vote: 0,
@@ -49,10 +50,10 @@ const DisplayPostSingleView = (props) => {
                 console.log("Post not found")
             } else {
                 setPost({...post, title: res.data.title, images: res.data.images, 
-                        likes: res.data.likes, 
-                        id: res.data.id, user_vote: res.data.user_vote, 
+                        likes: res.data.likes, id: res.data.id, user_vote: res.data.user_vote, 
                         date_created: res.data.date_created, description: res.data.description,
-                        poster: res.data.poster })
+                        poster: res.data.poster,
+                        files: [...res.data.pdf_files, ...res.data.videos, ...res.data.images].sort((a, b) => { return a.order - b.order }) })
                 setpost_comments({...post_comments, comments: res.data.comments})
             }
         } catch (err) {
@@ -75,7 +76,7 @@ const DisplayPostSingleView = (props) => {
     <div className='final-container'>
         <BiArrowBack className='back-arrow' onClick={() => goBack()}/>
         <div className='singlepost-body'>
-            <img className='background' src={post.images[0].image} alt="Sheet Music"></img>
+            {/* <img className='background' src={post.images[0].image} alt="Sheet Music"></img> */}
             <div className="singlepost-post-wrapper">
                 <div id='singlepost-upper' >
                     <div id='singlepost-title' >{post.title}</div>
@@ -85,10 +86,11 @@ const DisplayPostSingleView = (props) => {
                     </div>
                     
                 </div>
-                <div className='post-content' >
-                    <img src={post.images[0].image} alt="Sheet Music"></img>
-                    
-                </div>
+                {post.files.length !== 0 &&
+                    <div className='post-content' >
+                        <FileViewer uploaded_files={post.files} />   
+                    </div>
+                }
                 
                 { post.description == '' ? <p id='post-description'>No Post Description :(</p> : <p id='post-description'>{post.description}</p>}
                 <hr />

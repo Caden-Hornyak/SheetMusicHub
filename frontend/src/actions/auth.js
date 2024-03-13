@@ -48,8 +48,8 @@ export const checkAuthenticated = () => async dispatch => {
     }
 }
 
-export const register = (username, password, re_password) => async dispatch => {
-
+export const register_normal_pass = (username, password, re_password) => async dispatch => {
+    console.log('normal pass')
 
     const config = {
         headers: {
@@ -63,7 +63,41 @@ export const register = (username, password, re_password) => async dispatch => {
 
     try {
 
-        const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/accounts/register/`, body, config);
+        const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/accounts/register/normal`, body, config);
+
+        
+        if (res.data.error) {
+            dispatch({
+                type: REGISTER_FAIL
+            });
+        } else {
+            dispatch({
+                type: REGISTER_SUCCESS
+            })
+        }
+    } catch (err) {
+        dispatch({
+            type: REGISTER_FAIL
+        });
+    }
+}
+
+export const register_piano_pass = (username, piano_password) => async dispatch => {
+    console.log('hello')
+
+    const config = {
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'X-CSRFToken': Cookies.get('csrftoken')
+        }
+    };
+
+    const body = JSON.stringify({ username, piano_password });
+
+    try {
+        console.log(body)
+        const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/accounts/register/piano`, body, config);
 
         
         if (res.data.error) {
