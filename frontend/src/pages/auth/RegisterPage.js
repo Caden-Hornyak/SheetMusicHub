@@ -9,7 +9,7 @@ import background from '../../images/auth_background.jpg';
 import Piano from '../../components/Piano/Piano.js'
 import { IoMdCheckmark } from "react-icons/io";
 
-const Register = ({ register }) => {
+const Register = ({ register_normal_pass, register_piano_pass }) => {
     const [form_data, set_form_data] = useState({
         username: '',
         password: '',
@@ -80,30 +80,22 @@ const Register = ({ register }) => {
         return <Navigate to='/login' />
     }
 
-    const render_piano = (vis) => {
-        if (vis) {
-            set_piano_vis(true)
-        }
-    }
-
-    
 
     return(
-        <div>
-            {piano_vis &&
-            <div id='register-piano-wrapper' >
+        <>
+            <div id='register-piano-wrapper' style={{display: piano_vis ? 'block' : 'none' }}>
                 <div id='background-darkener' onClick={() => set_piano_vis(false)} ></div>
                 <button></button>
                 <div id='register-piano'>
-                    <Piano type='register' set_product={set_piano_password}/>
+                    <Piano type='register' set_product={set_piano_password} visible={piano_vis} />
                 </div>
             </div>
-            }
+
             <div id='register-form-wrapper'>
                 <img id="background" src={background}></img>
                 <div className='register-wrapper'>
                     <h1>Register</h1>
-                    <form onSubmit={e => onSubmit(e)}>
+                    <form className='auth-form' onSubmit={e => onSubmit(e)}>
                         <CSRFToken />
                         <div className='form-group'>
                             <input 
@@ -145,13 +137,13 @@ const Register = ({ register }) => {
                         </div>}
 
                         {/* Cond. btns for norm pass and piano pass */}
-                        {piano_pass_active && <button className='btn' onClick={() => render_piano(true)} type='button' disabled={piano_password} >{piano_password ? <IoMdCheckmark /> : 'Create Piano Password'}</button>}
+                        {piano_pass_active && <button className='def-btn' onClick={() => set_piano_vis(true)} type='button' disabled={piano_password} >{piano_password ? <IoMdCheckmark /> : 'Create Piano Password'}</button>}
                         {(piano_pass_active && piano_password) && <button onClick={() => set_piano_password(null)} >Clear Password</button>}
-                        {/* {(piano_pass_active && piano_password) && <div>IoMdCheckmark</div>} */}
-                        <button className='btn' type='submit' disabled={
+                        {piano_pass_active && <button className='pass-switch-btn' onClick={() => set_piano_pass_active(false)} type='button' >Use Boring Password</button>}
+                        {!piano_pass_active && <button className='pass-switch-btn' onClick={() => set_piano_pass_active(true)} type='button' >Use Piano Password</button>}
+                        <button className='def-btn' type='submit' disabled={
                         piano_pass_active ? (!piano_password || !form_data.username) : (!form_data.password || !form_data.re_password || !form_data.username)}>Register</button>
-                        {piano_pass_active && <button onClick={() => set_piano_pass_active(false)} type='button' >Use Normal Password</button>}
-                        {!piano_pass_active && <button onClick={() => set_piano_pass_active(true)} type='button' >Use Piano Password</button>}
+                        
                     </form>
                     
                     <p>
@@ -159,7 +151,7 @@ const Register = ({ register }) => {
                     </p>
                 </div>
             </div>
-        </div>
+        </>
     );
 }
 

@@ -4,8 +4,7 @@ import { Howl } from 'howler'
 import './Piano.css'
 
 
-
-const Piano = ({ start=12, end=60, type='', set_product=null }) => {
+const Piano = ({ start=12, end=60, type='', set_product=null, visible=true }) => {
   
   let notes = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B']
 
@@ -63,6 +62,8 @@ const Piano = ({ start=12, end=60, type='', set_product=null }) => {
       console.log("recording")
     } else if (action === 'end') {
       console.log("stopped recording")
+
+      // if second recording
       if (recording[1] === 1) {
 
         if (set_product) {
@@ -70,41 +71,52 @@ const Piano = ({ start=12, end=60, type='', set_product=null }) => {
         }
         set_recorded_song([[], []])
       } else {
-        set_recording([false, 1])
+        if (type == 'login') {
+          set_product(recorded_song[0])
+          set_recorded_song([[], []])
+        } else {
+          set_recording([false, 1])
+        }
+        
       }
     }
   }
 
+
+  const playPianoKey = (event) => {
+
+    let pressed_key = event.key.toLowerCase();
+
+    if (pressed_key === 'shift') {
+      pressed_key = event.location === 1 ? 'l_shft': 'r_shft'
+    }
+
+    let key_index = dic.get(pressed_key)
+    let key_state = event.type === 'keydown'
+
+    set_pressed_keys(prev_state => {
+      let keys = [...prev_state]
+      keys[key_index] = key_state
+      return keys
+    })
+  }
+
   useEffect(() => {
-
-    const playPianoKey = (event) => {
-
-      let pressed_key = event.key.toLowerCase();
-
-      if (pressed_key === 'shift') {
-        pressed_key = event.location === 1 ? 'l_shft': 'r_shft'
-      }
-
-      let key_index = dic.get(pressed_key)
-      let key_state = event.type === 'keydown'
-
-      set_pressed_keys(prev_state => {
-        let keys = [...prev_state]
-        keys[key_index] = key_state
-        return keys
-      })
-
-    };
-
-    document.addEventListener('keydown', playPianoKey);
-    document.addEventListener('keyup', playPianoKey)
     create_piano()
+    console.log('piano created')
+  }, [])
+
+  useEffect(() => {
+    if (visible) {
+      document.addEventListener('keydown', playPianoKey)
+      document.addEventListener('keyup', playPianoKey)
+    }
 
     return () => {
-      document.removeEventListener('keydown', playPianoKey);
+      document.removeEventListener('keydown', playPianoKey)
       document.addEventListener('keyup', playPianoKey)
     };
-  }, [])
+  }, [visible])
 
   let clear_song = () => {
     set_recorded_song([])
@@ -115,14 +127,14 @@ const Piano = ({ start=12, end=60, type='', set_product=null }) => {
 
   return (
     <div id='piano-wrapper'>
-      {type === 'register' &&
+      {(type === 'register' || type === 'login') &&
         <div id='piano-buttons'>
           <button id='recording-button' onClick={() => recording[0] ? recording_action('end') : recording_action('start')} ></button>
           <button id='clear-button' onClick={() => clear_song()} >Restart</button>
           {!recording && <p>{recording[1] === 0 ? 'Press Start To Begin Recording' : 'Confirm Password'}</p>}
         </div>
       }
-      
+
       <div id='piano'>
           <div id="first-level" >
             {create_piano(start, Math.floor((start+end)/2))}

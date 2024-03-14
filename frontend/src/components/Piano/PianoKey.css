@@ -1,0 +1,91 @@
+:root {
+    --black-key-wrap-width: 5%;
+    --white-key-wrap-width: 10%;
+
+    --black-key-height: 15%;
+    --white-key-height: 25%;
+}
+
+.piano-key-wrapper {
+    position: relative;
+}
+
+.vis-path {
+    position: absolute;
+    width: 100%;
+    height: calc(100% - var(--white-key-height));
+}
+
+.white-key {
+    position: absolute;
+    bottom: 0;
+    height: var(--white-key-height);
+    border: 1px black solid;
+    text-align: center;
+    width: 100%;
+}
+
+.black-key {
+    position: absolute;
+    background-color: black;
+    color: white;
+    height: var(--black-key-height);
+    width: 100%;
+    bottom: calc(var(--white-key-height) - var(--black-key-height));
+    z-index: 1;
+}
+
+.white-wrapper {
+    width: var(--white-key-wrap-width);
+    height: 100%;
+}
+
+.black-wrapper {
+    width: var(--black-key-wrap-width);
+    height: 100%;
+    margin-left: calc(var(--black-key-wrap-width) / -2.75);
+    margin-right: calc(var(--black-key-wrap-width) / -2.75);
+}
+
+.pressed {
+    background-color: var(--ten-color);
+}
+
+@keyframes expand_up {
+    0% {
+        position: absolute;
+        height: 0;
+        bottom: 0;
+    }
+
+    100% {
+        position: absolute;
+        bottom: 0;
+        height: 300000px;
+    }
+}
+
+@keyframes move_up {
+    0% {
+        position: absolute;
+        bottom: 0;
+    }
+
+    100% {
+        position: absolute;
+        bottom: 300000px;
+    }
+}
+
+.visualizer-instance {
+    background-color: var(--ten-color);
+    position: absolute;
+    width: 100%;
+}
+.expand_up {
+    animation: expand_up 1000s linear;
+}
+
+.move_up {
+    animation: move_up 1000s linear;
+}

@@ -19,15 +19,21 @@ import json
 from django.core.files.storage import default_storage
 from django.core.files.base import File
 
+def piano_pass_convert(piano_password):
+    stored_password = ''
+    for kt_pair in piano_password:
+        kt_pair[0].sort()
+        for note in kt_pair[0]:
+            stored_password += note
+        stored_password += '|'
+    return stored_password
 
+@method_decorator(ensure_csrf_cookie, name='dispatch')
 class Posts(APIView):
     permission_classes = (permissions.AllowAny, )
     
     # create post
-
-    # @method_decorator(csrf_protect, name='dispatch')
-    # @method_decorator(login_required)
-    @method_decorator(csrf_exempt)
+    @method_decorator(login_required)
     def post(self, request, format=None):
         try:
             
@@ -88,7 +94,7 @@ class Posts(APIView):
             return Response({'error': 'Unable to Create Post'})
 
     
-    # get posts
+    # get posts for homepage or single view
     def get(self, request, id, format=None):
 
         if id == 'multiple':
@@ -109,15 +115,32 @@ class Posts(APIView):
 class RegisterView(APIView):
     permission_classes = (permissions.AllowAny, )
 
+    # account creation
     def post(self, request, type, format=None):
         try:
             data = self.request.data
             username = data['username']
 
+            if User.objects.filter(username=username).exists():
+                return Response({ 'error': 'Username already exists '})
+            
             if type == 'piano':
                 
-                piano_password = data['piano_password']
-                print(piano_password, file=sys.stderr)
+                pass_pair = data['piano_password']
+                pass_l = pass_pair[0]
+                pass_re_l = pass_pair[1]
+
+                piano_pass = piano_pass_convert(pass_l)
+                piano_pass_re = piano_pass_convert(pass_re_l)
+
+                if piano_pass != piano_pass_re:
+                    return Response({ 'error': 'Passwords do not match'})
+                else:
+                    user = User.objects.create_user(username=username, password=piano_pass)
+                    print(username, piano_pass, file=sys.stderr)
+                    user_profile = UserProfile.objects.create(user=user, first_name='', last_name='')
+
+                    return Response({ 'success': 'Account Created'})
                 
             elif type == 'normal':
                 
@@ -125,10 +148,9 @@ class RegisterView(APIView):
                 re_password = data['re_password']
 
                 if password == re_password:
-                    if User.objects.filter(username=username).exists():
-                        return Response({ 'error': 'Username already exists '})
-                    elif len(password) < 6:
-                        return Response({ 'error': 'Password is less than 6 characters '})
+                    
+                    if len(password) < 6:
+                        return Response({ 'error': 'Normal password is less than 6 characters '})
                     else:
                         user = User.objects.create_user(username=username, password=password)
 
@@ -136,7 +158,7 @@ class RegisterView(APIView):
 
                         return Response({ 'success': 'Account Created'})
                 else:
-                    return Response({ 'error': 'Passwords do not match'})
+                    return Response({ 'error': 'Normal passwords do not match'})
             else:
                 raise Exception('Invalid Password Type')
             
@@ -147,11 +169,14 @@ class RegisterView(APIView):
 class GetCSRFToken(APIView):
     permission_classes = (permissions.AllowAny, )
 
+    # establish cookie with backend
     def get(self, request, format=None):
         return Response({ 'success': 'CSRF cookie set'})
 
+@method_decorator(ensure_csrf_cookie, name='dispatch')
 class CheckAuthenticatedView(APIView):
 
+    # check if user is authenticated
     def get(self, request, format=None):
 
         try:
@@ -170,27 +195,40 @@ class CheckAuthenticatedView(APIView):
 class LoginView(APIView):
     permission_classes = (permissions.AllowAny, )
 
-    def post(self, request, format=None):
-        data = self.request.data
+    # log user in
+    def post(self, request, type, format=None):
+        try:
+            data = self.request.data
 
-        username = data['username']
-        password = data['password']
+            username = data['username']
 
-        user = auth.authenticate(username=username, password=password)
+            if type == 'piano':
+                password = piano_pass_convert(data['piano_password'])
+            else:
+                password = data['password']
 
-        if user is not None:
-            auth.login(request, user)
-            return Response({ 'success': 'User Authenticated'})
-        else:
-            return Response({ 'error', 'Error Authenticating User'})
-        
+            user = auth.authenticate(username=username, password=password)
+
+            if user:
+                auth.login(request, user)
+                return Response({ 'success': 'User Authenticated'})
+            else:
+                return Response({ 'error': 'Error Authenticating User'})
+        except Exception as e:
+            print('LoginView-POST: ', e, file=sys.stderr)
+
+@method_decorator(ensure_csrf_cookie, name='dispatch')       
 class LogoutView(APIView):
+    
+    # log user out
     def post(self, request, format=None):
         auth.logout(request)
         return Response({ 'success': 'Successfully logged out'})
-    
+
+@method_decorator(ensure_csrf_cookie, name='dispatch')
 class DeleteAccountView(APIView):
 
+    # delete user account
     def delete(self, request, format=None):
         user = self.request.user
 
@@ -201,7 +239,10 @@ class DeleteAccountView(APIView):
         except:
             return Response({ 'error': 'User was not deleted successfully' })
 
+@method_decorator(ensure_csrf_cookie, name='dispatch')
 class UserProfiles(APIView):
+
+    # get user profile
     def get(self, request, format=None):
         try: 
             user = self.request.user
@@ -211,7 +252,8 @@ class UserProfiles(APIView):
             return Response({ 'profile': serializer.data, 'username': user.username})
         except:
             return Response({ 'error': "Something went wrong displaying User Profile."})
-        
+    
+    # update user profile
     def put(self, request, format=None):
         try:
             user = self.request.user
@@ -231,7 +273,9 @@ class UserProfiles(APIView):
             print(e, file=sys.stderr)
             return Response({ 'error': 'There was an error updating the user profile.'})
 
+@method_decorator(ensure_csrf_cookie, name='dispatch')
 class Votes(APIView):
+
     # update comment/post comment
     def post(self, request, object_type, id, format=None):
         try:
@@ -285,7 +329,10 @@ class Votes(APIView):
         
         return Response({ 'update': update })
 
+@method_decorator(ensure_csrf_cookie, name='dispatch')
 class Comments(APIView):
+
+    # add comment to post or comment
     def post(self, request, format=None):
         try:
             data = self.request.data

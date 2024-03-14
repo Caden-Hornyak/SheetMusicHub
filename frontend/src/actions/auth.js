@@ -8,7 +8,6 @@ import {
     LOGOUT_FAIL,
     AUTHENTICATED_SUCCESS,
     AUTHENTICATED_FAIL,
-    I_WAS_RAN_FIRST
     
 } from './types';
 import Cookies from 'js-cookie'
@@ -83,7 +82,6 @@ export const register_normal_pass = (username, password, re_password) => async d
 }
 
 export const register_piano_pass = (username, piano_password) => async dispatch => {
-    console.log('hello')
 
     const config = {
         headers: {
@@ -96,7 +94,6 @@ export const register_piano_pass = (username, piano_password) => async dispatch 
     const body = JSON.stringify({ username, piano_password });
 
     try {
-        console.log(body)
         const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/accounts/register/piano`, body, config);
 
         
@@ -116,7 +113,7 @@ export const register_piano_pass = (username, piano_password) => async dispatch 
     }
 }
 
-export const login = (username, password) => async dispatch => {
+export const login_normal = (username, password) => async dispatch => {
 
 
     const config = {
@@ -131,7 +128,43 @@ export const login = (username, password) => async dispatch => {
     const body = JSON.stringify({ username, password });
 
     try {
-        const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/accounts/login/`, body, config);
+        const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/accounts/login/normal`, body, config);
+        
+        if (res.data.error) {
+            dispatch({
+                type: LOGIN_FAIL
+            });
+        } else {
+            dispatch({
+                type: LOGIN_SUCCESS
+            });
+
+            load_user();
+        }
+    } catch (err) {
+        console.log(err)
+        dispatch({
+            type: LOGIN_FAIL
+        });
+    }
+}
+
+export const login_piano = (username, piano_password) => async dispatch => {
+
+
+    const config = {
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'X-CSRFToken': Cookies.get('csrftoken')
+        },
+        withCredentials: true
+    };
+
+    const body = JSON.stringify({ username, piano_password });
+
+    try {
+        const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/accounts/login/piano`, body, config);
 
         
         if (res.data.error) {
@@ -190,12 +223,4 @@ export const logout = () => async dispatch => {
     }
 }
 
-
-export const i_was_ran_first = () => async dispatch => {
-
-        dispatch({
-            type: I_WAS_RAN_FIRST
-        });
-
-}
 

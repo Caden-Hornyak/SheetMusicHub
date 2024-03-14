@@ -40,8 +40,13 @@ body {
         font-size: 3rem;
     }
 
+    .auth-form {
+        display: flex;
+        flex-direction: column;
+    }
+
     .form-group {
-        margin: 10px;
+        margin: 5px 0px;
         height: 50px;
         margin-left: 0;
         margin-right: 0;
@@ -55,9 +60,9 @@ body {
             padding: 15px;
         }
 
-    .btn {
+    .def-btn {
         padding: 0;
-        margin-top: 20px;
+        margin: 5px 0px;
         border: none;
         outline: none;
         border-radius: 20px;
@@ -66,6 +71,29 @@ body {
         height: 50px;
         width: 100%;
     }
+
+    .def-btn:not(:disabled):hover {
+        background-color: var(--ten-color);
+    }
+
+    .def-btn:disabled {
+        cursor: not-allowed;
+    }
+
+    .pass-switch-btn {
+        border: none;
+        outline: none;
+        background-color: transparent;
+        border-radius: 15px;
+        align-self: flex-start;
+    }
+
+    .pass-switch-btn:hover {
+        color: var(--ten-color);
+        cursor: pointer;
+    }
+
+    
 
     p {
         margin-top: 5px;

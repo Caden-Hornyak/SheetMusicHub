@@ -35,10 +35,11 @@ function DisplayPostListView() {
         navigate(`/posts/${post.id}`)
     }
 
+    // TODO Fix list view and give this page some time anyhow
     let post_map = posts.map((post) => (
         <div key={post.id} className="post-listview-ind" onClick={() => viewPost(post)}>
             <h3>{post.title}</h3>
-            <img src={process.env.REACT_APP_API_URL+post.images[0].image}></img>
+            {<img src={process.env.REACT_APP_API_URL+post.images[0].image}></img>}
             <div>
                 <BiLike className='like-btn' />
                 <BiDislike className='dislike-btn' />
@@ -55,7 +56,6 @@ function DisplayPostListView() {
         <div>
             <link rel="stylesheet" href="path/to/boxicons/css/boxicons.min.css" />
             <div className='post-listview'>
-
                 { postfailmsg ? <h1>No posts were found</h1> : post_map}
             </div>
         </div>

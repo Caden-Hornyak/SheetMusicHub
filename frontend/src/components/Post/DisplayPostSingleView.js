@@ -8,6 +8,7 @@ import Comment from './Comment/Comment'
 import RelativeTime from './RelativeTime'
 import CreateComment from './Comment/CreateComment'
 import FileViewer from '../FileViewer';
+import def_back from '../../images/default_sp_background.jpg'
 
 const DisplayPostSingleView = (props) => {
 
@@ -29,6 +30,7 @@ const DisplayPostSingleView = (props) => {
         comments: [{ child_comment: [], text: "", likes: 0 }]
     })
 
+    let [background, set_background] = useState(def_back)
     let [postreply_clicked, setpostreply_clicked] = useState(false)
     let [written_text_post, setwritten_text_post] = useState("") // reply text
 
@@ -39,6 +41,17 @@ const DisplayPostSingleView = (props) => {
     useEffect(() => {
         getPost()
     }, [])
+
+    useEffect(() => {
+        if (post.files.length > 0) {
+            for (let file_key in post.files) {
+                if (post.files[file_key].type == 'image') {
+                    set_background(post.files[file_key].file)
+                }
+            }
+            
+        }
+    }, [post])
 
     let getPost = async () => {
         let res;
@@ -76,7 +89,7 @@ const DisplayPostSingleView = (props) => {
     <div className='final-container'>
         <BiArrowBack className='back-arrow' onClick={() => goBack()}/>
         <div className='singlepost-body'>
-            {/* <img className='background' src={post.images[0].image} alt="Sheet Music"></img> */}
+            <img className='background' src={background} alt="Sheet Music"></img>
             <div className="singlepost-post-wrapper">
                 <div id='singlepost-upper' >
                     <div id='singlepost-title' >{post.title}</div>

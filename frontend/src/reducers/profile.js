@@ -3,7 +3,6 @@ import {
     LOAD_USER_PROFILE_SUCCESS,
     UPDATE_USER_PROFILE_SUCCESS,
     UPDATE_USER_PROFILE_FAIL,
-    I_WAS_RAN_FIRST
 } from '../actions/types';
 
 const initialState = {
@@ -32,7 +31,6 @@ export default function(state = initialState, action) {
                 last_name: ''
             }
         case UPDATE_USER_PROFILE_FAIL:
-        case I_WAS_RAN_FIRST:
             return state
         default:
             return state
