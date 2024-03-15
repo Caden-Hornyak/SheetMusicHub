@@ -20,6 +20,8 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true }) =>
   let [recorded_song, set_recorded_song] = useState([[], []])
   let [pressed_keys, set_pressed_keys] = useState(Array(piano_keys_ref.current.length).fill(false))
 
+  let [piano_styling, set_piano_styling] = useState(null)
+
   let create_piano = (curr_start, curr_end) => {
     let keyboard_it = curr_start - 12
     let piano_keys = []
@@ -124,6 +126,47 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true }) =>
     console.log("Song cleared")
   }
 
+  const [window_size, setwindow_size] = useState({
+    width: window.innerWidth,
+    height: window.innerHeight
+  });
+
+  useEffect(() => {
+    const handleResize = () => {
+      setwindow_size({
+        width: window.innerWidth,
+        height: window.innerHeight
+      });
+    };
+
+    // Listen for window resize events
+    window.addEventListener('resize', handleResize);
+
+    // Clean up the event listener
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (window_size['width'] >= 1000) {
+      set_piano_styling(prev_state => ({
+        first_level: {
+          width: '50%',
+          bottom: '0',
+          left: '0'
+        },
+        second_level: {
+          width: '50%',
+          bottom: '0',
+          right: '0'
+        }
+      }))
+    } else {
+      set_piano_styling(null)
+    }
+  }, [window_size])
+
 
   return (
     <div id='piano-wrapper'>
@@ -136,10 +179,10 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true }) =>
       }
 
       <div id='piano'>
-          <div id="first-level" >
+          <div id="first-level" style={piano_styling ? piano_styling['first_level']: undefined}>
             {create_piano(start, Math.floor((start+end)/2))}
           </div>
-          <div id="second-level" >
+          <div id="second-level" style={piano_styling ? piano_styling['second_level']: undefined}>
             {create_piano(Math.floor((start+end)/2), end)}
           </div>
           

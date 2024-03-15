@@ -8,6 +8,8 @@
 
 .piano-key-wrapper {
     position: relative;
+    display: flex;
+    justify-content: center;
 }
 
 .vis-path {
@@ -23,16 +25,21 @@
     border: 1px black solid;
     text-align: center;
     width: 100%;
+    background-color:white;
+    z-index: 1;
+    padding: 5px 0;
 }
 
 .black-key {
     position: absolute;
     background-color: black;
     color: white;
+    text-align: center;
+    padding: 5px 0;
     height: var(--black-key-height);
     width: 100%;
     bottom: calc(var(--white-key-height) - var(--black-key-height));
-    z-index: 1;
+    z-index: 2;
 }
 
 .white-wrapper {
@@ -51,41 +58,61 @@
     background-color: var(--ten-color);
 }
 
-@keyframes expand_up {
-    0% {
-        position: absolute;
-        height: 0;
-        bottom: 0;
-    }
-
-    100% {
-        position: absolute;
-        bottom: 0;
-        height: 300000px;
-    }
-}
-
-@keyframes move_up {
-    0% {
-        position: absolute;
-        bottom: 0;
-    }
-
-    100% {
-        position: absolute;
-        bottom: 300000px;
-    }
-}
 
 .visualizer-instance {
     background-color: var(--ten-color);
     position: absolute;
     width: 100%;
-}
-.expand_up {
-    animation: expand_up 1000s linear;
+    border-radius: 15px;
+
 }
 
-.move_up {
-    animation: move_up 1000s linear;
-}
+
+@keyframes flicker {
+    0% {
+        align-self: center;
+        transform: scale(2);
+    }
+    50% {
+        transform: scale(1.8);
+    }
+    100% {
+        transform: scale(2);
+    }
+  }
+
+.glow-effect-small {
+    position: absolute;
+    bottom: calc(var(--white-key-height) - 20px);
+    width: 45px;
+    height: 45px;
+
+    border-radius: 1000px;
+    background: radial-gradient(
+        circle,
+        rgba(255, 255, 255, 0.8) 0%,
+        rgba(255, 255, 255, 0) 70%
+      );
+    animation: flicker .15s infinite;
+    z-index: 3;
+    opacity: .8;
+  }
+
+  .glow-effect-big {
+    position: absolute;
+    bottom: calc(var(--white-key-height) - 40px);
+    transform: translate(-50%, -50%);
+    width: 90px;
+    height: 90px;
+
+    border-radius: 1000px;
+    background: radial-gradient(
+        circle,
+        rgba(255, 255, 255, 0.8) 0%,
+        rgba(255, 255, 255, 0) 70%
+      );
+    animation: flicker .2s infinite;
+    z-index: 3;
+    opacity: .6;
+  }
+  

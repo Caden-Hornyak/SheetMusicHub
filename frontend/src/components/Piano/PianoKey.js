@@ -15,8 +15,11 @@ const Pianokey = ({
   const time_threshold = 50;
 
   let visual_refs = useRef({})
-  let [visuals, set_visuals] = useState({})
-  let [visual_height, set_visual_height] = useState({})
+
+  let [curr_animation, set_curr_animation] = useState(null)
+  let [visuals, set_visuals] = useState([])
+  let [glow, set_glow] = useState(false)
+
   let [counter, set_counter] = useState(0)
 
   let load_note = async () => {
@@ -56,10 +59,19 @@ const Pianokey = ({
 
   useEffect(() => {
     load_note()
-    console.log("asjdf")
   }, [])
 
   
+  useEffect(() => {
+    if (counter in visual_refs.current) {
+      set_curr_animation(visual_refs.current[counter].animate(
+        [{height: '0', bottom: '0'}, {height: '300000px'}],
+        {duration: 1000000, fill: 'forwards'}
+      ))
+    }
+    
+  }, [visuals])
+
   useEffect(() => {
     if (this_pressed) {
       set_key_down(true)
@@ -68,43 +80,35 @@ const Pianokey = ({
       set_visuals(prev_state => ({
           ...prev_state,
           [counter]: (
-          <div style={{height: counter in visual_height ? `${visual_height[counter]}px`: 'auto'}} 
-          ref={ref => visual_refs.current[counter] = ref} className='visualizer-instance expand_up'></div>
+          <div ref={ref => visual_refs.current[counter] = ref} className='visualizer-instance'>{counter}</div>
           )
       })) 
+      set_glow(true)
 
     } else {
       if (key_down) {
+        
+        curr_animation.pause()
+        set_curr_animation(visual_refs.current[counter].animate(
+          [{bottom: '0'}, {bottom: '300000px'}],
+          {duration: 1000000, fill: 'forwards'}
+        ))
+        set_glow(false)
 
-        const { top, height } = visual_refs.current[counter].getBoundingClientRect()
-        let curr_visual = visual_refs.current[counter]
-        set_visual_height(prev_state => ({
-          ...prev_state,
-          [counter]: [height]
-        }))
-        curr_visual.className = 'visualizer-instance move_up'
-
-        setTimeout(() => {
-          delete visual_refs.current[counter];
-
-          set_visual_height(prev_state => {
-            const new_state = { ...prev_state };
-            delete new_state[counter];
-
-            return new_state;
-          }, counter)
-          set_visuals(prev_state => {
-            console.log("removed1")
-            const new_state = { ...prev_state };
-            delete new_state[counter];
-
-            return new_state;
-          }, counter);
-        }, 10, counter)
+        // setTimeout(() => {
+        //   // delete visual_refs.current[counter]
+        //   set_visuals(prev_state => {
+        //     console.log(counter)
+        //     const newState = {...prev_state};
+        //     delete newState[counter];
+        //     return newState;
+        //   });
+        // }, 8000, counter)
+          
         set_counter(prev_state => prev_state + 1)
-      }
-      set_key_down(false)
+        set_key_down(false)
       
+      }
     }
   }, [this_pressed])
 
@@ -112,11 +116,6 @@ const Pianokey = ({
   useEffect(() => {
     set_this_pressed(pressed)
   }, [pressed])
-
-  useEffect(() => {
-    console.log(visual_height)
-  }, [visual_height])
-
   
   return (
     <div className={`piano-key-wrapper ${color}-wrapper`}>
@@ -125,6 +124,8 @@ const Pianokey = ({
             return visuals[key]
           })}
       </div>
+      {glow && <div class='glow-effect-small' ></div>}
+      {glow && <div class='glow-effect-big' ></div>}
       <div ref={innerRef} className={`piano-key ${color}-key ${key_down ? 'pressed' : ''}`} 
       onMouseUp={() => set_this_pressed(false)} onMouseDown={() => set_this_pressed(true)} onMouseLeave={() => set_this_pressed(false)} >{keyboard_key}</div>
     </div>

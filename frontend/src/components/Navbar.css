@@ -9,20 +9,19 @@
 
 
 #navbar {
-    
-    background-color: white;
+
     position: fixed;
     top: 0;
     left: 0;
-    padding: 10px;
     width: 100vw;
     height: calc(var(--navbar-height));
     display: flex;
     flex-direction: row;
-
-    box-shadow: 3px 3px 15px rgba(0, 0, 0, .8);
+/* 
+    box-shadow: 3px 3px 15px rgba(0, 0, 0, .8); */
     min-width: var(--min-width);
-    z-index: 1;
+    z-index: 5;
+    background-color: transparent;
 }
 
     .navbar-link {
@@ -31,3 +30,29 @@
         color: black;
     }
 
+    .navbar-btn {
+        border: none;
+        outline: none;
+        background-color: transparent;
+
+        transform: scale(2.5);
+        margin: 15px;
+        margin-left: auto;
+        margin-right: 30px;
+        padding: 0;
+    }
+
+
+    .navbar-btn:hover path {
+        fill: var(--ten-color);
+    }
+
+    #navbar-links {
+        position: absolute;
+        background-color: salmon;
+        height: 100%;
+        width: 100%;
+        animation: all 10s ease;
+        display: flex;
+        align-items: center;
+    }

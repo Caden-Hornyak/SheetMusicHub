@@ -1,14 +1,11 @@
 
 #piano-wrapper {
     position: absolute;
-    height: calc(100% - var(--navbar-height));
-    top: var(--navbar-height);
+    height: 100%;
+    top: 0;
     left: 0;
     width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;   
-    flex-direction: column; 
+    background-color: var(--thirty-color);
 }
 
 #piano {
@@ -54,6 +51,7 @@
         }
 
 
-#second-level {
+#first-level {
     bottom: var(--white-key-height);
+    z-index: 1;
 }
