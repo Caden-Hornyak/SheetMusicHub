@@ -129,5 +129,20 @@ body {
     background-color: white;
     position: absolute;
     bottom: 0;
+    height: 100%;
+    width: 100%;
     
+}
+
+#login-page {
+    position: absolute;
+    top: var(--navbar-height);
+    left: 0;
+    width: 100vw;
+    height: calc(100vh - var(--navbar-height));
+    background-color: var(--thirty-color);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }

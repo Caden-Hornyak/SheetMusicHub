@@ -77,12 +77,36 @@ class CommentSerializer(ModelSerializer):
         
 
 class PostSerializerMultiple(ModelSerializer):
+    user_vote = serializers.SerializerMethodField()
     images = ImageSerializer(many=True)
     pdf_files = PDFSerializer(many=True)
     videos = VideoSerializer(many=True)
+    poster = serializers.SerializerMethodField()
+
     class Meta:
         model = Post
-        fields = ('id', 'title', 'likes', 'comment_count', 'images', 'pdf_files', 'videos', 'comments', 'date_created')
+        fields = ('id', 'title', 'likes', 'comment_count', 'images', 'pdf_files',
+                   'videos', 'comments', 'date_created', 'poster', 'description', 'user_vote')
+
+    def get_poster(self, obj):
+        if obj.poster:
+            return obj.poster.user.username
+        else:
+            return "User Not Found"
+        
+    # user_vote = previous user votes on post
+    def get_user_vote(self, obj):
+        try:
+            # Get the current user from the request
+            username = self.context.get('request').user
+            user = User.objects.get(username=username)
+            user_prof = UserProfile.objects.get(user=user)
+
+            # Check if a vote exists for the current user and comment
+            vote = Vote.objects.get(user=user_prof, post=obj)
+            return vote.value
+        except Exception as e:
+            return 0
 
 class PostSerializerSingle(ModelSerializer):
     user_vote = serializers.SerializerMethodField()

@@ -2,9 +2,10 @@ import React, { useEffect, useRef, useState } from 'react'
 import PianoKey from './PianoKey'
 import { Howl } from 'howler'
 import './Piano.css'
+import { top_animation } from '../../utility/Animations'
 
 
-const Piano = ({ start=12, end=60, type='', set_product=null, visible=true }) => {
+const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, pvh=() => {} }) => {
   
   let notes = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B']
 
@@ -105,7 +106,6 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true }) =>
 
   useEffect(() => {
     create_piano()
-    console.log('piano created')
   }, [])
 
   useEffect(() => {
@@ -167,13 +167,24 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true }) =>
     }
   }, [window_size])
 
+  let piano_ref = useRef(null)
+    useEffect(() => {
+        if (piano_ref.current && pvh !== null) {
+            if (pvh) {
+                top_animation(piano_ref.current, '0', 'var(--navbar-height)', 500, 'ease-in')
+            } else {
+                top_animation(piano_ref.current,'var(--navbar-height)', '0', 500, 'ease-out')
+            }
+        }
+    }, [pvh])
+
 
   return (
-    <div id='piano-wrapper'>
+    <div id='piano-wrapper' ref={piano_ref}>
       {(type === 'register' || type === 'login') &&
         <div id='piano-buttons'>
-          <button id='recording-button' onClick={() => recording[0] ? recording_action('end') : recording_action('start')} ></button>
-          <button id='clear-button' onClick={() => clear_song()} >Restart</button>
+          <button id='recording-btn' onClick={() => recording[0] ? recording_action('end') : recording_action('start')} ><div className='red-dot'></div></button>
+          <button id='clear-recording-btn' onClick={() => clear_song()} >Clear Recording</button>
           {!recording && <p>{recording[1] === 0 ? 'Press Start To Begin Recording' : 'Confirm Password'}</p>}
         </div>
       }

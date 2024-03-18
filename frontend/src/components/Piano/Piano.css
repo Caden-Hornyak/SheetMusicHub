@@ -1,16 +1,16 @@
 
 #piano-wrapper {
     position: absolute;
-    height: 100%;
-    top: 0;
+    top: var(--navbar-height);
     left: 0;
     width: 100%;
     background-color: var(--thirty-color);
+    height: calc(100% - var(--navbar-height));
 }
 
 #piano {
     position: absolute;
-    bottom: 0;
+    top: 0;
 
     user-select: none;
     display: flex;
@@ -37,21 +37,41 @@
     height: 50px;
 }
 
-    #recording-button {
-        background-color: gray;
-        border: none;
-        border-radius: 30px;
-
-        height: 30px;
-        width: 30px;
-    }
-
-        #recording-button:hover {
-            background-color: var(--ten-color);
-        }
-
 
 #first-level {
-    bottom: var(--white-key-height);
+    bottom: calc(var(--white-key-height) + 7.5px);
     z-index: 1;
 }
+
+
+#piano-buttons {
+    display: flex;
+    padding: 10px;
+    width: 100%;
+    height: 100px;
+}
+
+#recording-btn {
+    position: relative;
+    background-color: rgba(0, 0, 0, .5);
+    border: none;
+    border-radius: 50%;
+
+    height: 100px;
+    width: 100px;
+}
+
+.red-dot {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background-color: red;
+    border-radius: 50%;
+    height: 60%;
+    width: 60%;
+}
+
+    #recording-btn:hover {
+        background-color: var(--ten-color);
+    }

@@ -6,8 +6,25 @@ import { useNavigate } from 'react-router-dom'
 import './CreatePostPage.css'
 import { BiX } from 'react-icons/bi'
 import DropBox from '../components/DropBox.js'
+import { attribute_animation } from '../utility/Animations.js';
 
 const CreatePostPage = () => {
+
+    
+    // resize page on navbar hide/unhide
+    let createpageview_ref = useRef(null)
+    let [cpp_fullheight, set_cpp_fullheight] = useState(null)
+    useEffect(() => {
+        if (createpageview_ref.current && cpp_fullheight !== null) {
+            if (cpp_fullheight) {
+                attribute_animation(createpageview_ref.current, 'height', '100vh', 'calc(100vh - var(--navbar-height))', 500, 'ease-in')
+                attribute_animation(createpageview_ref.current, 'top', '0', 'var(--navbar-height)', 500, 'ease-in')
+            } else {
+                attribute_animation(createpageview_ref.current, 'height', 'calc(100vh - var(--navbar-height))', '100vh', 500, 'ease-out')
+                attribute_animation(createpageview_ref.current, 'top', 'var(--navbar-height)', '0', 500, 'ease-out')
+            }
+        }
+    }, [cpp_fullheight])
 
     let navigate = useNavigate()
 
@@ -48,14 +65,14 @@ const CreatePostPage = () => {
 
       const extract_file_info = (e) => {
         if (e.dataTransfer && e.dataTransfer.files) {
-            console.log("Drag and drop")
+
             // For drag-and-drop
             const file_array = Array.from(e.dataTransfer.files).map((file) => {
                 return file
             })
             return file_array
           } else {
-            console.log("Normal File Upload")
+
             // For regular file input
             const file_array = Array.from(e.target.files).map((file) => {
                 return file
@@ -113,18 +130,25 @@ const CreatePostPage = () => {
     }
 
     return(
-        <div>
-            <Navbar />
-            
-            <div id="createpost-body">
-                <DropBox uploaded_files={form_files} handle_change={handle_change} wipe_upload={wipe_upload} />
-                <form onSubmit={handleSubmit} id='createpost-form'>
-                    <input className='createpost-input' type="text" id="title" name="title" placeholder="Title" onChange={handle_change}/>
-                    <textarea className='createpost-input' type="text" id='description' name='description' placeholder='Description' onChange={handle_change} />
-                    <button type="submit">Submit</button>
-                </form>
+        <>
+            <Navbar parent_height_setter={set_cpp_fullheight}/>
+            <div id='createpostpage' ref={createpageview_ref}>
+                <div id="createpost-wrapper">
+                    <h2>Create a post</h2>
+                    <form onSubmit={() => handleSubmit()} id='createpost-form'>
+                        <input className='createpost-input' type="text" id="title" name="title" placeholder="Title" onChange={handle_change}/>
+                        <textarea className='createpost-input' type="text" id='description' name='description' placeholder='Description' onChange={handle_change} />
+                        <DropBox uploaded_files={form_files} handle_change={() => handle_change} wipe_upload={() => wipe_upload} />
+                        <div className='createpostpage-lower'>
+                            <button type="submit" onClick={() => navigate('/')} >Cancel</button>
+                            <button type="submit">Submit</button>
+                        </div>
+                        
+                    </form>
+                </div>
             </div>
-        </div>
+            
+        </>
     );
 }
 

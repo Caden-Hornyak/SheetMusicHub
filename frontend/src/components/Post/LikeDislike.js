@@ -17,7 +17,9 @@ const LikeDislike = ({ object, object_id, likes, user_vote }) => {
         setdisliked(user_vote === -1)
       }, [likes]);
 
-    let alterlikes = async (value, vote) => {
+    let alter_likes = async (e, value, vote) => {
+        console.log('ran')
+        e.stopPropagation();
         let res;
 
         const config = {
@@ -58,8 +60,8 @@ const LikeDislike = ({ object, object_id, likes, user_vote }) => {
   return (
     <div id='vote-container' >
         <span>{curr_likes}</span>
-        <BiLike className={liked ? 'like-btn-active': 'like-btn'} onClick={() => alterlikes(1, 'like')}/>
-        <BiDislike className={disliked ? 'dislike-btn-active': 'dislike-btn'} onClick={() => alterlikes(-1, 'dislike')}/>
+        <BiLike className={liked ? 'like-btn-active': 'like-btn'} onClick={(e) => alter_likes(e, 1, 'like')}/>
+        <BiDislike className={disliked ? 'dislike-btn-active': 'dislike-btn'} onClick={(e) => alter_likes(e, -1, 'dislike')}/>
     </div>
     
   )

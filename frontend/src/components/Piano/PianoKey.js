@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react'
 import { Howl } from 'howler'
 import F3 from '../../audio/pianokeys/F3.mp3'
-
+import { opacity_animation } from '../../utility/Animations.js'
 import './PianoKey.css'
 
 const Pianokey = ({
@@ -19,6 +19,7 @@ const Pianokey = ({
   let [curr_animation, set_curr_animation] = useState(null)
   let [visuals, set_visuals] = useState([])
   let [glow, set_glow] = useState(false)
+  let glowline = useRef(null)
 
   let [counter, set_counter] = useState(0)
 
@@ -80,10 +81,12 @@ const Pianokey = ({
       set_visuals(prev_state => ({
           ...prev_state,
           [counter]: (
-          <div ref={ref => visual_refs.current[counter] = ref} className='visualizer-instance'>{counter}</div>
+          <div key={`${counter}`} ref={ref => visual_refs.current[counter] = ref} className='visualizer-instance'></div>
           )
       })) 
       set_glow(true)
+      glow_animation('start')
+      opacity_animation(glowline.current, 'start', 600, 'cubic-bezier(0,.99,.26,.99)')
 
     } else {
       if (key_down) {
@@ -94,16 +97,17 @@ const Pianokey = ({
           {duration: 1000000, fill: 'forwards'}
         ))
         set_glow(false)
+        opacity_animation(glowline.current, 'end', 3000, 'cubic-bezier(.19,.98,.24,1.01)')
 
-        // setTimeout(() => {
-        //   // delete visual_refs.current[counter]
-        //   set_visuals(prev_state => {
-        //     console.log(counter)
-        //     const newState = {...prev_state};
-        //     delete newState[counter];
-        //     return newState;
-        //   });
-        // }, 8000, counter)
+        setTimeout(() => {
+          // delete visual_refs.current[counter]
+          set_visuals(prev_state => {
+            console.log(counter)
+            const newState = {...prev_state};
+            delete newState[counter];
+            return newState;
+          });
+        }, 8000, counter)
           
         set_counter(prev_state => prev_state + 1)
         set_key_down(false)
@@ -117,6 +121,11 @@ const Pianokey = ({
     set_this_pressed(pressed)
   }, [pressed])
   
+  const glow_animation = (action) => {
+    
+    
+  }
+
   return (
     <div className={`piano-key-wrapper ${color}-wrapper`}>
       <div className={`vis-path`} >
@@ -124,10 +133,13 @@ const Pianokey = ({
             return visuals[key]
           })}
       </div>
-      {glow && <div class='glow-effect-small' ></div>}
-      {glow && <div class='glow-effect-big' ></div>}
+      {glow && <div className='glow-effect-small' ></div>}
+      {glow && <div className='glow-effect-big' ></div>}
+      <div className='glow-line' >
+        <div ref={glowline} className='glowline-gradient'></div>
+      </div>
       <div ref={innerRef} className={`piano-key ${color}-key ${key_down ? 'pressed' : ''}`} 
-      onMouseUp={() => set_this_pressed(false)} onMouseDown={() => set_this_pressed(true)} onMouseLeave={() => set_this_pressed(false)} >{keyboard_key}</div>
+      onMouseUp={() => {console.log("up"); set_this_pressed(false)}} onMouseDown={() =>{console.log("down"); set_this_pressed(true)}} onMouseLeave={() => {console.log("leave"); set_this_pressed(false)}} >{keyboard_key}</div>
     </div>
     
   )

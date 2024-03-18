@@ -1,18 +1,25 @@
-#createpost-body {
+
+#createpostpage {
+    position: absolute;
     background-color: var(--background-color);
     height: calc(100vh - var(--navbar-height));
     width: 100vw;
 
-    position: absolute;
-    top: calc(var(--navbar-height));
+    
+    top: var(--navbar-height);
     left: 0;
 
     display: flex;
     justify-content: center;
     align-items: center;
 
-    /* background-color: var(--thirty-color);
-    color: white; */
+    background-color: var(--thirty-color);
+    overflow-y: auto;
+}
+
+#createpost-wrapper {
+    height: 500px;
+    width: 700px;
 }
 
 #createpost-form {
@@ -21,12 +28,41 @@
 
     border: solid 2px black;
     border-radius: 15px;
-    padding: 40px;
-
-    /* height: 800px;
-    width: 500px; */
+    padding: 20px 40px;
 }
 
-    .createpost-input {
-        margin: 10px;
-    }
+#createpost-form > * {
+    margin: 5px 0;
+    width: 100%;
+}
+
+#createpost-form > input,
+#createpost-form > textarea {
+    background-color: var(--thirty-color);
+    border: 1px var(--text-color) solid;
+    border-radius: 5px;
+    outline: none;
+    padding: 10px;
+    color: var(--text-color);
+
+    transition: border 1s ease;
+}
+
+#createpost-form > input:focus,
+#createpost-form > textarea:focus {
+    border: 1px solid var(--ten-color);
+}
+
+
+.createpostpage-lower {
+    display: flex;
+    justify-content: end;
+    align-items: center;
+}
+
+.createpostpage-lower button {
+    border-radius: 20px;
+    border: 1px solid var(--text-color);
+    padding: 7.5px 20px;
+    margin: 0 5px;
+}

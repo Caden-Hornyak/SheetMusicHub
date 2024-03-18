@@ -1,15 +1,12 @@
-.drop-box {
-    width: 400px;
-    height: 400px;
-    border: 1px dashed black;
+.dropbox {
+    width: 100%;
+    min-height: 400px;
+    border: 1px dashed var(--text-color);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-color);
+    border-radius: 5px;
 }
 
-.file-preview {
-    position: relative;
-}
-
-.file-preview > button {
-    position: absolute;
-    right: 0;
-    z-index: 1;
-}

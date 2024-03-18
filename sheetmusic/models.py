@@ -29,7 +29,7 @@ class PDF(models.Model):
 
 # Create your models here.
 class Post(models.Model):
-    poster = models.ForeignKey("UserProfile", on_delete=models.SET_NULL, null=True)
+    poster = models.ForeignKey('UserProfile', on_delete=models.SET_NULL, null=True)
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=50)
 
@@ -49,7 +49,7 @@ class Post(models.Model):
         return self.title
 
 class Comment(models.Model):
-    poster = models.ForeignKey("UserProfile", on_delete=models.CASCADE, null=True)
+    poster = models.ForeignKey('UserProfile', on_delete=models.CASCADE, null=True)
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     text = models.CharField(max_length=500)
     child_comment = models.ManyToManyField('self', blank=True, symmetrical=False)
@@ -69,16 +69,24 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     first_name = models.CharField(max_length=255, default='')
     last_name = models.CharField(max_length=255, default='')
-    posts = models.ManyToManyField("Post", blank=True, related_name='created_post')
+    posts = models.ManyToManyField('Post', blank=True, related_name='created_post')
 
     def __str__(self):
         return str(self.user)
     
 class Vote(models.Model):
-    user = models.ForeignKey("UserProfile", on_delete=models.CASCADE, null=True)
-    post = models.ForeignKey("Post", on_delete=models.CASCADE, null=True)
-    comment = models.ForeignKey("Comment", on_delete=models.CASCADE, null=True)
+    user = models.ForeignKey('UserProfile', on_delete=models.CASCADE, null=True)
+    post = models.ForeignKey('Post', on_delete=models.CASCADE, null=True)
+    comment = models.ForeignKey('Comment', on_delete=models.CASCADE, null=True)
     value = models.IntegerField(default=0)
 
     def __str__(self):
         return str(self.user)
+    
+class Song(models.Model):
+    name = models.CharField(max_length=100)
+    models.ManyToManyField('Note', blank=True)
+
+class Note(models.Model):
+    note = models.CharField(max_length=3)
+    timestamp = models.IntegerField(default=0)

@@ -37,28 +37,27 @@ const DragAndDropBox = ({ uploaded_files, handle_change, wipe_upload}) => {
   }, [uploaded_files])
 
   return (
-    <div>
-        {formatted_files.length === 0 ? 
-            <div
-            className={`drop-box ${dragging ? 'dragging' : ''}`}
-            onDragEnter={handle_drag_enter}
-            onDragOver={handle_drag_over}
-            onDragLeave={handle_drag_leave}
-            onDrop={handle_drop}
-            >
-            <p>
-                Drag & Drop or upload here: 
-                <input  type="file" id='file_upload' name='file_upload' onChange={handle_change} 
-                accept='image/*, .pdf, video/*' multiple
-                    />
-            </p> 
-            
-            </div> 
-        :
-            <div className='file-preview' >
-                <FileViewer uploaded_files={formatted_files} wipe_upload={wipe_upload} />
-            </div> 
-        }
+    <div className='dropbox-wrapper'>
+      {formatted_files.length === 0 ? 
+        <div
+        className={`dropbox ${dragging ? 'dragging' : ''}`}
+        onDragEnter={handle_drag_enter}
+        onDragOver={handle_drag_over}
+        onDragLeave={handle_drag_leave}
+        onDrop={handle_drop}
+        >
+        <p>
+          Drag & Drop or upload here: 
+          <input  type="file" id='file_upload' name='file_upload' onChange={handle_change} 
+          accept='image/*, .pdf, video/*' multiple
+          />
+        </p> 
+        <p>(image, video, or pdf)</p>
+        
+        </div> 
+      :
+        <FileViewer uploaded_files={formatted_files} wipe_upload={wipe_upload} />
+      }
     </div>
   );
 };

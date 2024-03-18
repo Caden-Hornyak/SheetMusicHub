@@ -1,15 +1,108 @@
 
-.post-listview {
-    display: flex
+.postlistview {
+    position: absolute;
+    top: var(--navbar-height);
+    left: 0;
+    
+    height: calc(100vh - var(--navbar-height));
+    width: 100vw;
 
-}
-.post-listview-ind {
     display: flex;
     flex-direction: column;
-    margin: 20px;
+    align-items: center;
+    background-color: var(--thirty-color);
+
+    overflow-y: auto;
+
 }
 
-    .post-listview-ind img {
-        height: 400px;
-        width: 300px;
-    }
+
+.postlistview-post-wrapper {
+    width: 75%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: color-mix(in srgb, var(--thirty-color), rgb(19, 19, 19));
+}
+
+
+.postlistview-post {
+    width: 600px;
+    margin: 15px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    border: 2px var(--text-color) solid;
+    color: var(--text-color);
+    border-radius: 10px;
+    padding: 25px;
+
+}
+
+.postlistview-fileviewer {
+    width: 100%;
+}
+
+.postlistview-description {
+    width: 100%;
+    background-color: color-mix(in srgb, var(--thirty-color), rgb(8, 8, 8));
+    border-radius: 10px;
+    margin: 10px 0;
+    padding: 10px;
+    text-wrap: wrap;
+    word-break: normal;
+    overflow-wrap: break-word;
+}
+
+.postlistview-post h2 {
+    align-self: flex-start;
+}
+
+.postlistview-upperpost {
+    display: flex;
+    align-items: center;
+}
+
+.postlistview-lowerpost {
+    display: flex;
+    width: 70%;
+    align-self: flex-start;
+}
+
+.postlistview-lowerpost > * {
+    margin: 5px 10px;
+}
+
+.postlistview-lowerpost > button {
+    outline: none;
+    background-color: transparent;
+    border: none;
+    border-radius: 5px;
+    color: var(--text-color);
+
+    transition: all ease .25s;
+    display: flex;
+    align-items: center;
+}
+
+.postlistview-lowerpost > button * {
+    margin: 0 10px;
+}
+
+.postlistview-lowerpost > button:hover {
+    color: var(--ten-color);
+    transform: scale(1.05);
+}
+
+.postlistview-lowerpost > button svg {
+    width: 20px;
+    height: 20px;
+}
+
+
+.postlistview-upperpost {
+    align-self: flex-start;
+    display: flex;
+}

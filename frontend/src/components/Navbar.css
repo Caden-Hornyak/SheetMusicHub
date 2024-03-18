@@ -3,10 +3,13 @@
     --min-width: 900px;
     --background-color: transparent;
     --ten-color: orange;
-    --thirty-color: #212121;
+    --thirty-color: #2e2e2e;
     --text-color: #dddddd;
 }
 
+a:hover {
+    color: var(--ten-color);
+}
 
 #navbar {
 
@@ -17,8 +20,8 @@
     height: calc(var(--navbar-height));
     display: flex;
     flex-direction: row;
-/* 
-    box-shadow: 3px 3px 15px rgba(0, 0, 0, .8); */
+
+    
     min-width: var(--min-width);
     z-index: 5;
     background-color: transparent;
@@ -27,7 +30,9 @@
     .navbar-link {
         margin: 15px;
         text-decoration: none;
-        color: black;
+        font-weight: bold;
+        color: var(--text-color);
+        transition: color ease .25s;
     }
 
     .navbar-btn {
@@ -40,19 +45,22 @@
         margin-left: auto;
         margin-right: 30px;
         padding: 0;
+        color: var(--text-color);
+        transition: color .25s ease;
     }
 
 
-    .navbar-btn:hover path {
-        fill: var(--ten-color);
+    .navbar-btn:hover {
+        color: var(--ten-color);
     }
 
     #navbar-links {
         position: absolute;
-        background-color: salmon;
         height: 100%;
         width: 100%;
         animation: all 10s ease;
         display: flex;
         align-items: center;
+        background-color: salmon;
+        box-shadow: 3px 3px 15px rgba(0, 0, 0, .8);
     }

@@ -6,8 +6,10 @@ import CSRFToken from '../../components/CSRFToken.js';
 
 import './Auth.css';
 import background from '../../images/auth_background.jpg';
-import Piano from '../../components/Piano/Piano.js'
+import Piano from '../../components/piano/Piano.js'
 import { IoMdCheckmark } from "react-icons/io";
+import Navbar from '../../components/Navbar.js';
+
 
 const Register = ({ register_normal_pass, register_piano_pass }) => {
     const [form_data, set_form_data] = useState({
@@ -83,6 +85,7 @@ const Register = ({ register_normal_pass, register_piano_pass }) => {
 
     return(
         <>
+            <Navbar />
             <div id='register-piano-wrapper' style={{display: piano_vis ? 'block' : 'none' }}>
                 <div id='background-darkener' onClick={() => set_piano_vis(false)} ></div>
                 <button></button>

@@ -8,11 +8,12 @@
 
 ::-webkit-scrollbar-thumb {
     border-radius: 100vw;
-    background: rgba(0, 0, 0, .5);
+    background: var(--text-color);
+    
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: rgba(0, 0, 0, 0.7);
+    background: var(--ten-color);
 }
 
 .final-container {
@@ -50,6 +51,7 @@ hr {
     width: 25px;
     transition: all ease .5s;
     z-index: 2;
+    fill: white;
 }
 
     .back-arrow:hover {
@@ -120,8 +122,8 @@ hr {
     position: fixed;
     width: 100%;
     height: 100%;
-    filter: blur(5px);
-    opacity: .7
+    filter: blur(10px);
+    opacity: .7;
 }
 
 #post-cmt-btn {

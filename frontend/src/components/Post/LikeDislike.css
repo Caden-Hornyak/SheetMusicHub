@@ -28,7 +28,7 @@
 
 .like-btn:hover path {
     fill: var(--ten-color);
-    transform: scale(1.1);
+    transform: scale(1.05);
 }
 
 .dislike-btn {
@@ -58,7 +58,7 @@
 
 .dislike-btn:hover path {
     fill: blue;
-    transform: scale(1.1);
+    transform: scale(1.05);
 }
 
 #vote-container {
