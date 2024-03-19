@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom'
 import './CreatePostPage.css'
 import { BiX } from 'react-icons/bi'
 import DropBox from '../components/DropBox.js'
-import { attribute_animation } from '../utility/Animations.js';
+import { attribute_animation } from '../utility/CommonFunctions.js';
 
 const CreatePostPage = () => {
 
@@ -135,7 +135,7 @@ const CreatePostPage = () => {
             <div id='createpostpage' ref={createpageview_ref}>
                 <div id="createpost-wrapper">
                     <h2>Create a post</h2>
-                    <form onSubmit={() => handleSubmit()} id='createpost-form'>
+                    <form onSubmit={(e) => handleSubmit(e)} id='createpost-form'>
                         <input className='createpost-input' type="text" id="title" name="title" placeholder="Title" onChange={handle_change}/>
                         <textarea className='createpost-input' type="text" id='description' name='description' placeholder='Description' onChange={handle_change} />
                         <DropBox uploaded_files={form_files} handle_change={() => handle_change} wipe_upload={() => wipe_upload} />

@@ -7,6 +7,10 @@
     --text-color: #dddddd;
 }
 
+* {
+    color: var(--text-color);
+}
+
 a:hover {
     color: var(--ten-color);
 }

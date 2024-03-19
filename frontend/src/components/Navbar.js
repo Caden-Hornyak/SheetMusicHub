@@ -4,7 +4,7 @@ import './Navbar.css'
 import { connect } from 'react-redux'
 import { logout } from '../actions/auth'
 import { IoIosArrowUp, IoIosArrowDown } from "react-icons/io"
-import { top_animation, attribute_animation } from '../utility/Animations.js'
+import { attribute_animation } from '../utility/CommonFunctions.js'
 
 
 function Navbar( { isAuthenticated, logout, parent_height_setter=() => {} }) {

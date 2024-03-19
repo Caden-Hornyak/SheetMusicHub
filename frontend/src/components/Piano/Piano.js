@@ -2,13 +2,61 @@ import React, { useEffect, useRef, useState } from 'react'
 import PianoKey from './PianoKey'
 import { Howl } from 'howler'
 import './Piano.css'
-import { top_animation } from '../../utility/Animations'
+import { attribute_animation, default_ajax } from '../../utility/CommonFunctions'
+import { FaXmark } from "react-icons/fa6";
+import { MdOutlineSaveAlt } from "react-icons/md";
+import { TbShare2 } from "react-icons/tb";
+import { IoMdCheckmark } from "react-icons/io";
 
 
-const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, pvh=() => {} }) => {
+const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, pvh=() => {}, user_interact=true }) => {
   
-  let notes = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B']
+  // Recording START
+  let [recording, set_recording] = useState([false, 0])
+  let [recorded_song, set_recorded_song] = useState([[], []])
+  let [save_prompt, set_save_prompt] = useState([false, false])
 
+  let recording_action = (action) => {
+    if (action === 'start') {
+      set_recording(prev_state => {
+        let rec_arr = [...prev_state]
+        rec_arr[0] = true
+        return rec_arr
+      })
+
+      console.log("recording")
+    } else if (action === 'end') {
+      console.log("stopped recording")
+
+      // if second recording
+      if (recording[1] === 1) {
+
+        if (type == 'register') {
+          set_product(recorded_song)
+        }
+        set_recorded_song([[], []])
+      } else {
+        if (type == 'login') {
+          set_product(recorded_song[0])
+          set_recorded_song([[], []])
+        } else if (type == 'register') {
+          set_recording([false, 1])
+        } else {
+          set_recording([false, 0])
+          set_save_prompt(prev_state => [true, false])
+        }
+        
+      }
+    }
+  }
+  let clear_song = () => {
+    set_recorded_song([], [])
+    set_recording([false, 0])
+  }
+  // Recording END
+
+  // Create Piano START
+  let notes = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B']
   let keyboard_keys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 
                       'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', 
                       'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', "'", 'enter',
@@ -17,12 +65,9 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, pvh=
   let piano_keys_ref = useRef({})
   let dic = new Map();
 
-  let [recording, set_recording] = useState([false, 0])
-  let [recorded_song, set_recorded_song] = useState([[], []])
   let [pressed_keys, set_pressed_keys] = useState(Array(piano_keys_ref.current.length).fill(false))
 
-  let [piano_styling, set_piano_styling] = useState(null)
-
+  
   let create_piano = (curr_start, curr_end) => {
     let keyboard_it = curr_start - 12
     let piano_keys = []
@@ -54,38 +99,12 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, pvh=
     return piano_keys
   }
 
-  let recording_action = (action) => {
-    if (action === 'start') {
-      set_recording(prev_state => {
-        let rec_arr = [...prev_state]
-        rec_arr[0] = true
-        return rec_arr
-      })
+  useEffect(() => {
+    create_piano()
+  }, [])
+  // Create Piano END
 
-      console.log("recording")
-    } else if (action === 'end') {
-      console.log("stopped recording")
-
-      // if second recording
-      if (recording[1] === 1) {
-
-        if (set_product) {
-          set_product(recorded_song)
-        }
-        set_recorded_song([[], []])
-      } else {
-        if (type == 'login') {
-          set_product(recorded_song[0])
-          set_recorded_song([[], []])
-        } else {
-          set_recording([false, 1])
-        }
-        
-      }
-    }
-  }
-
-
+  // Keyboard Listener START
   const playPianoKey = (event) => {
 
     let pressed_key = event.key.toLowerCase();
@@ -105,11 +124,7 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, pvh=
   }
 
   useEffect(() => {
-    create_piano()
-  }, [])
-
-  useEffect(() => {
-    if (visible) {
+    if (user_interact && visible) {
       document.addEventListener('keydown', playPianoKey)
       document.addEventListener('keyup', playPianoKey)
     }
@@ -119,12 +134,12 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, pvh=
       document.addEventListener('keyup', playPianoKey)
     };
   }, [visible])
+  // Keyboard Listener END
 
-  let clear_song = () => {
-    set_recorded_song([])
-    set_recording([false, 0])
-    console.log("Song cleared")
-  }
+
+  // Switch 1/2 piano layers START
+  let [piano_styling, set_piano_styling] = useState(null)
+
 
   const [window_size, setwindow_size] = useState({
     width: window.innerWidth,
@@ -171,34 +186,72 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, pvh=
     useEffect(() => {
         if (piano_ref.current && pvh !== null) {
             if (pvh) {
-                top_animation(piano_ref.current, '0', 'var(--navbar-height)', 500, 'ease-in')
+              attribute_animation(piano_ref.current, 'height', '100vh', 'calc(100vh - var(--navbar-height))', 500, 'ease-in')
+              attribute_animation(piano_ref.current, 'top', '0', 'var(--navbar-height)', 500, 'ease-in')
             } else {
-                top_animation(piano_ref.current,'var(--navbar-height)', '0', 500, 'ease-out')
+              attribute_animation(piano_ref.current, 'height', 'calc(100vh - var(--navbar-height))', '100vh', 500, 'ease-out')
+              attribute_animation(piano_ref.current, 'top', 'var(--navbar-height)', '0', 500, 'ease-out')
             }
         }
     }, [pvh])
+  // Switch 1/2 piano layers END
 
+  let save_song = async () => {
+    set_save_prompt(async prev_state => {
+      let res = await default_ajax('post', 'songs/', { 'song': recorded_song[0], 'name': 'TODO' })
+      if (res !== -1) {
+        console.log(res)
+      }
+      return [true, true]
+    })
+  }
 
   return (
-    <div id='piano-wrapper' ref={piano_ref}>
-      {(type === 'register' || type === 'login') &&
-        <div id='piano-buttons'>
-          <button id='recording-btn' onClick={() => recording[0] ? recording_action('end') : recording_action('start')} ><div className='red-dot'></div></button>
-          <button id='clear-recording-btn' onClick={() => clear_song()} >Clear Recording</button>
-          {!recording && <p>{recording[1] === 0 ? 'Press Start To Begin Recording' : 'Confirm Password'}</p>}
-        </div>
-      }
+    <>
+      {save_prompt[0] && 
+        <div className='piano-saveprompt-screen' onClick={() => set_save_prompt([false, false])}>
+          
+          <div className='piano-saveprompt' onClick={e => e.stopPropagation()} >
+            <button className='close-btn' onClick={() => set_save_prompt([false, false])}><FaXmark /></button>
+              {save_prompt[0] && !save_prompt[1] && <h2>Save or Share Your Recording</h2>}
+              {save_prompt[0] && !save_prompt[1] &&
+              <div>
+                <button className='piano-saveprompt-btn' onClick={() => save_song()} ><MdOutlineSaveAlt /> Save </button>
+                <button className='piano-saveprompt-btn'><TbShare2 /> Share</button>
+              </div>
+              }
+              {save_prompt[0] && save_prompt[1] &&
+              <div>
+                <div className='pianosave-checkmark' >Saved! <IoMdCheckmark /></div>
+                <button>Click here to go to thingy</button>
+              </div>
+              }
 
-      <div id='piano'>
+          </div>
+        </div>
+      
+      }
+      <div id='piano-wrapper' ref={piano_ref}>
+        {user_interact && 
+          <div id='piano-btn-wrapper'>
+            <button className='piano-btn' onClick={() => recording[0] ? recording_action('end') : recording_action('start')} ><div className='red-dot'></div></button>
+            {recording[0] && <button className='piano-btn' id='clear-song-btn' onClick={() => clear_song()} ><FaXmark /></button>}
+            {(type === 'register' || type === 'login') && !recording && <p>{recording[1] === 0 ? 'Press Start To Begin Recording' : 'Confirm Password'}</p>}
+          </div>
+        }
+
+        
+
+        <div id='piano'>
           <div id="first-level" style={piano_styling ? piano_styling['first_level']: undefined}>
             {create_piano(start, Math.floor((start+end)/2))}
           </div>
           <div id="second-level" style={piano_styling ? piano_styling['second_level']: undefined}>
             {create_piano(Math.floor((start+end)/2), end)}
-          </div>
-          
+          </div>  
+        </div>
       </div>
-    </div>
+    </>
   )
 }
 

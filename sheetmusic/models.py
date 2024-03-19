@@ -70,11 +70,13 @@ class UserProfile(models.Model):
     first_name = models.CharField(max_length=255, default='')
     last_name = models.CharField(max_length=255, default='')
     posts = models.ManyToManyField('Post', blank=True, related_name='created_post')
+    songs = models.ManyToManyField('Song', blank=True)
 
     def __str__(self):
         return str(self.user)
     
 class Vote(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey('UserProfile', on_delete=models.CASCADE, null=True)
     post = models.ForeignKey('Post', on_delete=models.CASCADE, null=True)
     comment = models.ForeignKey('Comment', on_delete=models.CASCADE, null=True)
@@ -84,9 +86,24 @@ class Vote(models.Model):
         return str(self.user)
     
 class Song(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100)
-    models.ManyToManyField('Note', blank=True)
+    notes = models.ManyToManyField('Note', through='SongNote', blank=True)
+
+    def __str__(self):
+        return self.name
 
 class Note(models.Model):
-    note = models.CharField(max_length=3)
+    note = models.CharField(max_length=500)
     timestamp = models.IntegerField(default=0)
+
+    def __str__(self):
+        return self.note + str(self.timestamp)
+    
+class SongNote(models.Model):
+    song = models.ForeignKey('Song', on_delete=models.CASCADE)
+    note = models.ForeignKey('Note', on_delete=models.CASCADE)
+    order = models.IntegerField(default=0)
+
+    class Meta:
+        ordering = ['order']

@@ -106,3 +106,7 @@
     align-self: flex-start;
     display: flex;
 }
+
+.listview-loader {
+    color: var(--text-color);
+}

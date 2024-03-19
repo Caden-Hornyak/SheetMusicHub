@@ -177,3 +177,5 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
     ]
 }
+
+DEBUG_PROPAGATE_EXCEPTIONS = True

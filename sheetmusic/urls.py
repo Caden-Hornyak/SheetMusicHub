@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.urls import path, include
 from . import views
 from .views import (LoginView, GetCSRFToken, CheckAuthenticatedView, 
-                    RegisterView, LogoutView, Posts, UserProfiles, Votes, Comments)
+                    RegisterView, LogoutView, Posts, UserProfiles, Votes, Comments, Songs)
 
 urlpatterns = [
     path('posts/create-post/', Posts.as_view(), name='create_post'),
@@ -21,6 +21,8 @@ urlpatterns = [
     path('votes/<str:object_type>/<str:id>', Votes.as_view()),
 
     path('comments/create-comment/', Comments.as_view()),
-    
-    
+    path('songs/create-song', Songs.as_view()),
+
+    path('songs/', Songs.as_view()),
+    path('songs/<str:id>', Songs.as_view()),
 ]

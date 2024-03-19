@@ -48,7 +48,6 @@ export const checkAuthenticated = () => async dispatch => {
 }
 
 export const register_normal_pass = (username, password, re_password) => async dispatch => {
-    console.log('normal pass')
 
     const config = {
         headers: {
@@ -204,8 +203,6 @@ export const logout = () => async dispatch => {
     try {
 
         const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/accounts/logout/`, body, config);
-
-        
         
         if (res.data.error) {
             dispatch({

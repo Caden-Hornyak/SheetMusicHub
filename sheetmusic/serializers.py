@@ -1,5 +1,7 @@
 from rest_framework.serializers import ModelSerializer
-from .models import Post, Image, UserProfile, Comment, Vote, User, Video, PDF
+from .models import (Post, Image, UserProfile, Comment, 
+                     Vote, User, Video, PDF, Song, Note,
+                     SongNote)
 from rest_framework import serializers
 import sys
 
@@ -144,5 +146,26 @@ class PostSerializerSingle(ModelSerializer):
             return obj.poster.user.username
         else:
             return "User Not Found"
+
+
+class NoteSerializer(ModelSerializer):
+    class Meta:
+        model = Note
+        fields = '__all__'
+
+class SongNoteSerializer(ModelSerializer):
+    note = NoteSerializer()
+
+    class Meta:
+        model = SongNote
+        fields = ('note', 'order')
+
+class SongSerializer(ModelSerializer):
+    song_notes = SongNoteSerializer(source='songnote_set', many=True)
+    
+    class Meta:
+        model = Song
+        fields = ('name', 'song_notes')
+
 
     

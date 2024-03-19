@@ -1,8 +1,8 @@
 from rest_framework.response import Response
 from .serializers import (PostSerializerSingle, PostSerializerMultiple, 
-                          UserProfileSerializer, CommentSerializer)
+                          UserProfileSerializer, CommentSerializer, SongSerializer)
 from .models import (Post, Image, Video, PDF, UserProfile, 
-                     Comment, Vote)
+                     Comment, Vote, Song, Note, SongNote)
 from django.http import JsonResponse
 import sys
 from rest_framework.views import APIView
@@ -363,3 +363,50 @@ class Comments(APIView):
         except Exception as e:
             print(e, file=sys.stderr)
             return Response({ 'error': 'Unable to create comment'})
+
+class Songs(APIView):
+    def post(self, request, format=None):
+        try:
+            data = self.request.data
+
+            user_song = data['song']
+            name = data['name']
+
+            user = self.request.user
+            user_prof = UserProfile.objects.get(user=user)
+
+            song_instance = Song.objects.create(name=name)
+
+            user_prof.songs.add(song_instance)
+            user_prof.save()
+
+            for index, pair in enumerate(user_song):
+                if index == 0:
+                    start_time = pair[1]
+                note = Note.objects.create(note=pair[0], timestamp=(pair[1] - start_time))
+                song_instance.notes.add(note)
+                song_note_through = SongNote.objects.create(song=song_instance, note=note, order=index)
+
+            
+            song_instance.save()
+            return Response({ 'success': 'Song created' })
+        
+        except Exception as e:
+            print('Songs:post ', e, file=sys.stderr)
+            return Response({ 'error': 'Unable to create song' })
+    
+    def get(self, request, id='all', format=None):
+        try:
+            if id == 'all':
+                user = self.request.user
+                user_prof = UserProfile.objects.get(user=user)
+                songs = user_prof.songs.all()
+                serializer = SongSerializer(songs, many=True)
+            else:
+                song = Song.objects.get(id=id)
+                serializer = SongSerializer(song)
+
+            return Response(serializer.data)
+        except Exception as e:
+            print('Songs:get ', e, file=sys.stderr)
+            return Response({ 'error': 'Unable to get song' })

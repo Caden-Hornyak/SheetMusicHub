@@ -3,7 +3,7 @@
     position: absolute;
     top: var(--navbar-height);
     left: 0;
-    width: 100%;
+    width: 100vw;
     background-color: var(--thirty-color);
     height: calc(100% - var(--navbar-height));
 }
@@ -44,22 +44,34 @@
 }
 
 
-#piano-buttons {
+#piano-btn-wrapper {
     display: flex;
+    /* justify-content: right; */
     padding: 10px;
     width: 100%;
     height: 100px;
 }
 
-#recording-btn {
+
+.piano-btn {
     position: relative;
     background-color: rgba(0, 0, 0, .5);
     border: none;
     border-radius: 50%;
 
-    height: 100px;
-    width: 100px;
+    height: 75px;
+    width: 75px;
+    z-index: 2;
+    margin: 5px 10px;
+    transition: all ease .25s;
 }
+
+
+
+    .piano-btn:hover {
+        background-color: var(--ten-color);
+        transform: scale(1.03);
+    }
 
 .red-dot {
     position: absolute;
@@ -72,6 +84,87 @@
     width: 60%;
 }
 
-    #recording-btn:hover {
-        background-color: var(--ten-color);
-    }
+#clear-song-btn svg {
+    width: 80%;
+    height: 80%;
+}
+
+#clear-song-btn path {
+    color: white;
+}
+
+.piano-saveprompt-screen {
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    left: 0;
+    top: 0;
+
+    background-color: rgba(0, 0, 0, .5);
+    z-index: 6;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.piano-saveprompt {
+    position: relative;
+    color: var(--text-color);
+    width: 500px; 
+    height: 300px;
+    background-color: color-mix(in srgb, var(--thirty-color), rgba(255, 255, 255, .2));
+    border-radius: 15px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+}
+
+.close-btn {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: transparent;
+    outline: none;
+    margin: 10px;
+    border: none;
+    color: var(--text-color);
+    width: 25px;
+    height: 25px;
+    transition: all ease .25s;
+}
+
+.close-btn:hover {
+    transform: scale(1.05);
+    color: var(--ten-color);
+}
+
+.close-btn svg {
+    transform: scale(2);
+}
+
+.piano-saveprompt-btn {
+    border: none;
+    border-radius: 100px;
+    width: 40%;
+    height: 65px;
+    margin: 15px;
+    font-weight: bold;
+    transition: all .25s ease;
+}
+
+.piano-saveprompt-btn svg {
+    transform: scale(2);
+    margin: 0 10px;
+
+}
+
+.piano-saveprompt-btn:hover {
+    transform: scale(1.025);
+    background-color: var(--ten-color);
+}
+
+.pianosave-checkmark svg {
+    transform: scale(6);
+}
