@@ -21,8 +21,8 @@ urlpatterns = [
     path('votes/<str:object_type>/<str:id>', Votes.as_view()),
 
     path('comments/create-comment/', Comments.as_view()),
+    path('comments/<str:id>/', Comments.as_view()),
     path('songs/create-song', Songs.as_view()),
 
-    path('songs/', Songs.as_view()),
     path('songs/<str:id>', Songs.as_view()),
 ]

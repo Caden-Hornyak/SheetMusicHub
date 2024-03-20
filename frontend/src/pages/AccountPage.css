@@ -1,0 +1,72 @@
+#accountpage-page {
+    position: absolute;
+    top: var(--navbar-height);
+    left: 0;
+    height: calc(100vh - var(--navbar-height));
+    width: 100vw;
+    background-color: var(--thirty-color);
+
+    display: flex;
+    justify-content: center;
+}
+
+#accountpage-content {
+    width: 80%;
+    display: flex;
+    justify-content: center;
+}
+
+#accountpage-page > div {
+    height: 100%;
+}
+
+.accountpage-sidebar {
+    width: 200px;
+}
+
+#accountpage-profile {
+    position: relative;
+    width: 700px;
+}
+
+
+.accountpage-sidebar {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid var(--text-color);
+}
+
+.sidebarbtn {
+    outline: none;
+    background-color: transparent;
+    transition: all ease .25s;
+    border: none;
+    width: 100%;
+    margin: 5px 0px;
+    padding: 0;
+    height: 50px;
+    font-size: 1.25rem;
+    color: var(--text-color);
+
+    border-top-left-radius: 15px;
+    border-bottom-left-radius: 15px;
+
+
+}
+
+.sidebarbtn:hover {
+    background-color: rgba(255, 255, 255, .1);
+}
+
+
+.sidebarbtn.active {
+    color: var(--ten-color);
+    background-color: rgba(255, 255, 255, .2);
+}
+
+.accountpage-sidebar-btns {
+    position: absolute;
+    top: 100px;
+    right: 0;
+}

@@ -30,32 +30,32 @@ function DisplayPostListView({ lvh }) {
         }
     }, [lvh])
 
-    let [posts, setPosts] = useState(null)
+    let [posts, set_posts] = useState(null)
 
     let navigate = useNavigate();
     
     let getPosts = async () => {
         let res = await default_ajax('get', 'posts/multiple')
         
-        if (res !== -1) {
-            if (res.length !== 0) {
-
-                setPosts(
-                    (res).map(post => (
-                        {
-                            title: post.title,
-                            files: [...post.images, ...post.pdf_files, ...post.videos],
-                            likes: post.likes,
-                            id: post.id,
-                            user_vote: post.user_vote,
-                            date_created: post.date_created,
-                            description: post.description,
-                            poster: post.poster,
-                            comment_count: post.comment_count
-                        }
-                    
-                )))
-            }
+        if (res !== -1 && res.length !== 0) {
+            set_posts(
+                (res).map(post => (
+                    {
+                        title: post.title,
+                        files: [...post.images, ...post.pdf_files, ...post.videos],
+                        likes: post.likes,
+                        id: post.id,
+                        user_vote: post.user_vote,
+                        date_created: post.date_created,
+                        description: post.description,
+                        poster: post.poster,
+                        comment_count: post.comment_count
+                    }
+                
+            )))
+        } else {
+            console.log("skjfgsadkljhg")
+            set_posts([])
         }
 
     }

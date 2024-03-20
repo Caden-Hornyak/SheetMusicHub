@@ -7,9 +7,11 @@ import { FaXmark } from "react-icons/fa6";
 import { MdOutlineSaveAlt } from "react-icons/md";
 import { TbShare2 } from "react-icons/tb";
 import { IoMdCheckmark } from "react-icons/io";
+import { FaPlay, FaPause } from "react-icons/fa";
 
 
-const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, pvh=() => {}, user_interact=true }) => {
+
+const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user_interact=true, song_prop=null }) => {
   
   // Recording START
   let [recording, set_recording] = useState([false, 0])
@@ -88,6 +90,7 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, pvh=
       set_recorded_song={set_recorded_song}
       recording={recording}
       pressed={pressed_keys[i]}
+      user_interact={user_interact}
       />)
 
       
@@ -182,29 +185,25 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, pvh=
     }
   }, [window_size])
 
-  let piano_ref = useRef(null)
-    useEffect(() => {
-        if (piano_ref.current && pvh !== null) {
-            if (pvh) {
-              attribute_animation(piano_ref.current, 'height', '100vh', 'calc(100vh - var(--navbar-height))', 500, 'ease-in')
-              attribute_animation(piano_ref.current, 'top', '0', 'var(--navbar-height)', 500, 'ease-in')
-            } else {
-              attribute_animation(piano_ref.current, 'height', 'calc(100vh - var(--navbar-height))', '100vh', 500, 'ease-out')
-              attribute_animation(piano_ref.current, 'top', 'var(--navbar-height)', '0', 500, 'ease-out')
-            }
-        }
-    }, [pvh])
   // Switch 1/2 piano layers END
 
   let save_song = async () => {
     set_save_prompt(async prev_state => {
-      let res = await default_ajax('post', 'songs/', { 'song': recorded_song[0], 'name': 'TODO' })
+      let res = await default_ajax('post', 'songs/create-song', { 'song': recorded_song[0], 'name': 'TODO' })
       if (res !== -1) {
         console.log(res)
       }
       return [true, true]
     })
   }
+
+  // Playback START
+  let [playing, set_playing] = useState(false)
+  let [song, set_song] = useState(song_prop)
+
+  useEffect(() => {
+    set_song(song_prop)
+  }, [song_prop])
 
   return (
     <>
@@ -229,14 +228,20 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, pvh=
 
           </div>
         </div>
-      
       }
-      <div id='piano-wrapper' ref={piano_ref}>
+      
+      <div id='piano-wrapper'>
         {user_interact && 
           <div id='piano-btn-wrapper'>
             <button className='piano-btn' onClick={() => recording[0] ? recording_action('end') : recording_action('start')} ><div className='red-dot'></div></button>
             {recording[0] && <button className='piano-btn' id='clear-song-btn' onClick={() => clear_song()} ><FaXmark /></button>}
             {(type === 'register' || type === 'login') && !recording && <p>{recording[1] === 0 ? 'Press Start To Begin Recording' : 'Confirm Password'}</p>}
+          </div>
+        }
+        { type == 'playback' &&
+          <div id='pianoplayback-btn-wrapper'>
+            <button className='piano-btn' onClick={() => set_playing(prev_state => !prev_state)}>{playing ? <FaPause />: <FaPlay /> }</button>
+            <button className='piano-btn'>Go to start</button>
           </div>
         }
 

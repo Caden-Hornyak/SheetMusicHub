@@ -6,7 +6,7 @@ import './PianoKey.css'
 
 const Pianokey = ({
   note, color, keyboard_key, innerRef, recorded_song, 
-    set_recorded_song, recording, pressed
+    set_recorded_song, recording, pressed, user_interact
   }) => {
   
   let load_note = async () => {
@@ -31,19 +31,6 @@ const Pianokey = ({
 
   let [counter, set_counter] = useState(0)
 
-  
-  let play_sound = () => {
-    audio.play()
-
-    if (recording[0]) {
-      set_recorded_song((prev_song) => {
-        let l = [...prev_song]
-        l[recording[1]].push([note, new Date().getTime()])
-        return l
-      })
-    }
-  }
-  
   useEffect(() => {
     if (counter in visual_refs.current) {
       set_curr_animation(visual_refs.current[counter].animate(
@@ -57,7 +44,16 @@ const Pianokey = ({
   useEffect(() => {
     if (this_pressed) {
       set_key_down(true)
-      play_sound()
+      audio.play()
+
+      if (recording[0]) {
+        set_recorded_song((prev_song) => {
+          console.log('create note')
+          let l = [...prev_song]
+          l[recording[1]].push([note, new Date().getTime()])
+          return l
+        })
+      }
 
       set_visuals(prev_state => ({
           ...prev_state,
@@ -78,6 +74,14 @@ const Pianokey = ({
         ))
         set_glow(false)
         attribute_animation(glowline.current, 'opacity', '1', '0', 3000, 'cubic-bezier(.19,.98,.24,1.01)')
+        if (recording[0]) {
+          set_recorded_song((prev_song) => {
+            console.log('end note')
+            let l = [...prev_song]
+            l[recording[1]][l[recording[1]].length - 1].push(new Date().getTime())
+            return l
+          })
+        }
       
 
         // setTimeout(() => {
@@ -116,7 +120,20 @@ const Pianokey = ({
         <div ref={glowline} className='glowline-gradient'></div>
       </div>
       <div ref={innerRef} className={`piano-key ${color}-key ${key_down ? 'pressed' : ''}`} 
-      onMouseUp={() => {console.log("up"); set_this_pressed(false)}} onMouseDown={() =>{console.log("down"); set_this_pressed(true)}} onMouseLeave={() => {console.log("leave"); set_this_pressed(false)}} >{keyboard_key}</div>
+      onMouseUp={() => {
+        if (user_interact) {
+          set_this_pressed(false)
+        }
+        }} 
+        onMouseDown={() =>{
+          if (user_interact) {
+            set_this_pressed(true)
+          }
+        }} onMouseLeave={() => {
+          if (user_interact) {
+            set_this_pressed(false)
+          }
+          }} >{keyboard_key}</div>
     </div>
     
   )

@@ -1,0 +1,32 @@
+.defaultlistitem-wrapper {
+    border: 1px solid white;
+    display: flex;
+    height: 100px;
+    width: 100%;
+}
+
+.defaultlistitem-wrapper:hover {
+    background-color: rgba(255, 255, 255, .1);
+}
+
+.defaultlistitem-left {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    width: 100px;
+    margin: 5px;
+    border: 1px solid var(--text-color);
+    border-radius: 15px;
+}
+
+.defaultlistitem-left img {
+    width: 100%;
+}
+
+.defaultlistitem-left  svg{
+    height: 80%;
+    width: 80%;
+}
+.defaultlistitem-right {
+    margin-left: 10px;
+}

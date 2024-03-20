@@ -50,6 +50,7 @@ class Post(models.Model):
 
 class Comment(models.Model):
     poster = models.ForeignKey('UserProfile', on_delete=models.CASCADE, null=True)
+    parent_post = models.ForeignKey('Post', on_delete=models.CASCADE, null=True)
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     text = models.CharField(max_length=500)
     child_comment = models.ManyToManyField('self', blank=True, symmetrical=False)
@@ -95,10 +96,11 @@ class Song(models.Model):
 
 class Note(models.Model):
     note = models.CharField(max_length=500)
-    timestamp = models.IntegerField(default=0)
+    start_timestamp = models.IntegerField(default=0)
+    end_timestamp = models.IntegerField(default=0)
 
     def __str__(self):
-        return self.note + str(self.timestamp)
+        return self.note + str(self.start_timestamp)
     
 class SongNote(models.Model):
     song = models.ForeignKey('Song', on_delete=models.CASCADE)

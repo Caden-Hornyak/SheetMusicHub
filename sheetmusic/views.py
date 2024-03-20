@@ -1,6 +1,7 @@
 from rest_framework.response import Response
 from .serializers import (PostSerializerSingle, PostSerializerMultiple, 
-                          UserProfileSerializer, CommentSerializer, SongSerializer)
+                          UserProfileSerializer, CommentSerializer, SongSerializer,
+                          CommentNoChildrenSerializer)
 from .models import (Post, Image, Video, PDF, UserProfile, 
                      Comment, Vote, Song, Note, SongNote)
 from django.http import JsonResponse
@@ -351,10 +352,13 @@ class Comments(APIView):
             if object_type == 'Post':
                 object = Post.objects.get(id=object_id)
                 object.comments.add(comment)
+                comment.parent_post = object
             elif object_type == 'Comment':
                 object = Comment.objects.get(id=object_id)
                 object.child_comment.add(comment)
+                comment.parent_post = object.parent_post
 
+            comment.save()
             object.save()
 
             serializer = CommentSerializer(comment, context={ 'request': request })
@@ -363,8 +367,23 @@ class Comments(APIView):
         except Exception as e:
             print(e, file=sys.stderr)
             return Response({ 'error': 'Unable to create comment'})
+        
+    def get(self, request, id, format=None):
+        try:
+            if id == 'multiple':
+                user = self.request.user
+                user_prof = UserProfile.objects.get(user=user)
+                comments = Comment.objects.filter(poster=user_prof)
+                serializer = CommentNoChildrenSerializer(comments, many=True)
+                return Response(serializer.data)
 
+        except Exception as e:
+            print('Comments:get ', e, file=sys.stderr)
+            return Response({ 'error': 'Unable to retrieve user comments'})
+
+@method_decorator(ensure_csrf_cookie, name='dispatch')
 class Songs(APIView):
+    @method_decorator(login_required)
     def post(self, request, format=None):
         try:
             data = self.request.data
@@ -380,11 +399,10 @@ class Songs(APIView):
             user_prof.songs.add(song_instance)
             user_prof.save()
 
-            for index, pair in enumerate(user_song):
+            for index, item in enumerate(user_song):
                 if index == 0:
-                    start_time = pair[1]
-                note = Note.objects.create(note=pair[0], timestamp=(pair[1] - start_time))
-                song_instance.notes.add(note)
+                    start_time = item[1]
+                note = Note.objects.create(note=item[0], start_timestamp=(item[1] - start_time), end_timestamp=(item[2] - start_time))
                 song_note_through = SongNote.objects.create(song=song_instance, note=note, order=index)
 
             
@@ -395,9 +413,9 @@ class Songs(APIView):
             print('Songs:post ', e, file=sys.stderr)
             return Response({ 'error': 'Unable to create song' })
     
-    def get(self, request, id='all', format=None):
+    def get(self, request, id, format=None):
         try:
-            if id == 'all':
+            if id == 'multiple':
                 user = self.request.user
                 user_prof = UserProfile.objects.get(user=user)
                 songs = user_prof.songs.all()

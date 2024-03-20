@@ -77,6 +77,20 @@ class CommentSerializer(ModelSerializer):
         else:
             return "User Not Found"
         
+class CommentNoChildrenSerializer(ModelSerializer):
+    parent_post = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Comment
+        fields = ('id', 'text', 'date_created', 'likes')
+
+    def get_parent_post(self, obj):
+        if obj.post:
+            return obj.post
+        else:
+            return 'Post Not Found'
+    
+        
 
 class PostSerializerMultiple(ModelSerializer):
     user_vote = serializers.SerializerMethodField()
