@@ -46,7 +46,7 @@ const CreatePostPage = () => {
                 let file = file_array[file_key]
 
                 if (upload_count >= 10) {
-                    alert("More than 10 files uploaded. Only uploaded the first ten")
+                    alert('More than 10 files uploaded. Only uploaded the first ten')
                     break
                 }
 
@@ -133,15 +133,15 @@ const CreatePostPage = () => {
         <>
             <Navbar parent_height_setter={set_cpp_fullheight}/>
             <div id='createpostpage' ref={createpageview_ref}>
-                <div id="createpost-wrapper">
+                <div id='createpost-wrapper'>
                     <h2>Create a post</h2>
                     <form onSubmit={(e) => handleSubmit(e)} id='createpost-form'>
-                        <input className='createpost-input' type="text" id="title" name="title" placeholder="Title" onChange={handle_change}/>
-                        <textarea className='createpost-input' type="text" id='description' name='description' placeholder='Description' onChange={handle_change} />
+                        <input className='createpost-input' type='text' id='title' name='title' placeholder='Title' onChange={handle_change}/>
+                        <textarea className='createpost-input' type='text' id='description' name='description' placeholder='Description' onChange={handle_change} />
                         <DropBox uploaded_files={form_files} handle_change={() => handle_change} wipe_upload={() => wipe_upload} />
                         <div className='createpostpage-lower'>
-                            <button type="submit" onClick={() => navigate('/')} >Cancel</button>
-                            <button type="submit">Submit</button>
+                            <button type='button' onClick={() => navigate('/')} >Cancel</button>
+                            <button type='submit'>Submit</button>
                         </div>
                         
                     </form>

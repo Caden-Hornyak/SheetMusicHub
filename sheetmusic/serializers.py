@@ -1,7 +1,7 @@
 from rest_framework.serializers import ModelSerializer
 from .models import (Post, Image, UserProfile, Comment, 
                      Vote, User, Video, PDF, Song, Note,
-                     SongNote)
+                     SongNote, Bookmark)
 from rest_framework import serializers
 import sys
 
@@ -45,6 +45,7 @@ class CommentSerializer(ModelSerializer):
     child_comment = serializers.SerializerMethodField()
     user_vote = serializers.SerializerMethodField()
     poster = serializers.SerializerMethodField()
+    user_bookmark = serializers.SerializerMethodField()
 
     class Meta:
         model = Comment
@@ -77,16 +78,20 @@ class CommentSerializer(ModelSerializer):
         else:
             return "User Not Found"
         
+    def get_user_bookmark(self, obj):
+        user_prof = UserProfile.objects.get(user=self.context.get('request').user)
+        return Bookmark.objects.filter(user=user_prof, comment=obj).exists()
+        
 class CommentNoChildrenSerializer(ModelSerializer):
     parent_post = serializers.SerializerMethodField()
 
     class Meta:
         model = Comment
-        fields = ('id', 'text', 'date_created', 'likes')
+        fields = ('id', 'text', 'date_created', 'likes', 'parent_post')
 
     def get_parent_post(self, obj):
-        if obj.post:
-            return obj.post
+        if obj.parent_post:
+            return obj.parent_post.id
         else:
             return 'Post Not Found'
     
@@ -94,6 +99,7 @@ class CommentNoChildrenSerializer(ModelSerializer):
 
 class PostSerializerMultiple(ModelSerializer):
     user_vote = serializers.SerializerMethodField()
+    user_bookmark = serializers.SerializerMethodField()
     images = ImageSerializer(many=True)
     pdf_files = PDFSerializer(many=True)
     videos = VideoSerializer(many=True)
@@ -102,7 +108,7 @@ class PostSerializerMultiple(ModelSerializer):
     class Meta:
         model = Post
         fields = ('id', 'title', 'likes', 'comment_count', 'images', 'pdf_files',
-                   'videos', 'comments', 'date_created', 'poster', 'description', 'user_vote')
+                   'videos', 'comments', 'date_created', 'poster', 'description', 'user_vote', 'user_bookmark')
 
     def get_poster(self, obj):
         if obj.poster:
@@ -123,9 +129,14 @@ class PostSerializerMultiple(ModelSerializer):
             return vote.value
         except Exception as e:
             return 0
+        
+    def get_user_bookmark(self, obj):
+        user_prof = UserProfile.objects.get(user=self.context.get('request').user)
+        return Bookmark.objects.filter(user=user_prof, post=obj).exists()
 
 class PostSerializerSingle(ModelSerializer):
     user_vote = serializers.SerializerMethodField()
+    user_bookmark = serializers.SerializerMethodField()
     images = ImageSerializer(many=True)
     videos = VideoSerializer(many=True)
     pdf_files = PDFSerializer(many=True)
@@ -160,7 +171,11 @@ class PostSerializerSingle(ModelSerializer):
             return obj.poster.user.username
         else:
             return "User Not Found"
-
+        
+    def get_user_bookmark(self, obj):
+        user_prof = UserProfile.objects.get(user=self.context.get('request').user)
+        return Bookmark.objects.filter(user=user_prof, post=obj).exists()
+        
 
 class NoteSerializer(ModelSerializer):
     class Meta:

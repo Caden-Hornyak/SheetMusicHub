@@ -18,7 +18,6 @@ const LikeDislike = ({ object, object_id, likes, user_vote }) => {
       }, [likes]);
 
     let alter_likes = async (e, value, vote) => {
-        console.log('ran')
         e.stopPropagation();
         let res;
 

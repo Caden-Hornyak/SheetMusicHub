@@ -8,9 +8,10 @@ import { attribute_animation } from '../../utility/CommonFunctions.js'
 import LikeDislike from './LikeDislike.js'
 import RelativeTime from './RelativeTime.js'
 import { BiComment } from "react-icons/bi"
-import { FaRegBookmark } from "react-icons/fa6"
+import { FaRegBookmark, FaBookmark  } from "react-icons/fa6"
 import { newtonsCradle } from 'ldrs'
 import { default_ajax } from '../../utility/CommonFunctions.js'
+
 
 function DisplayPostListView({ lvh }) {
 
@@ -49,12 +50,12 @@ function DisplayPostListView({ lvh }) {
                         date_created: post.date_created,
                         description: post.description,
                         poster: post.poster,
-                        comment_count: post.comment_count
+                        comment_count: post.comment_count,
+                        user_bookmark: post.user_bookmark
                     }
                 
             )))
         } else {
-            console.log("skjfgsadkljhg")
             set_posts([])
         }
 
@@ -70,9 +71,27 @@ function DisplayPostListView({ lvh }) {
         newtonsCradle.register()
     }, [])
 
-    // useEffect(() => {
-    //     console.log(posts)
-    // }, [posts])
+    let bookmark_action = async (index) => {
+        let res = await default_ajax('post', 'bookmarks/post', { 'post': posts[index].id })
+        if (res !== -1) {
+            set_posts(prev_state => {
+                let l = [...prev_state]
+                l[index] = {
+                    title: res.title,
+                    files: [...res.images, ...res.pdf_files, ...res.videos],
+                    likes: res.likes,
+                    id: res.id,
+                    user_vote: res.user_vote,
+                    date_created: res.date_created,
+                    description: res.description,
+                    poster: res.poster,
+                    comment_count: res.comment_count,
+                    user_bookmark: res.user_bookmark
+                }
+                return l
+            })
+        }
+    }
     
 
     return(
@@ -93,7 +112,7 @@ function DisplayPostListView({ lvh }) {
                 <h1>No posts were found</h1>
             </div>
             : 
-            posts.map((post) => (
+            posts.map((post, index) => (
                 <div className='postlistview-post-wrapper' key={post.id}>
                     <div className='postlistview-post' onClick={() => viewPost(post)}>
                         <div className='postlistview-upperpost'>
@@ -110,12 +129,14 @@ function DisplayPostListView({ lvh }) {
                         <div className='postlistview-lowerpost'>
                             <LikeDislike object="post" object_id={post.id} likes={post.likes} user_vote={post.user_vote}/>
                             <button ><BiComment /> {post.comment_count} comments</button>
-                            <button ><FaRegBookmark /> Bookmark</button>
+                            <button onClick={(e) => {e.stopPropagation(); bookmark_action(index)}} 
+                            className={post.user_bookmark ? 'bookmark-active': ''} >{post.user_bookmark ? <FaBookmark />: <FaRegBookmark />} {post.user_bookmark ? 'Un-Bookmark': 'Bookmark'}</button>
                         </div>
                     </div>
                 </div>
+            ))
+            }
             
-            ))}
         </div>
     );
 }

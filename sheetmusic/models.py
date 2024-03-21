@@ -109,3 +109,18 @@ class SongNote(models.Model):
 
     class Meta:
         ordering = ['order']
+
+class Bookmark(models.Model):
+    user = models.ForeignKey('UserProfile', on_delete=models.CASCADE)
+    comment = models.ForeignKey('Comment', on_delete=models.CASCADE, null=True)
+    post = models.ForeignKey('Post', on_delete=models.CASCADE, null=True)
+
+    def __str__(self):
+        obj = ''
+        if self.comment:
+            obj = str(self.comment)
+        elif self.post:
+            obj = str(self.post)
+
+        return str(self.user) + ' ' + obj
+

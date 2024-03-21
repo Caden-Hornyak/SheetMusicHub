@@ -1,5 +1,5 @@
 #accountpage-page {
-    position: absolute;
+    position: fixed;
     top: var(--navbar-height);
     left: 0;
     height: calc(100vh - var(--navbar-height));
@@ -22,11 +22,6 @@
 
 .accountpage-sidebar {
     width: 200px;
-}
-
-#accountpage-profile {
-    position: relative;
-    width: 700px;
 }
 
 
@@ -69,4 +64,10 @@
     position: absolute;
     top: 100px;
     right: 0;
+}
+
+.accountpage-components {
+    position: relative;
+    height: 100%;
+    width: 700px;
 }

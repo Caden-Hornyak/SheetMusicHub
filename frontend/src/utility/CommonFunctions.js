@@ -2,7 +2,7 @@ import Cookies from 'js-cookie'
 import axios from '../configs/axiosConfig.js'
 
 export const attribute_animation = (object, attribute, start, end, duration, easing) => {
-    object.animate(
+    return object.animate(
         [{[attribute]: start}, { [attribute]: end}],
         {duration: duration, fill: 'forwards', easing: easing}
     )
@@ -23,7 +23,6 @@ export const default_ajax = async (action, url, action_body='') => {
         let res;
         if (action == 'post') {
             const body = JSON.stringify(action_body)
-            console.log(body, action_body)
             res = await axios.post(`${process.env.REACT_APP_API_URL}/api/${url}`, body, config)
         } else if (action == 'get') {
             res = await axios.get(`${process.env.REACT_APP_API_URL}/api/${url}`, config)

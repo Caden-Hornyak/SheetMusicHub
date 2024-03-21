@@ -33,10 +33,7 @@ const Pianokey = ({
 
   useEffect(() => {
     if (counter in visual_refs.current) {
-      set_curr_animation(visual_refs.current[counter].animate(
-        [{height: '0', bottom: '0'}, {height: '300000px'}],
-        {duration: 1000000, fill: 'forwards'}
-      ))
+      set_curr_animation(attribute_animation(visual_refs.current[counter], 'height', '0', '300000px', 1000000))
     }
     
   }, [visuals])
@@ -68,10 +65,8 @@ const Pianokey = ({
       if (key_down) {
         
         curr_animation.pause()
-        set_curr_animation(visual_refs.current[counter].animate(
-          [{bottom: '0'}, {bottom: '300000px'}],
-          {duration: 1000000, fill: 'forwards'}
-        ))
+        
+        set_curr_animation(attribute_animation(visual_refs.current[counter], 'bottom', '0', '300000px', 1000000))
         set_glow(false)
         attribute_animation(glowline.current, 'opacity', '1', '0', 3000, 'cubic-bezier(.19,.98,.24,1.01)')
         if (recording[0]) {
@@ -106,7 +101,6 @@ const Pianokey = ({
     set_this_pressed(pressed)
   }, [pressed])
   
-
   return (
     <div className={`piano-key-wrapper ${color}-wrapper`}>
       <div className={`vis-path`} >
@@ -121,7 +115,7 @@ const Pianokey = ({
       </div>
       <div ref={innerRef} className={`piano-key ${color}-key ${key_down ? 'pressed' : ''}`} 
       onMouseUp={() => {
-        if (user_interact) {
+        if (user_interact && this_pressed) {
           set_this_pressed(false)
         }
         }} 
@@ -130,7 +124,7 @@ const Pianokey = ({
             set_this_pressed(true)
           }
         }} onMouseLeave={() => {
-          if (user_interact) {
+          if (user_interact && this_pressed) {
             set_this_pressed(false)
           }
           }} >{keyboard_key}</div>

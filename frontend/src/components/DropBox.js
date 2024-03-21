@@ -21,6 +21,7 @@ const DragAndDropBox = ({ uploaded_files, handle_change, wipe_upload}) => {
   };
 
   const handle_drop = (e) => {
+    console.log('handle drop!')
     e.preventDefault()
     set_dragging(false)
 
@@ -38,13 +39,14 @@ const DragAndDropBox = ({ uploaded_files, handle_change, wipe_upload}) => {
 
   return (
     <div className='dropbox-wrapper'>
+      {console.log(formatted_files)}
       {formatted_files.length === 0 ? 
         <div
         className={`dropbox ${dragging ? 'dragging' : ''}`}
-        onDragEnter={handle_drag_enter}
-        onDragOver={handle_drag_over}
-        onDragLeave={handle_drag_leave}
-        onDrop={handle_drop}
+        onDragEnter={(e) => handle_drag_enter(e)}
+        onDragOver={(e) => handle_drag_over(e)}
+        onDragLeave={(e) => handle_drag_leave(e)}
+        onDrop={(e) => handle_drop(e)}
         >
         <p>
           Drag & Drop or upload here: 

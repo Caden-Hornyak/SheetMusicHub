@@ -3,7 +3,7 @@ from .serializers import (PostSerializerSingle, PostSerializerMultiple,
                           UserProfileSerializer, CommentSerializer, SongSerializer,
                           CommentNoChildrenSerializer)
 from .models import (Post, Image, Video, PDF, UserProfile, 
-                     Comment, Vote, Song, Note, SongNote)
+                     Comment, Vote, Song, Note, SongNote, Bookmark)
 from django.http import JsonResponse
 import sys
 from rest_framework.views import APIView
@@ -99,7 +99,7 @@ class Posts(APIView):
     def get(self, request, id, format=None):
 
         if id == 'multiple':
-            serializer = PostSerializerMultiple(Post.objects.all(), many=True)
+            serializer = PostSerializerMultiple(Post.objects.all(), many=True, context={ 'request': request })
 
         else:
             try:
@@ -369,17 +369,16 @@ class Comments(APIView):
             return Response({ 'error': 'Unable to create comment'})
         
     def get(self, request, id, format=None):
-        try:
+        # try:
             if id == 'multiple':
-                user = self.request.user
-                user_prof = UserProfile.objects.get(user=user)
+                user_prof = UserProfile.objects.get(user=self.request.user)
                 comments = Comment.objects.filter(poster=user_prof)
                 serializer = CommentNoChildrenSerializer(comments, many=True)
                 return Response(serializer.data)
 
-        except Exception as e:
-            print('Comments:get ', e, file=sys.stderr)
-            return Response({ 'error': 'Unable to retrieve user comments'})
+        # except Exception as e:
+        #     print('Comments:get ', e, file=sys.stderr)
+        #     return Response({ 'error': 'Unable to retrieve user comments'})
 
 @method_decorator(ensure_csrf_cookie, name='dispatch')
 class Songs(APIView):
@@ -428,3 +427,71 @@ class Songs(APIView):
         except Exception as e:
             print('Songs:get ', e, file=sys.stderr)
             return Response({ 'error': 'Unable to get song' })
+        
+@method_decorator(ensure_csrf_cookie, name='dispatch')   
+class Bookmarks(APIView):
+    @method_decorator(login_required)
+    def post(self, request, type, format=None):
+        try:
+            user_prof = UserProfile.objects.get(user=self.request.user)
+            data = request.data
+
+            if type == 'post':
+                
+                post_id = data['post']
+                post = Post.objects.get(id=post_id)
+
+                try:
+                    saved_bookmark = Bookmark.objects.get(user=user_prof, post=post)
+                    saved_bookmark.delete()
+                except Bookmark.DoesNotExist:
+                    bookmark = Bookmark.objects.create(user=user_prof, post=post)
+
+                serializer = PostSerializerMultiple(post, context={ 'request': request })
+                return Response(serializer.data)
+
+            elif type == 'comment':
+                comment_id = data['comment']
+                comment = Comment.objects.get(id=comment_id)
+
+                try:
+                    saved_bookmark = Bookmark.objects.get(user=user_prof, comment=comment)
+                    saved_bookmark.delete()
+                except Bookmark.DoesNotExist:
+                    bookmark = Bookmark.objects.create(user=user_prof, comment=comment)
+
+                serializer = CommentSerializer(comment, context={ 'request': request })
+                return Response(serializer.data)
+
+            else:
+                return Response({'error': 'Invalid bookmark object type'})
+
+        except Exception as e:
+            print('Bookmark:post ', e, file=sys.stderr)
+            return Response({'error': 'Error saving bookmark.'})
+        
+    @method_decorator(login_required)
+    def get(self, request, type, format=None):
+        try:
+            user_prof = UserProfile.objects.get(user=self.request.user)
+            data = request.data
+
+            if type == 'post':
+                bookmarks = Bookmark.objects.filter(user=user_prof, comment=None)
+
+                serializer = PostSerializerMultiple([bookmark.post for bookmark in bookmarks], many=True, context={ 'request': request })
+                return Response(serializer.data)
+
+            elif type == 'comment':
+                bookmarks = Bookmark.objects.filter(user=user_prof, post=None)
+
+                serializer = CommentNoChildrenSerializer([bookmark.comment for bookmark in bookmarks], many=True, context={ 'request': request })
+                return Response(serializer.data)
+
+            else:
+                return Response({'error': 'Invalid bookmark object type'})
+
+            
+        except Exception as e:
+            print('Bookmark:get ', e, file=sys.stderr)
+            return Response({'error': 'Error getting bookmark.'})

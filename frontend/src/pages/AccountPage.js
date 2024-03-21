@@ -5,6 +5,7 @@ import Navbar from '../components/Navbar.js';
 
 import './AccountPage.css'
 import Profile from '../components/account/Profile.js';
+import Bookmarked from '../components/account/Bookmarked.js';
 
 const ProfilePage = ({ isAuthenticated }) => {
     const navigate = useNavigate();
@@ -38,9 +39,11 @@ const ProfilePage = ({ isAuthenticated }) => {
               onClick={() => set_active_sidebar(1)}>Bookmarked</button>
             </div>
           </div>
-          <div id='accountpage-profile'>
-            <Profile />
+          <div className='accountpage-components'>
+            {active_sidebar === 0 && <Profile />}
+            {active_sidebar === 1 && <Bookmarked />}
           </div>
+          
         </div>
         
       </div>

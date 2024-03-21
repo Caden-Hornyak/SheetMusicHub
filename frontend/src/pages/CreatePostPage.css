@@ -1,6 +1,6 @@
 
 #createpostpage {
-    position: absolute;
+    position: fixed;
     background-color: var(--background-color);
     height: calc(100vh - var(--navbar-height));
     width: 100vw;

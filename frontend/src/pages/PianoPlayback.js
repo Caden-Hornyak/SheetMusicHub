@@ -16,7 +16,7 @@ const PianoPlayback = () => {
   return (
     <div style={{height: '100vh', width: '100vw', 
     position: 'absolute', top: '0', left: '0'}}>
-        {user_songs && <Piano type='playback' user_interact={false} song={user_songs['0']}/>}
+        {user_songs && <Piano type='playback' user_interact={false} song_prop={user_songs['1']}/>}
     </div>
   )
 }

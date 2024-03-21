@@ -1,8 +1,8 @@
 .defaultlistitem-wrapper {
-    border: 1px solid white;
     display: flex;
     height: 100px;
     width: 100%;
+    /* border-top: 1px solid var(--text-color); */
 }
 
 .defaultlistitem-wrapper:hover {
@@ -12,7 +12,8 @@
 .defaultlistitem-left {
     display: flex;
     align-items: center;
-    height: 100%;
+    justify-content: center;
+    align-self: stretch;
     width: 100px;
     margin: 5px;
     border: 1px solid var(--text-color);
@@ -23,7 +24,7 @@
     width: 100%;
 }
 
-.defaultlistitem-left  svg{
+.defaultlistitem-left  svg {
     height: 80%;
     width: 80%;
 }

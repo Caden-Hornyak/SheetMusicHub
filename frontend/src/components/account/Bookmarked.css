@@ -1,4 +1,4 @@
-#profile-component {
+#bookmarked-component {
     margin-top: 15px;
     position: absolute;
     top: 0;
@@ -13,7 +13,7 @@
 
 }
 
-#profile-topbar {
+#bookmarked-topbar {
     width: 100%;
 
     display: flex;
@@ -21,14 +21,7 @@
     justify-content: center;
 }
 
-
-#profile-tabs > div {
-    width: 100%;
-    height: 100%;
-    padding: 15px;
-}
-
-.profile-topbar-btn {
+.bookmark-topbar-btn {
     outline: none;
     background-color: transparent;
     transition: all ease .25s;
@@ -43,17 +36,22 @@
     border-radius: 5px;
 }
 
-.profile-topbar-btn:hover {
+.bookmark-topbar-btn:hover {
     color: var(--ten-color);
     transform: scale(1.05);
 }
 
+#bookmarked-tabs > div {
+    width: 100%;
+    height: 100%;
+    padding: 15px;
+}
 
-.profile-topbar-btn.active {
+.bookmark-topbar-btn.active {
     background-color: rgba(255, 255, 255, .2);
     color: var(--ten-color);
 }
 
-.profile-topbar-btn.active:hover {
+.bookmark-topbar-btn.active:hover {
     transform: none;
 }
