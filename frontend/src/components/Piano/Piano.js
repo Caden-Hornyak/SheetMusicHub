@@ -11,12 +11,13 @@ import { FaPlay, FaPause } from "react-icons/fa";
 
 
 
-const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user_interact=true, song_prop=null }) => {
+const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user_interact=true, song=null }) => {
   
   // Recording START
   let [recording, set_recording] = useState([false, 0])
   let [recorded_song, set_recorded_song] = useState([[], []])
   let [save_prompt, set_save_prompt] = useState([false, false])
+  let [curr_pressed_keys, set_curr_pressed_keys] = useState({})
 
   let recording_action = (action) => {
     if (action === 'start') {
@@ -58,109 +59,148 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user
   // Recording END
 
   // Create Piano START
-  
-
   let piano_keys_ref = useRef({})
-
-  let [pressed_keys, set_pressed_keys] = useState(Array(piano_keys_ref.current.length).fill(false))
   let [playback_visual, set_playback_visual] = useState(Array(piano_keys_ref.current.length).fill(''))
-  let [key_to_key, set_key_to_key] = useState({})
+  let [key_to_pkeyind, set_key_to_pkeyind] = useState({})
+  let [pkey_to_pkeyind, set_pkey_to_pkeyind] = useState({})
   let [piano, set_piano] = useState([])
-  let [test, set_test] = useState ()
-
+  let [curr_mouse_click, set_curr_mouse_click] = useState('')
 
   useEffect(() => {
-    // create piano
-    // let notes = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B']
-    // let keyboard_keys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 
-    //                   'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', 
-    //                   'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', "'", 'enter',
-    //                   'l_shft', 'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', 'r_shft']
+      let notes = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B']
+      let keyboard_keys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 
+                        'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', 
+                        'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', "'", 'enter',
+                        'l_shft', 'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', 'r_shft']
+      
+      for (let i = start; i < end; i++) {
+
+        if (i-start >= keyboard_keys.length)
+          break
+
+        let note = notes[(i % 12)] + (1+Math.floor(i / 12)).toString()
+
+        set_piano(prev_state => {
+          const new_piano = [
+            ...prev_state,
+            <PianoKey 
+              note={note} 
+              color={notes[(i % 12)].length === 1 ? 'white' : 'black'} 
+              keyboard_key={keyboard_keys[i-start]}
+              key={note}
+              innerRef={ref => piano_keys_ref.current[i] = ref}
+              pressed={null}
+              user_interact={user_interact}
+              playback_visual={'none'} // edit this
+              type={type}
+            />
+          ]
+
+          set_key_to_pkeyind(prev_state => ({
+            ...prev_state,
+            [keyboard_keys[i-start]]: i-start
+          }))
+          set_pkey_to_pkeyind(prev_state => ({
+            ...prev_state,
+            [note]: i-start
+          }))
+          return new_piano;
+        });
+
+      }
     
-    // for (let i = start; i < end; i++) {
-
-    //   if (i-start >= keyboard_keys.length)
-    //     break
-
-    //   let note = notes[(i % 12)] + (1+Math.floor(i / 12)).toString()
-
-    //   set_piano(prev_state => {
-    //     const new_piano = [
-    //       ...prev_state,
-    //       <PianoKey 
-    //         note={note} 
-    //         color={notes[(i % 12)].length === 1 ? 'white' : 'black'} 
-    //         keyboard_key={keyboard_keys[i-start]}
-    //         key={note}
-    //         innerRef={ref => piano_keys_ref.current[i] = ref}
-    //         recorded_song={recorded_song}
-    //         set_recorded_song={set_recorded_song}
-    //         recording={recording}
-    //         pressed={pressed_keys[i]}
-    //         user_interact={user_interact}
-    //         playback_visual={playback_visual[i-start]}
-    //       />
-    //     ]
-
-    //     // set_key_to_key(prev_state => ({
-    //     //   ...prev_state,
-    //     //   [keyboard_keys[i-start]]: i-start
-    //     // }))
-    //     return new_piano;
-    //   });
-    // 
-    set_test('hello')
-
     return () => {
-      set_key_to_key({})
-      set_pressed_keys(Array(piano_keys_ref.current.length).fill(false))
       set_piano([])
     }
   }, [])
-
   // Create Piano END
 
-  // Keyboard Listener START
-  const play_piano_key = (event) => {
+  // Play Piano Key START
+  useEffect(() => {
+    const play_piano_key = (e) => {
+      let event = e
+      // mouse click handling
 
-    let pressed_key = event.key.toLowerCase();
+      if (event.type === 'mouseup' && curr_mouse_click === '') {
+        return
+      } else if (event.type === 'mouseup') {
+        event = {
+          key: curr_mouse_click,
+          type: 'keyup'
+        }
+      } else if (event.type === 'clickpianokey') {
+        event = event.detail
+        set_curr_mouse_click(prev_state => event.key)
+      }
 
-    if (pressed_key === 'shift') {
-      pressed_key = event.location === 1 ? 'l_shft': 'r_shft'
+      if (event.repeat) return
+      let pressed_key = event.key.toLowerCase()
+  
+      if (pressed_key === 'shift') {
+        pressed_key = event.location === 1 ? 'l_shft': 'r_shft'
+      }
+  
+  
+      let key_state = event.type === 'keydown'
+      let key_ind = key_to_pkeyind[pressed_key]
+      if (!key_ind) return
+      
+      // if recording
+      if (recording[0]) {
+        
+        if (key_ind in curr_pressed_keys) {
+          
+          set_recorded_song((prev_song) => {
+            set_curr_pressed_keys(prev_state => {
+              const new_state = { ...prev_state }
+              delete new_state[key_ind]
+              return new_state
+            })
+
+            let l = [...prev_song]
+            l[recording[1]][l[recording[1]].length - 1].push(new Date().getTime())
+            return l
+          })
+        } else {
+          set_recorded_song((prev_song) => {
+            set_curr_pressed_keys(prev_state => ({
+              ...prev_state,
+              [key_ind]: true
+            }))
+
+            let l = [...prev_song]
+            l[recording[1]].push([piano[key_ind].props.note, new Date().getTime()])
+            return l
+          })
+        }
+        
+      }
+  
+      set_piano(prev_state => {
+        const keys = [...prev_state]
+        keys[key_ind] = React.cloneElement(keys[key_ind], { pressed: key_state }) // Clone the specific PianoKey and update the pressed prop
+        return keys
+      })
     }
 
-
-    let key_state = event.type === 'keydown'
-    let key_ind = key_to_key[pressed_key]
-    console.log(test)
-    set_pressed_keys(prev_state => ({
-      ...prev_state,
-      [key_ind]: key_state
-    }))
-    // set_piano(prev_state => {
-    //   const keys = [...prev_state]; 
-    //   console.log(keys, key_ind)
-    //   keys[key_ind] = React.cloneElement(keys[key_ind], { pressed: key_state }); // Clone the specific PianoKey element and update the pressed prop
-    //   return keys; 
-    // });
-  }
-
-
-  useEffect(() => {
     if (user_interact && visible) {
       document.addEventListener('keydown', play_piano_key)
       document.addEventListener('keyup', play_piano_key)
+      document.addEventListener('clickpianokey', play_piano_key)
+      document.addEventListener('mouseup', play_piano_key)
     }
 
     return () => {
       document.removeEventListener('keydown', play_piano_key)
-      document.addEventListener('keyup', play_piano_key)
-    };
-  }, [visible])
-  // Keyboard Listener END
+      document.removeEventListener('keyup', play_piano_key)
+      document.removeEventListener('clickpianokey', play_piano_key)
+      document.removeEventListener('mouseup', play_piano_key)
+    }
+  }, [visible, piano, user_interact, recording])
+  // Play Piano Key END
 
 
-  // Switch 1/2 piano layers START
+  // Handle Piano Layer Stacking START
   let [piano_styling, set_piano_styling] = useState(null)
 
 
@@ -204,91 +244,97 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user
       set_piano_styling(null)
     }
   }, [window_size])
+  // Handle Piano Layer Stacking END
 
-  // Switch 1/2 piano layers END
 
   let save_song = async () => {
-    set_save_prompt(async prev_state => {
-      let res = await default_ajax('post', 'songs/create-song', { 'song': recorded_song[0], 'name': 'TODO' })
+    console.log(recorded_song)
+    let res = await default_ajax('post', 'songs/create-song', { 'song': recorded_song[0], 'name': 'TODO' })
       if (res !== -1) {
         console.log(res)
       }
-      return [true, true]
-    })
+
+    set_save_prompt([true, true])
   }
 
-  // Playback START
+  // // Playback START
   let [playing, set_playing] = useState(null)
-  let [song, set_song] = useState(song_prop)
-  let [playback_index, set_playback_index] = useState(0)
+  let start_note_index = useRef(0)
+  let end_note_index = useRef(0)
   let song_player = useRef(null)
+  let sp_start_time = useRef(null)
+  let sp_anim_frameid = useRef(null)
 
-  function song_playback() {
-    let start_time = null;
-    let animation_frame_id = null;
-
-    function animate(timestamp) {
-      if (!start_time) {
-        start_time = timestamp;
-      }
-
-      for (let i = playback_index; i < song.length; i++) {
-        if (song[i]['start_timestamp'] <= timestamp) {
-          let pkey_index = key_to_key[song[i]['note']]
-          set_playback_visual(prev_state => {
-            let l =[...prev_state]
-            l[pkey_index] = 'expand_up'
-          })
-        } else if (song[i]['end_timestamp'] <= timestamp) {
-          let pkey_index = key_to_key[song[i]['note']]
-          set_playback_visual(prev_state => {
-            let l =[...prev_state]
-            l[pkey_index] = 'move_up'
-          })
-          set_playback_index(prev_state => prev_state + 1)
-          }
+  useEffect(() => {
+    function song_playback() {
+  
+      function animate(timestamp) {
+        if (!sp_start_time.current) {
+          sp_start_time.current = timestamp
         }
-  
-      if (playing) {
-        animation_frame_id = requestAnimationFrame(animate);
+        if (start_note_index.current < song.length && 
+          song[start_note_index.current]['note']['start_timestamp'] <= timestamp - sp_start_time.current) {
+          console.log('start_note')
+          
+          let pkey_index = pkey_to_pkeyind[song[start_note_index.current]['note']['note']]
+          set_piano(prev_state => {
+            const keys = [...prev_state]
+            keys[pkey_index] = React.cloneElement(keys[pkey_index], { pb_visual_mode: 'expand_down' })
+            return keys
+          })
+          start_note_index.current += 1
+        }
+        if (end_note_index.current < song.length && 
+          song[end_note_index.current]['note']['end_timestamp'] <= timestamp - sp_start_time.current) {
+          console.log('end_note')
+          
+          let pkey_index = pkey_to_pkeyind[song[end_note_index.current]['note']['note']]
+          set_piano(prev_state => {
+            const keys = [...prev_state]
+            keys[pkey_index] = React.cloneElement(keys[pkey_index], { pb_visual_mode: 'move_down' })
+            return keys
+          })
+          end_note_index.current += 1
+          }
+          if (start_note_index.current >= song.length && end_note_index.current >= song.length) {
+            set_playing(false)
+          }
+          
+        if (playing) {
+          sp_anim_frameid.current = requestAnimationFrame(animate)
+        }
       }
+    
+      function pause() {
+        cancelAnimationFrame(sp_anim_frameid.current)
+      }
+    
+      function resume() {
+        console.log('resume')
+          requestAnimationFrame(animate)
+      }
+    
+      function reset() {
+        sp_start_time.current = null
+        start_note_index.current = 0
+        end_note_index.current = 0
+      }
+      return { pause, resume, reset };
     }
-  
-    function pause() {
-      set_playing(false)
-      cancelAnimationFrame(animation_frame_id);
-    }
-  
-    function resume() {
-        set_playing(true)
-        requestAnimationFrame(animate);
-    }
-  
-    function reset() {
-      start_time = null;
-      set_playback_index(0)
-      set_playing(false)
-    }
-    return { pause, resume, reset };
-  }
-  
-  useEffect(() => {
-    set_song(song_prop)
-    // console.log(song_prop.song_notes)
-  }, [song_prop])
+    song_player.current = song_playback()
+  }, [song, playing])
 
   
   useEffect(() => {
-    if (playing === null) {
-      song_player.current = song_playback()
-    } else if (playing) {
-      console.log('Play')
-      song_player.current.resume()
-    } else {
-      console.log('stop')
-      song_player.current.pause()
+    if (playing !== null) {
+      if (playing) {
+        song_player.current.resume()
+      } else {
+        song_player.current.pause()
+      }
     }
   }, [playing])
+  // Playback END
 
   return (
     <>

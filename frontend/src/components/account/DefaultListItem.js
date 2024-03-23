@@ -18,6 +18,7 @@ const DefaultListItem = ({ list, files=[], DefaultIcon=<BiBarChartAlt />, header
                     }
                 }
             }
+            
             return (
                 <div key={item.id} className='defaultlistitem-wrapper' onClick={() => navigate(url+item[id])}>
                     <div className='defaultlistitem-left'>

@@ -15,7 +15,7 @@ import InitialLoader from './components/InitialLoader.js';
 import ProfilePage from './pages/AccountPage.js';
 import ViewPostPage from './pages/ViewPostPage'
 import PianoPage from './pages/PianoPage.js'
-import PianoPlayback from './pages/PianoPlayback.js'
+import PianoPlayback from './components/piano/PianoPlayback.js'
  
 
 const router = createBrowserRouter([

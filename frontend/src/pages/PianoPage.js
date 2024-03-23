@@ -24,7 +24,7 @@ const PianoPage = () => {
 
   return (
     <>
-        <Navbar parent_height_setter={set_pianopage_fullheight}/>
+        <Navbar parent_height_setter={set_pianopage_fullheight} />
         <div id='pianopage-page' ref={pianopage_ref}>
           <Piano pvh={pianopage_fullheight}/>
         </div>

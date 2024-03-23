@@ -386,7 +386,7 @@ class Songs(APIView):
     def post(self, request, format=None):
         try:
             data = self.request.data
-
+            print(data, file=sys.stderr)
             user_song = data['song']
             name = data['name']
 
