@@ -3,6 +3,7 @@ import { Howl } from 'howler'
 import F3 from '../../audio/pianokeys/F3.mp3'
 import { attribute_animation } from '../../utility/CommonFunctions.js'
 import './PianoKey.css'
+import { TbRuler } from 'react-icons/tb'
 
 const Pianokey = ({
   note, color, keyboard_key, innerRef, pressed, user_interact, pb_visual_mode,
@@ -43,7 +44,6 @@ const Pianokey = ({
 
   useEffect(() => {
     if (pressed) {
-      console.log(note)
       audio.play()
 
       set_visuals(prev_state => {
@@ -84,43 +84,74 @@ const Pianokey = ({
     }
   }, [pressed])
 
-  let curr_playback_anim = useRef([null, true])
-  let [playback_visuals, set_playback_visuals] = useState({})
-  let playback_counter = useRef(0)
+  let [playback_visuals, set_playback_visuals] = useState([])
+  let [pb_counter, set_pb_counter] = useState(0)
+  let [curr_pb_anim, set_curr_pb_anim] = useState([[], true])
   let playback_visual_refs = useRef({})
 
   useEffect(() => {
-    console.log(playback_visuals)
-    if (playback_visuals[playback_counter.current] && curr_playback_anim.current[1]) {
-      curr_playback_anim = [attribute_animation(playback_visual_refs.current[counter], 'height', '100vh', '-300000px', 1000000, 'linear'), false]
+    if (playback_visuals[pb_counter] && curr_pb_anim[1]) {
+      set_curr_pb_anim(prev_state => {
+        let l = [...prev_state]
+        l[0].push(attribute_animation(playback_visual_refs.current[pb_counter], 'height', '0', '300000px', 1000000))
+        l[1] = false
+        return l
+      })
     }
     
   }, [playback_visuals])
 
+  useEffect(() => {})
+
   useEffect(() => {
-
     if (pb_visual_mode === 'expand_down') {
-      set_playback_visuals(prev_state => ({
-        ...prev_state,
-        [playback_counter.current]: (
-        <div key={`${playback_counter.current}`} ref={ref => playback_visual_refs.current[counter] = ref} className='visualizer-instance'></div>
-        )
-      }))
-    } else if (pb_visual_mode === 'move_down' && curr_playback_anim) {
+      console.log(note)
+      setTimeout(() => {
+        audio.play()
+      }, 2000)
+      
+      set_playback_visuals(prev_state => {
+        set_curr_pb_anim(in_prev_state => {
+          let l = [...in_prev_state]
+          l[1] = true
+          return l
+        })
 
-      curr_playback_anim.current[0].pause()
-      attribute_animation(playback_visual_refs.current[counter], 'top', '0', '-300000px', 1000000, 'linear')
-      curr_playback_anim = [null, true]
+        return ({...prev_state,
+          [pb_counter]: (
+          <div key={`${pb_counter}`} ref={ref => playback_visual_refs.current[pb_counter] = ref} className='pb-visualizer-instance'></div>
+          )
+        })
+      })
+    } else if (pb_visual_mode === 'move_down' && curr_pb_anim[0]) {
+      console.log("played!!")
+      curr_pb_anim[0][curr_pb_anim[0].length-1].pause()
+      set_curr_pb_anim(prev_state => {
+        let l = [...prev_state]
+        l[0][l[0].length-1] = attribute_animation(playback_visual_refs.current[pb_counter], 'top', '0', '300000px', 1000000, 'linear')
+        l[1] = true
+        return l
+      })
+
 
       setTimeout(() => {
-        delete playback_visual_refs.current[playback_counter.current]
+        delete playback_visual_refs.current[pb_counter]
         set_playback_visuals(prev_state => {
           const new_state = {...prev_state}
-          delete new_state[playback_counter.current]
+          delete new_state[pb_counter]
           return new_state
         });
-      }, 2000, playback_counter.current)
-      playback_counter.current += 1
+      }, 3000, pb_counter)
+      set_pb_counter(prev_state => prev_state + 1)
+    } else if (pb_visual_mode === 'pause') {
+
+      for (let i = 0; i < curr_pb_anim[0].length; i++) {
+        curr_pb_anim[0][i].pause()
+      }
+    } else if (pb_visual_mode == 'resume') {
+      for (let i = 0; i < curr_pb_anim[0].length; i++) {
+        curr_pb_anim[0][i].resume()
+      }
     }
   }, [pb_visual_mode])
 
@@ -146,7 +177,8 @@ const Pianokey = ({
       {type === 'playback' && 
       <div>
         {Object.keys(playback_visuals).map((key, index) => {
-              return visuals[key]
+          
+              return playback_visuals[key]
             })}
       </div>}
       {glow && <div className='glow-effect-small' ></div>}

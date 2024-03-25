@@ -194,7 +194,7 @@ class SongSerializer(ModelSerializer):
     
     class Meta:
         model = Song
-        fields = ('name', 'song_notes')
+        fields = ('name', 'song_notes', 'id')
 
 
     

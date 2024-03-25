@@ -91,7 +91,7 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user
               innerRef={ref => piano_keys_ref.current[i] = ref}
               pressed={null}
               user_interact={user_interact}
-              playback_visual={'none'} // edit this
+              playback_visual={'none'}
               type={type}
             />
           ]
@@ -149,27 +149,32 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user
       if (recording[0]) {
         
         if (key_ind in curr_pressed_keys) {
-          
-          set_recorded_song((prev_song) => {
+
+          set_recorded_song((prev_song) => {  
+            
+            let l = [...prev_song]
+            console.log(piano[key_ind].props.note, " saved to ", curr_pressed_keys[key_ind])
+            l[recording[1]][curr_pressed_keys[key_ind]].push(new Date().getTime())
             set_curr_pressed_keys(prev_state => {
+              
               const new_state = { ...prev_state }
               delete new_state[key_ind]
               return new_state
             })
-
-            let l = [...prev_song]
-            l[recording[1]][l[recording[1]].length - 1].push(new Date().getTime())
+            
             return l
           })
         } else {
           set_recorded_song((prev_song) => {
-            set_curr_pressed_keys(prev_state => ({
-              ...prev_state,
-              [key_ind]: true
-            }))
-
             let l = [...prev_song]
-            l[recording[1]].push([piano[key_ind].props.note, new Date().getTime()])
+
+            set_curr_pressed_keys(prev_state => {
+              let len = l[recording[1]].push([piano[key_ind].props.note, new Date().getTime()]) - 1
+              return ({
+              ...prev_state,
+              [key_ind]: len
+            })})
+            
             return l
           })
         }
@@ -198,7 +203,9 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user
     }
   }, [visible, piano, user_interact, recording])
   // Play Piano Key END
-
+  useEffect(() => {
+    console.log(curr_pressed_keys)
+  }, [curr_pressed_keys])
 
   // Handle Piano Layer Stacking START
   let [piano_styling, set_piano_styling] = useState(null)
@@ -249,6 +256,18 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user
 
   let save_song = async () => {
     console.log(recorded_song)
+     set_recorded_song(prev_song => {
+      let l = [...prev_song[0]]
+      for (let i = 0; i < l.length; i++) {
+        if (l[i].length === 2) {
+          l[i].push(l[i][1] + 50)
+        } else if (l[i].length <= 1) {
+          l.splice(i, 1)
+        } else if (l[i].length > 3) {
+          l[i] = l[i].splice(3, l[i].length - 3)
+        }
+      }
+    })
     let res = await default_ajax('post', 'songs/create-song', { 'song': recorded_song[0], 'name': 'TODO' })
       if (res !== -1) {
         console.log(res)
@@ -274,7 +293,6 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user
         }
         if (start_note_index.current < song.length && 
           song[start_note_index.current]['note']['start_timestamp'] <= timestamp - sp_start_time.current) {
-          console.log('start_note')
           
           let pkey_index = pkey_to_pkeyind[song[start_note_index.current]['note']['note']]
           set_piano(prev_state => {
@@ -286,7 +304,6 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user
         }
         if (end_note_index.current < song.length && 
           song[end_note_index.current]['note']['end_timestamp'] <= timestamp - sp_start_time.current) {
-          console.log('end_note')
           
           let pkey_index = pkey_to_pkeyind[song[end_note_index.current]['note']['note']]
           set_piano(prev_state => {
@@ -297,21 +314,36 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user
           end_note_index.current += 1
           }
           if (start_note_index.current >= song.length && end_note_index.current >= song.length) {
-            set_playing(false)
+            set_playing(null)
+            cancelAnimationFrame(sp_anim_frameid.current)
+          } else {
+            if (playing === 'playing') {
+              sp_anim_frameid.current = requestAnimationFrame(animate)
+            }
           }
-          
-        if (playing) {
-          sp_anim_frameid.current = requestAnimationFrame(animate)
-        }
+        
       }
     
       function pause() {
         cancelAnimationFrame(sp_anim_frameid.current)
+        set_piano(prev_state => {
+          const keys = [...prev_state]
+          for (let i = 0; i < keys.length; i++) {
+            keys[i] = React.cloneElement(keys[i], { pb_visual_mode: 'pause' })
+          }
+          return keys
+        })
       }
     
       function resume() {
-        console.log('resume')
-          requestAnimationFrame(animate)
+        requestAnimationFrame(animate)
+        set_piano(prev_state => {
+          const keys = [...prev_state]
+          for (let i = 0; i < keys.length; i++) {
+            keys[i] = React.cloneElement(keys[i], { pb_visual_mode: 'resume' })
+          }
+          return keys
+        })
       }
     
       function reset() {
@@ -319,20 +351,24 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user
         start_note_index.current = 0
         end_note_index.current = 0
       }
-      return { pause, resume, reset };
+
+      return { pause, resume, reset }
     }
     song_player.current = song_playback()
   }, [song, playing])
 
   
   useEffect(() => {
-    if (playing !== null) {
-      if (playing) {
+      if (playing === 'playing') {
+        console.log('resume')
         song_player.current.resume()
-      } else {
+      } else if (playing === 'paused') {
+        console.log('pause')
         song_player.current.pause()
+      } else if (playing === null) {
+        console.log('reset')
+        song_player.current.reset()
       }
-    }
   }, [playing])
   // Playback END
 
@@ -371,8 +407,10 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user
         }
         { type == 'playback' && song &&
           <div id='pianoplayback-btn-wrapper'>
-            <button className='piano-btn' onClick={() => set_playing(prev_state => {return prev_state === null ? true : !prev_state})}>{playing ? <FaPause />: <FaPlay /> }</button>
-            <button className='piano-btn'>Go to start</button>
+            <button className='piano-btn' 
+            onClick={() => set_playing(prev_state => prev_state === null || prev_state === 'paused'  ? 'playing': 'paused')}>
+            {playing === 'playing' ? <FaPause /> : <FaPlay />}</button>
+            <button className='piano-btn' onClick={() => set_playing(prev_state => null)}>Go to start</button>
           </div>
         }
 

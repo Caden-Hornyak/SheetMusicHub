@@ -50,6 +50,10 @@ const router = createBrowserRouter([
   {
     path: '/pianoplayback',
     element: <PianoPlayback />
+  },
+  {
+    path: '/songs/:songid',
+    element: < PianoPlayback />
   }
 ]);
 
