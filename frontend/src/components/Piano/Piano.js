@@ -8,8 +8,7 @@ import { MdOutlineSaveAlt } from "react-icons/md";
 import { TbShare2 } from "react-icons/tb";
 import { IoMdCheckmark } from "react-icons/io";
 import { FaPlay, FaPause } from "react-icons/fa";
-
-
+import Tooltip from '../utility/Tooltip'
 
 const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user_interact=true, song=null }) => {
   
@@ -60,7 +59,6 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user
 
   // Create Piano START
   let piano_keys_ref = useRef({})
-  let [playback_visual, set_playback_visual] = useState(Array(piano_keys_ref.current.length).fill(''))
   let [key_to_pkeyind, set_key_to_pkeyind] = useState({})
   let [pkey_to_pkeyind, set_pkey_to_pkeyind] = useState({})
   let [piano, set_piano] = useState([])
@@ -203,9 +201,7 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user
     }
   }, [visible, piano, user_interact, recording])
   // Play Piano Key END
-  useEffect(() => {
-    console.log(curr_pressed_keys)
-  }, [curr_pressed_keys])
+
 
   // Handle Piano Layer Stacking START
   let [piano_styling, set_piano_styling] = useState(null)
@@ -366,7 +362,6 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user
         console.log('pause')
         song_player.current.pause()
       } else if (playing === null) {
-        console.log('reset')
         song_player.current.reset()
       }
   }, [playing])
@@ -400,7 +395,10 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user
       <div id='piano-wrapper'>
         {user_interact && 
           <div id='piano-btn-wrapper'>
-            <button className='piano-btn' onClick={() => recording[0] ? recording_action('end') : recording_action('start')} ><div className='red-dot'></div></button>
+            <Tooltip content='Record' direction='bottom' delay={300} >
+              <button className='piano-btn' onClick={() => recording[0] ? recording_action('end') : recording_action('start')} >
+              <div className='red-dot'></div></button>
+            </Tooltip>
             {recording[0] && <button className='piano-btn' id='clear-song-btn' onClick={() => clear_song()} ><FaXmark /></button>}
             {(type === 'register' || type === 'login') && !recording && <p>{recording[1] === 0 ? 'Press Start To Begin Recording' : 'Confirm Password'}</p>}
           </div>

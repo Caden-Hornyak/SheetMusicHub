@@ -39,7 +39,6 @@ const DragAndDropBox = ({ uploaded_files, handle_change, wipe_upload}) => {
 
   return (
     <div className='dropbox-wrapper'>
-      {console.log(formatted_files)}
       {formatted_files.length === 0 ? 
         <div
         className={`dropbox ${dragging ? 'dragging' : ''}`}
@@ -50,7 +49,7 @@ const DragAndDropBox = ({ uploaded_files, handle_change, wipe_upload}) => {
         >
         <p>
           Drag & Drop or upload here: 
-          <input  type="file" id='file_upload' name='file_upload' onChange={handle_change} 
+          <input  type="file" id='file_upload' name='file_upload' onChange={(e) => handle_change(e)} 
           accept='image/*, .pdf, video/*' multiple
           />
         </p> 

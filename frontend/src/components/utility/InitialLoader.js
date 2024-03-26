@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
-import { checkAuthenticated } from '../actions/auth';
-import { load_user } from '../actions/profile';
+import { checkAuthenticated } from '../../actions/auth';
+import { load_user } from '../../actions/profile';
 import { connect } from 'react-redux';
 
 const InitialLoader = ({ checkAuthenticated, load_user }) => {

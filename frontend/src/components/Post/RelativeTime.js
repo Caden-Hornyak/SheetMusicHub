@@ -5,7 +5,6 @@ const RelativeTime = ({ object_date }) => {
     function calculateTimeDifference(commentDate) {
         const now = new Date();
         const differenceInSeconds = Math.floor((now - new Date(commentDate)) / 1000);
-        // console.log
       
         if (differenceInSeconds < 60) {
           return `just now`;
@@ -38,7 +37,7 @@ const RelativeTime = ({ object_date }) => {
       if (object_date !== '-') {
         const formattedTimeDifference = calculateTimeDifference(object_date);
         return (
-            <span>{formattedTimeDifference}</span>
+            <span style={{ margin: '0'}}>{formattedTimeDifference}</span>
           )
       } else {
         return (

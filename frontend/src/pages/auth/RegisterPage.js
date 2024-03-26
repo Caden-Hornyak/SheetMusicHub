@@ -2,13 +2,13 @@ import React, { useState, useEffect } from 'react'
 import { connect } from 'react-redux';
 import { Navigate, Link } from 'react-router-dom';
 import { register_normal_pass, register_piano_pass } from '../../actions/auth.js';
-import CSRFToken from '../../components/CSRFToken.js';
+import CSRFToken from '../../components/utility/CSRFToken.js';
 
 import './Auth.css';
 import background from '../../images/auth_background.jpg';
 import Piano from '../../components/piano/Piano.js'
 import { IoMdCheckmark } from "react-icons/io";
-import Navbar from '../../components/Navbar.js';
+import Navbar from '../../components/utility/Navbar.js';
 
 
 const Register = ({ register_normal_pass, register_piano_pass }) => {

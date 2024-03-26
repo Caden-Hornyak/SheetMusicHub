@@ -17,7 +17,7 @@
 }
 
 .final-container {
-    position: absolute;
+    position: fixed;
     height: calc(100vh - var(--navbar-height));
     width: 100vw;
     overflow-y: auto;
@@ -59,6 +59,11 @@ hr {
         fill: var(--ten-color);
     }
 
+.singlepost-post {
+    width: 600px;
+    min-width: 600px;
+}
+
     .singlepost-post-wrapper {
         position: relative;
         background-color: var(--thirty-color);
@@ -66,44 +71,40 @@ hr {
         border-radius: 15px;
 
         /* height: auto; */
-        width: 700px;
+        width: 1300px;
+        margin-top: 15px;
 
         display: flex;
-        flex-direction: column;
-
-        margin: 30px;
-        margin-left: 100px;
-        margin-top: 15px;
-        padding: 10px;
+        padding: 25px;
 
 
-        min-width: 700px;
+        min-width: 1000px;
 
         color: var(--text-color);
 
     }
 
-        .singlepost-post-wrapper img {
-            height: 650px;
-            width: 500px;
-            margin: 10px;
-            border-radius: 15px;
+
+        #singlepost-upper {
+            margin-bottom: 20px;
         }
 
     .singlepost-comments-wrapper {
         font-size: 17px;
         display: flex;
         flex-direction: column;
+        flex: 1;
 
         margin: 30px;
         margin-top: 15px;
-        width: 700px;
+        width: 600px;
         padding: 10px;
+        height: 90%;
         
         overflow: auto;
         background-color: var(--thirty-color);
 
-        min-width: 150px;
+        min-width: 400px;
         z-index: 1;
 
         color: var(--text-color);
@@ -115,7 +116,11 @@ hr {
 
     .post-content {
         display: flex;
-        justify-content: center;
+        justify-content: left;
+    }
+
+    .post-content > * {
+        margin-left: 40px;
     }
 
 .background {

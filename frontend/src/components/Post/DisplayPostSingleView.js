@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import Comment from './Comment/Comment'
 import RelativeTime from './RelativeTime'
 import CreateComment from './Comment/CreateComment'
-import FileViewer from '../FileViewer';
+import FileViewer from '../utility/FileViewer';
 import def_back from '../../images/default_sp_background.jpg'
 
 const DisplayPostSingleView = (props) => {
@@ -26,9 +26,7 @@ const DisplayPostSingleView = (props) => {
         poster: "User Not Found"
     })
 
-    let [post_comments, setpost_comments] = useState({
-        comments: [{ child_comment: [], text: "", likes: 0 }]
-    })
+    let [post_comments, setpost_comments] = useState([])
 
     let [background, set_background] = useState(def_back)
     let [postreply_clicked, setpostreply_clicked] = useState(false)
@@ -91,35 +89,45 @@ const DisplayPostSingleView = (props) => {
         <div className='singlepost-body'>
             <img className='background' src={background} alt="Sheet Music"></img>
             <div className="singlepost-post-wrapper">
-                <div id='singlepost-upper' >
-                    <div id='singlepost-title' >{post.title}</div>
-                    <div id='date-and-user'>
-                        <span>Posted <RelativeTime object_date={post.date_created}/></span>
-                        <span id='singlepost-poster'>by {post.poster}</span>
+                <div className='singlepost-post'>
+                    {console.log(post)}
+                    <div id='singlepost-upper' >
+                        <div id='singlepost-title' >{post.title}</div>
+                        <div id='date-and-user'>
+                            <span style={{color: 'rgba(255, 255, 255, 0.3)'}}>Posted <RelativeTime object_date={post.date_created} /> by {post.poster.username}</span>
+                        </div>
+                        
                     </div>
+                    {post.files.length !== 0 &&
+                        <div className='post-content' >
+                            <FileViewer uploaded_files={post.files} />   
+                        </div>
+                    }
                     
-                </div>
-                {post.files.length !== 0 &&
-                    <div className='post-content' >
-                        <FileViewer uploaded_files={post.files} />   
-                    </div>
-                }
-                
-                { post.description == '' ? <p id='post-description'>No Post Description :(</p> : <p id='post-description'>{post.description}</p>}
-                <hr />
-                <div id='singlepost-lower' >
-                    <LikeDislike object="post" object_id={post.id} likes={post.likes} user_vote={post.user_vote}/>
+                    { post.description == '' ? <p id='post-description'>No Post Description :(</p> : <p id='post-description'>{post.description}</p>}
+                    <hr />
+                    <div id='singlepost-lower' >
+                        <LikeDislike object="post" object_id={post.id} likes={post.likes} user_vote={post.user_vote}/>
 
-                    <button id='post-cmt-btn' className="comment-button" onClick={() => setpostreply_clicked(!postreply_clicked)} >Comment <BiUpArrowAlt /></button>
-                    
+                        <button id='post-cmt-btn' className="comment-button" onClick={() => setpostreply_clicked(!postreply_clicked)} >Comment <BiUpArrowAlt /></button>
+                        
+                    </div>
+                    {postreply_clicked && <CreateComment key={post.id} object_type='Post' object_id={post.id} 
+                    update_object={setpost_comments} par_state={post_comments.comments} close_reply={setpostreply_clicked} 
+                    written_text={written_text_post} setwritten_text={setwritten_text_post}/>}
                 </div>
-                {postreply_clicked && <CreateComment key={post.id} object_type='Post' object_id={post.id} 
-                update_object={setpost_comments} par_state={post_comments.comments} close_reply={setpostreply_clicked} 
-                written_text={written_text_post} setwritten_text={setwritten_text_post}/>}
+                
+
+                
+                <div className="singlepost-comments-wrapper">
+                    {post_comments.length === 0 ?
+                        <div>This post has no comments</div>
+                    :
+                        getComments(post_comments.comments)
+                    }
+                </div>
             </div>
-            <div className="singlepost-comments-wrapper">
-                    {getComments(post_comments.comments)}
-            </div>
+            
         </div>
     </div>
   )

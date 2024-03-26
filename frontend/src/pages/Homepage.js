@@ -1,8 +1,8 @@
 import React, { useState, useEffect} from 'react'
-import DisplayPostListView from '../components/Post/DisplayPostListView';
-import Navbar from '../components/Navbar';
+import DisplayPostListView from '../components/Post/DisplayPostListView'
+import Navbar from '../components/utility/Navbar'
 
-function PostListPage({}) {
+function HomePage() {
     let [listview_fullheight, set_listview_fullheight] = useState(null)
     
 
@@ -14,4 +14,4 @@ function PostListPage({}) {
     );
 }
 
-export default PostListPage
+export default HomePage

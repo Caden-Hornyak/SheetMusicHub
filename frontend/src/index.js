@@ -11,11 +11,11 @@ import store from './store.js'
 import { connect, Provider } from 'react-redux'
 
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import InitialLoader from './components/InitialLoader.js';
+import InitialLoader from './components/utility/InitialLoader.js';
 import ProfilePage from './pages/AccountPage.js';
 import ViewPostPage from './pages/ViewPostPage'
 import PianoPage from './pages/PianoPage.js'
-import PianoPlayback from './components/piano/PianoPlayback.js'
+import PianoPlayback from './pages/PianoPlaybackPage.js'
  
 
 const router = createBrowserRouter([

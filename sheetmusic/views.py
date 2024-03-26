@@ -352,6 +352,7 @@ class Comments(APIView):
             if object_type == 'Post':
                 object = Post.objects.get(id=object_id)
                 object.comments.add(comment)
+                object.comment_count += 1
                 comment.parent_post = object
             elif object_type == 'Comment':
                 object = Comment.objects.get(id=object_id)

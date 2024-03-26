@@ -72,6 +72,7 @@ class UserProfile(models.Model):
     last_name = models.CharField(max_length=255, default='')
     posts = models.ManyToManyField('Post', blank=True, related_name='created_post')
     songs = models.ManyToManyField('Song', blank=True)
+    profile_picture = models.ImageField(upload_to='images/', default='default_profpic')
 
     def __str__(self):
         return str(self.user)

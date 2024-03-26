@@ -2,9 +2,9 @@ import React, { useState, useEffect, useRef } from 'react'
 import { Link } from "react-router-dom"
 import './Navbar.css'
 import { connect } from 'react-redux'
-import { logout } from '../actions/auth'
+import { logout } from '../../actions/auth.js'
 import { IoIosArrowUp, IoIosArrowDown } from "react-icons/io"
-import { attribute_animation } from '../utility/CommonFunctions.js'
+import { attribute_animation } from '../../utility/CommonFunctions.js'
 
 
 function Navbar( { isAuthenticated, logout, parent_height_setter=() => {} }) {

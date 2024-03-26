@@ -10,33 +10,29 @@ const Pianokey = ({
   type
   }) => {
   
+  console.log(note)
   let load_note = async () => {
     const note_src = await import(`../../audio/pianokeys/${note}.mp3`);
-    setAudio(new Howl({ src: [note_src.default]}))
+    audio.current = new Howl({ src: [note_src.default]})
   }
   useEffect(() => {
     load_note()
   }, [])
 
-  const [audio, setAudio] = useState(null)
+  const audio = useRef(null)
 
   let visual_refs = useRef({})
 
-  let [curr_animation, set_curr_animation] = useState([null, true])
+  let curr_animation = useRef([null, true])
+
   let [visuals, set_visuals] = useState([])
-  let [glow, set_glow] = useState(false)
   let glowline = useRef(null)
 
-  let [counter, set_counter] = useState(0)
+  let counter = useRef(0)
 
   useEffect(() => {
-    if (visuals[counter] && curr_animation[1]) {
-      set_curr_animation(prev_state => {
-        let l = [...prev_state]
-        l[0] = attribute_animation(visual_refs.current[counter], 'height', '0', '300000px', 1000000)
-        l[1] = false
-        return l
-      })
+    if (visuals[counter.current] && curr_animation.current[1]) {
+      curr_animation.current = [attribute_animation(visual_refs.current[counter.current], 'height', '0', '300000px', 1000000), false]
     }
     
   }, [visuals])
@@ -44,43 +40,39 @@ const Pianokey = ({
 
   useEffect(() => {
     if (pressed) {
-      audio.play()
+      audio.current.play()
 
       set_visuals(prev_state => {
-        set_curr_animation(in_prev_state => {
-          let l = [...in_prev_state]
-          l[1] = true
-          return l
-        })
+        curr_animation.current[1] = true
+        console.log(counter.current)
         return ({
           ...prev_state,
-          [counter]: (
-          <div key={`${counter}`} ref={ref => visual_refs.current[counter] = ref} className='visualizer-instance'></div>
+          [counter.current]: (
+          <div key={`${counter.current}`} ref={ref => visual_refs.current[counter.current] = ref} 
+          className={`visualizer-instance ${color === 'black' ? 'black-visualizer': ''}`}></div>
           )
       })}) 
-      set_glow(true)
       
       attribute_animation(glowline.current, 'opacity', '0', '1', 600, 'cubic-bezier(0,.99,.26,.99)')
+      console.log('two state')
 
-    } else if (!pressed && pressed !== null && counter in visual_refs.current && curr_animation[0]) {
-        curr_animation[0].pause()
-        attribute_animation(visual_refs.current[counter], 'bottom', '0', '300000px', 1000000)
-        set_glow(false)
+    } else if (!pressed && pressed !== null && counter.current in visual_refs.current && curr_animation.current[0]) {
+
+        curr_animation.current[0].pause()
+        attribute_animation(visual_refs.current[counter.current], 'bottom', '0', '300000px', 1000000)
         attribute_animation(glowline.current, 'opacity', '1', '0', 3000, 'cubic-bezier(.19,.98,.24,1.01)')
       
-
-        setTimeout(() => {
-          delete visual_refs.current[counter]
-          set_visuals(prev_state => {
-            const new_state = {...prev_state}
-            delete new_state[counter]
-            return new_state
-          });
-        }, 2000, counter)
+        // setTimeout((curr_counter) => {
+        //   delete visual_refs.current[curr_counter]
+        //   console.log(curr_counter)
+        //   set_visuals(prev_state => {
+        //     const new_state = {...prev_state}
+        //     delete new_state[curr_counter]
+        //     return new_state
+        //   });
+        // }, 3000, counter.current)
           
-        set_counter(prev_state => prev_state + 1)
-      
-
+        counter.current += 1
     }
   }, [pressed])
 
@@ -101,13 +93,11 @@ const Pianokey = ({
     
   }, [playback_visuals])
 
-  useEffect(() => {})
-
   useEffect(() => {
     if (pb_visual_mode === 'expand_down') {
       console.log(note)
       setTimeout(() => {
-        audio.play()
+        audio.current.play()
       }, 2000)
       
       set_playback_visuals(prev_state => {
@@ -150,7 +140,7 @@ const Pianokey = ({
       }
     } else if (pb_visual_mode == 'resume') {
       for (let i = 0; i < curr_pb_anim[0].length; i++) {
-        curr_pb_anim[0][i].resume()
+        curr_pb_anim[0][i].play()
       }
     }
   }, [pb_visual_mode])
@@ -181,8 +171,8 @@ const Pianokey = ({
               return playback_visuals[key]
             })}
       </div>}
-      {glow && <div className='glow-effect-small' ></div>}
-      {glow && <div className='glow-effect-big' ></div>}
+      {pressed && <div className='glow-effect-small' ></div>}
+      {pressed && <div className='glow-effect-big' ></div>}
       <div className='glow-line' >
         <div ref={glowline} className='glowline-gradient'></div>
       </div>

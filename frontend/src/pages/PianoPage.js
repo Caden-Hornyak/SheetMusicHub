@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import Piano from '../components/piano/Piano.js'
-import Navbar from '../components/Navbar.js'
+import Navbar from '../components/utility/Navbar.js'
 import { attribute_animation } from '../utility/CommonFunctions.js'
 
 import './PianoPage.css'

@@ -3,7 +3,7 @@
     --min-width: 900px;
     --background-color: transparent;
     --ten-color: orange;
-    --thirty-color: #2e2e2e;
+    --thirty-color: #222222;
     --text-color: #dddddd;
 }
 
@@ -61,6 +61,6 @@ a:hover {
         animation: all 10s ease;
         display: flex;
         align-items: center;
-        background-color: salmon;
+        background-color: rgb(39, 39, 39);
         box-shadow: 3px 3px 15px rgba(0, 0, 0, .8);
     }

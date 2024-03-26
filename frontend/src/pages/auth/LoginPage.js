@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import { login_normal, login_piano } from '../../actions/auth.js';
 import { Navigate, Link } from 'react-router-dom';
-import CSRFToken from '../../components/CSRFToken.js';
+import CSRFToken from '../../components/utility/CSRFToken.js';
 import { connect, useSelector } from 'react-redux';
 
 import './Auth.css';
 import Piano from '../../components/piano/Piano.js';
 import { IoMdCheckmark } from "react-icons/io";
-import Navbar from '../../components/Navbar.js';
+import Navbar from '../../components/utility/Navbar.js';
 
 const LoginPage = ({ login_normal, login_piano }) => {
     const [form_data, set_form_data] = useState({

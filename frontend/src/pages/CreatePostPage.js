@@ -1,19 +1,21 @@
 import React, { useState, useRef, useEffect } from 'react';
 import axios from '../configs/axiosConfig';
 import Cookies from 'js-cookie';
-import Navbar from '../components/Navbar';
+import Navbar from '../components/utility/Navbar.js';
 import { useNavigate } from 'react-router-dom'
 import './CreatePostPage.css'
 import { BiX } from 'react-icons/bi'
-import DropBox from '../components/DropBox.js'
+import DropBox from '../components/utility/DropBox.js'
 import { attribute_animation } from '../utility/CommonFunctions.js';
 
 const CreatePostPage = () => {
 
+    let navigate = useNavigate()
     
     // resize page on navbar hide/unhide
     let createpageview_ref = useRef(null)
     let [cpp_fullheight, set_cpp_fullheight] = useState(null)
+
     useEffect(() => {
         if (createpageview_ref.current && cpp_fullheight !== null) {
             if (cpp_fullheight) {
@@ -26,18 +28,18 @@ const CreatePostPage = () => {
         }
     }, [cpp_fullheight])
 
-    let navigate = useNavigate()
-
+    
     const [form_data, set_form_data] = useState({
         title: '',
         description: '',
-    });
+    })
+
     const [form_files, set_form_files] = useState([])
 
     const [upload_count, set_upload_count] = useState(0)
 
     const handle_change = (e) => {
-        
+        console.log('ran')
         // update files
         if (e.target.files || e.dataTransfer) {
             const file_array = extract_file_info(e)
@@ -49,7 +51,7 @@ const CreatePostPage = () => {
                     alert('More than 10 files uploaded. Only uploaded the first ten')
                     break
                 }
-
+                console.log(file)
                 set_form_files(prev_state => [...prev_state, file])
                 set_upload_count(prev_state => prev_state + 1)
 
@@ -138,7 +140,7 @@ const CreatePostPage = () => {
                     <form onSubmit={(e) => handleSubmit(e)} id='createpost-form'>
                         <input className='createpost-input' type='text' id='title' name='title' placeholder='Title' onChange={handle_change}/>
                         <textarea className='createpost-input' type='text' id='description' name='description' placeholder='Description' onChange={handle_change} />
-                        <DropBox uploaded_files={form_files} handle_change={() => handle_change} wipe_upload={() => wipe_upload} />
+                        <DropBox uploaded_files={form_files} handle_change={handle_change} wipe_upload={wipe_upload} />
                         <div className='createpostpage-lower'>
                             <button type='button' onClick={() => navigate('/')} >Cancel</button>
                             <button type='submit'>Submit</button>

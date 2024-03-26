@@ -3,7 +3,7 @@ import axios from '../../configs/axiosConfig'
 import { BiLike, BiDislike } from "react-icons/bi"
 import './DisplayPostListView.css'
 import { useNavigate } from 'react-router-dom'
-import FileViewer from '../FileViewer'
+import FileViewer from '../utility/FileViewer.js'
 import { attribute_animation } from '../../utility/CommonFunctions.js'
 import LikeDislike from './LikeDislike.js'
 import RelativeTime from './RelativeTime.js'
@@ -112,30 +112,35 @@ function DisplayPostListView({ lvh }) {
                 <h1>No posts were found</h1>
             </div>
             : 
-            posts.map((post, index) => (
-                <div className='postlistview-post-wrapper' key={post.id}>
-                    <div className='postlistview-post' onClick={() => viewPost(post)}>
-                        <div className='postlistview-upperpost'>
-                            <h2>{post.title}</h2>
-                            <span>Posted by {post.poster} <RelativeTime object_date={post.date_created} /></span>
-                        </div>
-                        <div className='postlistview-fileviewer'>
-                            {post.files.length !== 0 && <FileViewer uploaded_files={post.files}/>}
-                        </div>
-                        {post.description && 
-                        <p className='postlistview-description'>
-                            {post.description.length < 300 ? post.description : post.description.slice(0, 200)+'...'}
-                        </p>}
-                        <div className='postlistview-lowerpost'>
-                            <LikeDislike object="post" object_id={post.id} likes={post.likes} user_vote={post.user_vote}/>
-                            <button ><BiComment /> {post.comment_count} comments</button>
-                            <button onClick={(e) => {e.stopPropagation(); bookmark_action(index)}} 
-                            className={post.user_bookmark ? 'bookmark-active': ''} >{post.user_bookmark ? <FaBookmark />: <FaRegBookmark />} {post.user_bookmark ? 'Un-Bookmark': 'Bookmark'}</button>
+            <>
+                <div id='homepage-backdrop'></div>
+                {posts.map((post, index) => (
+                    <div className='postlistview-post-wrapper' key={post.id}>
+                        
+                        <div className='postlistview-post' onClick={() => viewPost(post)}>
+                            <div className='postlistview-upperpost'>
+                                <h2>{post.title}</h2>
+                                <span style={{ marginLeft: '0px'}}>Posted by {post.poster} <RelativeTime object_date={post.date_created} /></span>
+                            </div>
+                            <div className='postlistview-fileviewer'>
+                                {post.files.length !== 0 && <FileViewer uploaded_files={post.files} clamp={true} />}
+                            </div>
+                            {post.description && 
+                            <p className='postlistview-description'>
+                                {post.description.length < 300 ? post.description : post.description.slice(0, 200)+'...'}
+                            </p>}
+                            <div className='postlistview-lowerpost'>
+                                <LikeDislike object="post" object_id={post.id} likes={post.likes} user_vote={post.user_vote}/>
+                                <button ><BiComment /> {post.comment_count} comments</button>
+                                <button onClick={(e) => {e.stopPropagation(); bookmark_action(index)}} 
+                                className={post.user_bookmark ? 'bookmark-active': ''} >{post.user_bookmark ? <FaBookmark />: <FaRegBookmark />} {post.user_bookmark ? 'Un-Bookmark': 'Bookmark'}</button>
+                            </div>
                         </div>
                     </div>
-                </div>
-            ))
+                ))}
+            </>
             }
+            
             
         </div>
     );

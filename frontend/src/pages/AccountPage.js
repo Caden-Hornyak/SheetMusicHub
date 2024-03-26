@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { connect } from 'react-redux'
 import { Navigate, useNavigate} from 'react-router-dom';
-import Navbar from '../components/Navbar.js';
+import Navbar from '../components/utility/Navbar.js';
 
 import './AccountPage.css'
 import Profile from '../components/account/Profile.js';

@@ -9,10 +9,10 @@ import { BiUpArrowAlt } from "react-icons/bi";
 
 const Comment = ({ comment, getComments, thread_style }) => {
 
-    
+    console.log(comment)
     let [curr_comment, setcurr_comment] = useState(comment)
     let [comment_clicked, setcomment_clicked] = useState(false)
-    let child_comment = curr_comment['child_comment']
+    let child_comment = curr_comment.child_comment
 
     let [written_text_comment, setwritten_text_comment] = useState("") // reply text
     let [thread, setThread] = useState(true)
@@ -20,7 +20,7 @@ const Comment = ({ comment, getComments, thread_style }) => {
     const close_thread_style = {
       transition: 'height ease 10s',
       display: thread ? 'block' : 'none'
-    };
+    }
 
     const thread_closed = {
       borderRadius: thread ? '0px': '30px',
@@ -42,15 +42,15 @@ const Comment = ({ comment, getComments, thread_style }) => {
     <div style={{...thread_style, ...comment_hier_margin}} className='comment'>
       <div className='upper-comment'>
           {!thread && <div id='thread-container' onClick={() => close_thread()}><div className='comment-thread' style={thread_closed}  ></div></div>}
-          <div id='comment-image'><img src='#'></img></div>
-          <div id='comment-name' >{curr_comment['poster']}</div>
+          <div id='comment-image'><img src={comment.poster.profile_picture}></img></div>
+          <div id='comment-name' >{curr_comment.poster.username}</div>
           <RelativeTime object_date={curr_comment.date_created}/>
       </div>
       <div className='lower-comment'>
         { thread && <div id='thread-container' onClick={() => close_thread()}><div className='comment-thread' style={thread_closed}  ></div></div>}
         <div id="comment-body">
           <div className='toggle-div' style={close_thread_style}>
-            <p id="comment-text" >{curr_comment['text']}</p> 
+            <p id="comment-text" >{curr_comment.text}</p> 
             <div id='comment-btn'>
               <LikeDislike object="comment" object_id={curr_comment.id} likes={curr_comment.likes} user_vote={curr_comment.user_vote}/>
 
