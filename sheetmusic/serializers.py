@@ -92,7 +92,6 @@ class CommentSerializer(ModelSerializer):
         return Bookmark.objects.filter(user=user_prof, comment=obj).exists()
         
 class CommentNoChildrenSerializer(ModelSerializer):
-    parent_post = serializers.SerializerMethodField()
 
     class Meta:
         model = Comment

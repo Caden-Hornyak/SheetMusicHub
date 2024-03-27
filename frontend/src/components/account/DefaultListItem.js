@@ -1,21 +1,22 @@
 import React, { useState, useEffect } from 'react'
 import './DefaultListItem.css'
-import { BiBarChartAlt } from "react-icons/bi";
-import { useNavigate } from 'react-router-dom';
+import { BiBarChartAlt } from "react-icons/bi"
+import { useNavigate } from 'react-router-dom'
 
 
-const DefaultListItem = ({ list, files=[], DefaultIcon=<BiBarChartAlt />, header='', text='', id='id', url='/'}) => {
+const DefaultListItem = ({ list, DefaultIcon=<BiBarChartAlt />, header='', text='', id='id', url='/', files='files'}) => {
     let navigate = useNavigate()
 
   return (
     <>
         {list.length > 0 && list.map(item => {
-            let chosen_image = null;
-            if (files !== '') {
-                for (let file in list[files]) {
-                    if (file.type == 'image') {
-                        chosen_image = file
-                    }
+            let chosen_image = null
+
+            for (let file_key in item[files]) {
+                let file = item[files][file_key]
+                console.log(file)
+                if (file.type == 'image') {
+                    chosen_image = file.file
                 }
             }
             
@@ -23,7 +24,7 @@ const DefaultListItem = ({ list, files=[], DefaultIcon=<BiBarChartAlt />, header
                 <div key={item.id} className='defaultlistitem-wrapper' onClick={() => navigate(url+item[id])}>
                     <div className='defaultlistitem-left'>
                     {chosen_image ? 
-                        <img src={URL.createObjectURL(chosen_image)}></img>
+                        <img src={chosen_image}></img>
                         :
                         <>
                         {DefaultIcon}

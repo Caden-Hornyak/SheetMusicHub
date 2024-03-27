@@ -18,6 +18,10 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user
   let [save_prompt, set_save_prompt] = useState([false, false])
   let [curr_pressed_keys, set_curr_pressed_keys] = useState({})
 
+  // useEffect(() => {
+  //   console.log(recorded_song[0])
+  // }, [recorded_song])
+
   let recording_action = (action) => {
     if (action === 'start') {
       set_recording(prev_state => {
@@ -52,7 +56,7 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user
     }
   }
   let clear_song = () => {
-    set_recorded_song([], [])
+    set_recorded_song([[], []])
     set_recording([false, 0])
   }
   // Recording END
@@ -89,7 +93,7 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user
               innerRef={ref => piano_keys_ref.current[i] = ref}
               pressed={null}
               user_interact={user_interact}
-              playback_visual={'none'}
+              pb_visual_mode={'none'}
               type={type}
             />
           ]
@@ -116,6 +120,8 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user
   // Play Piano Key START
   useEffect(() => {
     const play_piano_key = (e) => {
+      
+      if (e.repeat) return
       let event = e
       // mouse click handling
 
@@ -131,27 +137,28 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user
         set_curr_mouse_click(prev_state => event.key)
       }
 
-      if (event.repeat) return
+      
       let pressed_key = event.key.toLowerCase()
   
       if (pressed_key === 'shift') {
         pressed_key = event.location === 1 ? 'l_shft': 'r_shft'
       }
-  
-  
+      
+      
       let key_state = event.type === 'keydown'
       let key_ind = key_to_pkeyind[pressed_key]
-      if (!key_ind) return
+
+      if (key_ind == null || key_ind == undefined) return
       
-      // if recording
-      if (recording[0]) {
+      // if recording and not repeat
+      if (recording[0] && ((!(key_ind in curr_pressed_keys) && key_state) || ((key_ind in curr_pressed_keys) && !key_state))) {
         
         if (key_ind in curr_pressed_keys) {
 
           set_recorded_song((prev_song) => {  
             
             let l = [...prev_song]
-            console.log(piano[key_ind].props.note, " saved to ", curr_pressed_keys[key_ind])
+
             l[recording[1]][curr_pressed_keys[key_ind]].push(new Date().getTime())
             set_curr_pressed_keys(prev_state => {
               
@@ -178,7 +185,7 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user
         }
         
       }
-  
+
       set_piano(prev_state => {
         const keys = [...prev_state]
         keys[key_ind] = React.cloneElement(keys[key_ind], { pressed: key_state }) // Clone the specific PianoKey and update the pressed prop
@@ -254,6 +261,7 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user
     console.log(recorded_song)
      set_recorded_song(prev_song => {
       let l = [...prev_song[0]]
+      console.log(l)
       for (let i = 0; i < l.length; i++) {
         if (l[i].length === 2) {
           l[i].push(l[i][1] + 50)

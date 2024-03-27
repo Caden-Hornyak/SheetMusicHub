@@ -61,7 +61,7 @@ const Profile = () => {
                     user_posts === -1 ?
                     <p>Error getting user posts</p>
                     :
-                    <DefaultListItem list={user_posts} files='files' 
+                    <DefaultListItem list={user_posts} files='images' 
                     DefaultIcon={<BsBodyText />} header='title' text='description'
                     url='/posts/'
                     />

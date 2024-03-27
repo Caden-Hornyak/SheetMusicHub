@@ -83,7 +83,7 @@
     border-radius: 15px;
     top: 0;
     left: 0;
-    border: 1px solid black;
+    border: 1px solid rgba(0, 0, 0, .3);
     min-height: 20px;
 
 }

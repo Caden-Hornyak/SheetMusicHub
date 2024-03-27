@@ -120,7 +120,7 @@ function DisplayPostListView({ lvh }) {
                         <div className='postlistview-post' onClick={() => viewPost(post)}>
                             <div className='postlistview-upperpost'>
                                 <h2>{post.title}</h2>
-                                <span style={{ marginLeft: '0px'}}>Posted by {post.poster} <RelativeTime object_date={post.date_created} /></span>
+                                <span style={{ marginLeft: '0px'}}>Posted by {post.poster.username} <RelativeTime object_date={post.date_created} /></span>
                             </div>
                             <div className='postlistview-fileviewer'>
                                 {post.files.length !== 0 && <FileViewer uploaded_files={post.files} clamp={true} />}

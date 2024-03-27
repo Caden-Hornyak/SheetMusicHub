@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react'
-import { login_normal, login_piano } from '../../actions/auth.js';
-import { Navigate, Link } from 'react-router-dom';
-import CSRFToken from '../../components/utility/CSRFToken.js';
-import { connect, useSelector } from 'react-redux';
+import { login_normal, login_piano } from '../../actions/auth.js'
+import { Navigate, Link } from 'react-router-dom'
+import CSRFToken from '../../components/utility/CSRFToken.js'
+import { connect, useSelector } from 'react-redux'
 
-import './Auth.css';
-import Piano from '../../components/piano/Piano.js';
-import { IoMdCheckmark } from "react-icons/io";
-import Navbar from '../../components/utility/Navbar.js';
+import './Auth.css'
+import background from '../../images/claire_background.svg';
+import Piano from '../../components/piano/Piano.js'
+import { IoMdCheckmark } from "react-icons/io"
+import Navbar from '../../components/utility/Navbar.js'
 
 const LoginPage = ({ login_normal, login_piano }) => {
     const [form_data, set_form_data] = useState({
@@ -22,13 +23,13 @@ const LoginPage = ({ login_normal, login_piano }) => {
   // const [logged_in, set_logged_in] = useState(false);
   let logged_in = useSelector(state => state.auth.isAuthenticated)
   
-  const { username, password} = form_data;
+  const { username, password} = form_data
 
-  const onChange = e => set_form_data({...form_data, [e.target.name]: e.target.value });
+  const onChange = e => set_form_data({...form_data, [e.target.name]: e.target.value })
 
   const onSubmit = async e => {
 
-    e.preventDefault();
+    e.preventDefault()
 
     if (piano_pass_active) {
       await login_piano(username, piano_password)
@@ -55,7 +56,7 @@ const LoginPage = ({ login_normal, login_piano }) => {
             <Piano type='login' set_product={set_piano_password} visible={piano_vis} />
           </div>
         </div>
-
+        <img id="background" src={background}></img>
         <div className='register-wrapper'>
           <h1>Login</h1>
           <form className='auth-form' onSubmit={e => onSubmit(e)} >

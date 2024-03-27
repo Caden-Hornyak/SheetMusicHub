@@ -56,7 +56,7 @@ const Bookmarked = () => {
                     bookmarked_posts === -1 ?
                     <p>Error getting bookmarked posts</p>
                     :
-                    <DefaultListItem list={bookmarked_posts} files='files' 
+                    <DefaultListItem list={bookmarked_posts} files='images' 
                     DefaultIcon={<BsBodyText />} header='title' text='description'
                     url='/posts/'
                     />

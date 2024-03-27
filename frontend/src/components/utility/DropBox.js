@@ -47,13 +47,13 @@ const DragAndDropBox = ({ uploaded_files, handle_change, wipe_upload}) => {
         onDragLeave={(e) => handle_drag_leave(e)}
         onDrop={(e) => handle_drop(e)}
         >
-        <p>
-          Drag & Drop or upload here: 
+        <p class='dropbox-dragtxt'>
+          Drag & Drop or upload here:
           <input  type="file" id='file_upload' name='file_upload' onChange={(e) => handle_change(e)} 
           accept='image/*, .pdf, video/*' multiple
           />
         </p> 
-        <p>(image, video, or pdf)</p>
+        <p class='dropbox-filetxt'>(image, video, or pdf)</p>
         
         </div> 
       :

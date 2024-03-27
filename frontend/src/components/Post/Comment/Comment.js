@@ -9,7 +9,6 @@ import { BiUpArrowAlt } from "react-icons/bi";
 
 const Comment = ({ comment, getComments, thread_style }) => {
 
-    console.log(comment)
     let [curr_comment, setcurr_comment] = useState(comment)
     let [comment_clicked, setcomment_clicked] = useState(false)
     let child_comment = curr_comment.child_comment

@@ -39,3 +39,37 @@ export const default_ajax = async (action, url, action_body='') => {
         return -1
       }
 }
+
+export function Timer(callback, delay) {
+    var args = arguments,
+        self = this,
+        timer, start
+
+    this.clear = function () {
+        clearTimeout(timer)
+    }
+
+    this.pause = function () {
+        this.clear()
+        delay -= new Date() - start
+    }
+
+    this.resume = function () {
+        start = new Date()
+        timer = setTimeout(function () {
+            callback.apply(self, Array.prototype.slice.call(args, 2, args.length))
+            self.destroy()
+        }, delay)
+    }
+
+    this.destroy = function() {
+        this.clear()
+        // Remove references to the Timer instance
+        delete self.clear
+        delete self.pause
+        delete self.resume
+        delete self.destroy
+    }
+
+    this.resume()
+}
