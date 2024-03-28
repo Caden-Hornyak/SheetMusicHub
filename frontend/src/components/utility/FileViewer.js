@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react'
 import './FileViewer.css'
-import { BiLeftArrow, BiRightArrow, BiX } from "react-icons/bi";
-import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
-
+import { BiLeftArrow, BiRightArrow, BiX } from "react-icons/bi"
+import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io"
+import Piano from '../piano/Piano'
 
 const FileViewer = ({ uploaded_files, wipe_upload=null, clamp=false }) => {
 
@@ -31,6 +31,8 @@ const FileViewer = ({ uploaded_files, wipe_upload=null, clamp=false }) => {
       {wipe_upload && <button onClick={() => wipe_upload(uploaded_files[current_index])} ></button>}
       {current_index !== 0 && <button className='scroll-button' id='prev-img-btn' onClick={(e) => handle_prev_click(e)}><IoIosArrowBack /></button>}
       {uploaded_files[current_index].type == 'image' && <img onLoad={(e) => get_orig_file_dim(e)} src={uploaded_files[current_index].file}></img>}
+      {console.log(uploaded_files[current_index])}
+      {uploaded_files[current_index].type == 'song' && <Piano type='playback' user_interact={false} song={uploaded_files[current_index].song_notes} />}
       {uploaded_files[current_index].type == 'video' && (
         <video controls width="400" height="300">
           <source src={URL.createObjectURL(uploaded_files[current_index])} type={uploaded_files[current_index].type} />
@@ -44,4 +46,4 @@ const FileViewer = ({ uploaded_files, wipe_upload=null, clamp=false }) => {
   )
 }
 
-export default FileViewer;
+export default FileViewer

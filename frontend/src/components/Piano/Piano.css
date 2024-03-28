@@ -3,9 +3,11 @@
     position: absolute;
     top: 0;
     left: 0;
-    width: 100vw;
+
+    width: max(100%, 600px);
     background-color: var(--thirty-color);
     height: 100%;
+    overflow: hidden;
 }
 
 #piano {
@@ -167,4 +169,19 @@
 
 .pianosave-checkmark svg {
     transform: scale(6);
+}
+
+#piano-playbtn {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--text-color);
+}
+
+#piano-playbtn svg {
+    position: absolute;
+    left: 47.5%;
+    top: 42.5%;
+    transform: scale(3);
 }

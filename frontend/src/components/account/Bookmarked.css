@@ -41,6 +41,10 @@
     transform: scale(1.05);
 }
 
+#bookmarked-posttab {
+    overflow-y: scroll;
+}
+
 #bookmarked-tabs > div {
     width: 100%;
     height: 100%;

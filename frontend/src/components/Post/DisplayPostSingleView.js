@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react'
 import axios from '../../configs/axiosConfig'
 import LikeDislike from './LikeDislike'
-import { BiArrowBack, BiUpArrowAlt } from "react-icons/bi";
+import { BiArrowBack, BiUpArrowAlt } from "react-icons/bi"
 import './DisplayPostSingleView.css'
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom'
 import Comment from './Comment/Comment'
 import RelativeTime from './RelativeTime'
 import CreateComment from './Comment/CreateComment'
-import FileViewer from '../utility/FileViewer';
+import FileViewer from '../utility/FileViewer'
 import def_back from '../../images/default_sp_background.jpg'
+import { default_ajax } from '../../utility/CommonFunctions'
 
 const DisplayPostSingleView = (props) => {
 
@@ -52,23 +53,24 @@ const DisplayPostSingleView = (props) => {
     }, [post])
 
     let getPost = async () => {
-        let res;
+        let res = await default_ajax('get', `posts/${post_id}`)
 
-        try {
-            res = await axios.get(`${process.env.REACT_APP_API_URL}/api/posts/${post_id}`);
-            
-            if (res.data.error) {
-                console.log("Post not found")
-            } else {
-                setPost({...post, title: res.data.title, images: res.data.images, 
-                        likes: res.data.likes, id: res.data.id, user_vote: res.data.user_vote, 
-                        date_created: res.data.date_created, description: res.data.description,
-                        poster: res.data.poster,
-                        files: [...res.data.pdf_files, ...res.data.videos, ...res.data.images].sort((a, b) => { return a.order - b.order }) })
-                setpost_comments({...post_comments, comments: res.data.comments})
+        if (res === -1) {
+            console.log(res)
+        } else {
+            let cleaned_songs = res.songs
+            for (let song_key in cleaned_songs) {
+                cleaned_songs[song_key].type = 'song'
+                cleaned_songs[song_key].order = 0
             }
-        } catch (err) {
-            console.log(err);
+
+            setPost({...post, title: res.title, images: res.images, 
+                likes: res.likes, id: res.id, user_vote: res.user_vote, 
+                date_created: res.date_created, description: res.description,
+                poster: res.poster, songs: res.songs,
+                // display files in order they were saved, put songs at end
+                files: [...res.pdf_files, ...res.videos, ...res.images, ...cleaned_songs].sort((a, b) => (a.order || 0) - (b.order || 0)) })
+        setpost_comments({...post_comments, comments: res.comments})
         }
     }
 
@@ -90,7 +92,6 @@ const DisplayPostSingleView = (props) => {
             <img className='background' src={background} alt="Sheet Music"></img>
             <div className="singlepost-post-wrapper">
                 <div className='singlepost-post'>
-                    {console.log(post)}
                     <div id='singlepost-upper' >
                         <div id='singlepost-title' >{post.title}</div>
                         <div id='date-and-user'>

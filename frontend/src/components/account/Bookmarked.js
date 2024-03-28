@@ -47,7 +47,7 @@ const Bookmarked = () => {
                     <p>{<l-dot-pulse
                     size="43"
                     speed="1.3" 
-                    color="black" 
+                    color="white" 
                     ></l-dot-pulse>}</p>
                     :
                     bookmarked_posts.length === 0 ?
@@ -68,7 +68,7 @@ const Bookmarked = () => {
                 <p>{<l-dot-pulse
                 size="43"
                 speed="1.3" 
-                color="black" 
+                color="white" 
                 ></l-dot-pulse>}</p>
                 :
                 bookmarked_comments.length === 0 ?

@@ -1,12 +1,16 @@
-import React, { useState, useRef, useEffect } from 'react';
-import axios from '../configs/axiosConfig';
-import Cookies from 'js-cookie';
-import Navbar from '../components/utility/Navbar.js';
+import React, { useState, useRef, useEffect } from 'react'
+import axios from '../configs/axiosConfig'
+import Cookies from 'js-cookie'
+import Navbar from '../components/utility/Navbar.js'
 import { useNavigate } from 'react-router-dom'
 import './CreatePostPage.css'
 import { BiX } from 'react-icons/bi'
 import DropBox from '../components/utility/DropBox.js'
-import { attribute_animation } from '../utility/CommonFunctions.js';
+import { attribute_animation } from '../utility/CommonFunctions.js'
+import DefaultListItem from '../components/account/DefaultListItem.js'
+import { dotPulse } from 'ldrs'
+import { LuListMusic } from "react-icons/lu"
+import { default_ajax } from '../utility/CommonFunctions.js'
 
 const CreatePostPage = () => {
 
@@ -28,6 +32,16 @@ const CreatePostPage = () => {
         }
     }, [cpp_fullheight])
 
+    let [user_songs, set_user_songs] = useState(null)
+    useEffect(() => {
+        let get_songs = async () => {
+            let res = await default_ajax('get', 'songs/multiple')
+            set_user_songs(res)
+        }
+        get_songs()
+    }, [])
+    
+
     
     const [form_data, set_form_data] = useState({
         title: '',
@@ -37,9 +51,11 @@ const CreatePostPage = () => {
     const [form_files, set_form_files] = useState([])
 
     const [upload_count, set_upload_count] = useState(0)
+    let selections = useRef({})
+    let [display_songs, set_display_songs] = useState(false)
 
     const handle_change = (e) => {
-        console.log('ran')
+
         // update files
         if (e.target.files || e.dataTransfer) {
             const file_array = extract_file_info(e)
@@ -84,7 +100,7 @@ const CreatePostPage = () => {
       }
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
+        e.preventDefault()
 
         try {
             let type_list = []
@@ -95,9 +111,19 @@ const CreatePostPage = () => {
             form_files.forEach(file => {
                 post_form_data.append('files', file)
                 type_list.push(file.type)
-              });
+              })
             post_form_data.append('file_types', JSON.stringify(type_list))
 
+            if (Object.keys(selections.current).length !== 0) {
+                let songs = []
+                for (let selection in selections.current) {
+                    songs.push(selection)
+                }
+                console.log(songs)
+                post_form_data.append('songs', JSON.stringify(songs))
+                
+            }
+            console.log(selections.current)
             const config = {
                 headers: {
                     'X-CSRFToken': Cookies.get('csrftoken')
@@ -131,6 +157,10 @@ const CreatePostPage = () => {
         }
     }
 
+    useEffect(() => {
+        dotPulse.register()
+    }, [])
+
     return(
         <>
             <Navbar parent_height_setter={set_cpp_fullheight}/>
@@ -140,8 +170,32 @@ const CreatePostPage = () => {
                     <form onSubmit={(e) => handleSubmit(e)} id='createpost-form'>
                         <input className='createpost-input' type='text' id='title' name='title' placeholder='Title' onChange={handle_change}/>
                         <textarea className='createpost-input' type='text' id='description' name='description' placeholder='Description' onChange={handle_change} />
+                        <div onClick={() => set_display_songs(prev_state => !prev_state)}>
+                            Share Your Songs
+                        {display_songs &&
+                            <div onClick={e => e.stopPropagation()}>
+                                {!user_songs ? 
+                                    <p>{<l-dot-pulse
+                                    size="43"
+                                    speed="1.3" 
+                                    color="var(--text-color)" 
+                                    ></l-dot-pulse>}</p>
+                                :
+                                user_songs.length === 0 ?
+                                    <p>You have no songs</p>
+                                :
+                                user_songs === -1 ?
+                                    <p>Error getting user songs</p>
+                                :
+                                    <DefaultListItem list={user_songs}
+                                    DefaultIcon={<LuListMusic />} header='name'
+                                    url='/songs/' selection={selections} />
+                                }
+                            </div> 
+                        }
+                        </div>
                         <DropBox uploaded_files={form_files} handle_change={handle_change} wipe_upload={wipe_upload} />
-                        <div className='createpostpage-lower'>
+                        <div id='createpostpage-lower'>
                             <button type='button' onClick={() => navigate('/')} >Cancel</button>
                             <button type='submit'>Submit</button>
                         </div>

@@ -40,6 +40,7 @@ class Post(models.Model):
     images = models.ManyToManyField('Image', blank=True)
     videos = models.ManyToManyField('Video', blank=True)
     description = models.TextField(default='')
+    songs = models.ManyToManyField('Song', blank=True)
     
     comments = models.ManyToManyField('Comment', blank=True)
     date_created = models.DateTimeField(auto_now_add=True)
@@ -72,7 +73,7 @@ class UserProfile(models.Model):
     last_name = models.CharField(max_length=255, default='')
     posts = models.ManyToManyField('Post', blank=True, related_name='created_post')
     songs = models.ManyToManyField('Song', blank=True)
-    profile_picture = models.ImageField(upload_to='images/', default='images/default_profpic')
+    profile_picture = models.ImageField(upload_to='images/', default='images/default_profpic.png')
 
     def __str__(self):
         return str(self.user)

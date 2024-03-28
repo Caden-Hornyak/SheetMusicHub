@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react'
 import './Profile.css'
 import { default_ajax } from '../../utility/CommonFunctions.js'
 import DefaultListItem from './DefaultListItem.js'
-import { BiCommentDetail } from "react-icons/bi";
-import { BsBodyText } from "react-icons/bs";
-import { LuListMusic } from "react-icons/lu";
+import { BiCommentDetail } from "react-icons/bi"
+import { BsBodyText } from "react-icons/bs"
+import { LuListMusic } from "react-icons/lu"
 import { dotPulse } from 'ldrs'
 
 
@@ -52,7 +52,7 @@ const Profile = () => {
                     <p>{<l-dot-pulse
                         size="43"
                         speed="1.3" 
-                        color="black" 
+                        color="white" 
                         ></l-dot-pulse>}</p>
                     :
                     user_posts.length === 0 ?
@@ -73,7 +73,7 @@ const Profile = () => {
                 <p>{<l-dot-pulse
                     size="43"
                     speed="1.3" 
-                    color="black" 
+                    color="white" 
                     ></l-dot-pulse>}</p>
                 :
                 user_comments.length === 0 ?
@@ -95,7 +95,7 @@ const Profile = () => {
                 <p>{<l-dot-pulse
                     size="43"
                     speed="1.3" 
-                    color="black" 
+                    color="white" 
                     ></l-dot-pulse>}</p>
                 :
                 user_songs.length === 0 ?

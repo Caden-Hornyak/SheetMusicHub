@@ -20,14 +20,25 @@ import json
 from django.core.files.storage import default_storage
 from django.core.files.base import File
 
+# convert raw notes to notes + chords for pass
 def piano_pass_convert(piano_password):
     stored_password = ''
-    for kt_pair in piano_password:
-        kt_pair[0].sort()
-        for note in kt_pair[0]:
-            stored_password += note
-        stored_password += '|'
+    ptr = 0
+    curr_chord = []
+    while ptr < len(piano_password):
+        start_ptr = ptr
+        while ptr < len(piano_password) and (
+        ptr == start_ptr or piano_password[ptr][1] - piano_password[ptr-1][1]) <= 65:
+            curr_chord.append(piano_password[ptr][0])
+            ptr += 1
+
+        curr_chord.sort()
+        stored_password += ''.join(curr_chord) + '|'
+        curr_chord.clear()
+    
+    print(stored_password, file=sys.stderr)
     return stored_password
+
 
 @method_decorator(ensure_csrf_cookie, name='dispatch')
 class Posts(APIView):
@@ -41,15 +52,14 @@ class Posts(APIView):
             max_uploads = 10
 
             data = request.data
-
+            
             uploaded_files = request.FILES.getlist('files')
             file_types = json.loads(data['file_types'])
 
-            # image = Image(name=uploaded_files[0].name, )
 
             user_prof = UserProfile.objects.get(user=request.user)
-            post = Post(title=data['title'], description=data['description'], poster=user_prof)
-            post.save()
+            post = Post.objects.create(title=data['title'], description=data['description'], poster=user_prof)
+            
 
             for uploaded_file, file_type in zip(uploaded_files, file_types):
                 if file_type.startswith('image'): file_type='image'
@@ -60,7 +70,6 @@ class Posts(APIView):
                 file_path = os.path.join(settings.MEDIA_ROOT, (file_type+'s'), uploaded_file.name)
                 default_storage.save(file_path, uploaded_file)
 
-                print(file_path, file=sys.stderr)
 
                 if file_type == 'image':
                     image = Image(name=uploaded_file.name)
@@ -86,6 +95,14 @@ class Posts(APIView):
                 else:
                     print(f'Unsupported filetype!', file=sys.stderr)
 
+            for song_id in json.loads(data['songs']):
+                try:
+                    song = Song.objects.get(id=song_id)
+                except Exception as e:
+                    song = ''
+                
+                if song: post.songs.add(song)
+
                 
             post.save()
             return Response({'success': 'Post created successfully', 'id': post.id})
@@ -96,7 +113,7 @@ class Posts(APIView):
 
     
     # get posts for homepage or single view
-    def get(self, request, id, format=None):
+    def get(self, request, id='multiple', format=None):
 
         if id == 'multiple':
             serializer = PostSerializerMultiple(Post.objects.all(), many=True, context={ 'request': request })
@@ -104,7 +121,8 @@ class Posts(APIView):
         else:
             try:
                 serializer = PostSerializerSingle(Post.objects.get(id=id), context={ 'request': request })
-                # print(serializer.data, file=sys.stderr)
+
+                print(serializer.data, file=sys.stderr)
             except Exception as e:
                 print("Post:get ", e, file=sys.stderr)
                 return Response({ 'error': 'Post does not exist'})
@@ -138,7 +156,6 @@ class RegisterView(APIView):
                     return Response({ 'error': 'Passwords do not match'})
                 else:
                     user = User.objects.create_user(username=username, password=piano_pass)
-                    print(username, piano_pass, file=sys.stderr)
                     user_profile = UserProfile.objects.create(user=user, first_name='', last_name='')
 
                     return Response({ 'success': 'Account Created'})
@@ -217,6 +234,7 @@ class LoginView(APIView):
                 return Response({ 'error': 'Error Authenticating User'})
         except Exception as e:
             print('LoginView-POST: ', e, file=sys.stderr)
+            return Response({ 'error': 'Error Authenticating User'})
 
 @method_decorator(ensure_csrf_cookie, name='dispatch')       
 class LogoutView(APIView):

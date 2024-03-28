@@ -96,7 +96,26 @@ class CommentNoChildrenSerializer(ModelSerializer):
     class Meta:
         model = Comment
         fields = ('id', 'text', 'date_created', 'likes', 'parent_post')
- 
+
+
+class NoteSerializer(ModelSerializer):
+    class Meta:
+        model = Note
+        fields = '__all__'
+
+class SongNoteSerializer(ModelSerializer):
+    note = NoteSerializer()
+
+    class Meta:
+        model = SongNote
+        fields = ('note', 'order')
+
+class SongSerializer(ModelSerializer):
+    song_notes = SongNoteSerializer(source='songnote_set', many=True)
+    
+    class Meta:
+        model = Song
+        fields = ('name', 'song_notes', 'id')
 
 class PostSerializerMultiple(ModelSerializer):
     user_vote = serializers.SerializerMethodField()
@@ -105,10 +124,11 @@ class PostSerializerMultiple(ModelSerializer):
     pdf_files = PDFSerializer(many=True)
     videos = VideoSerializer(many=True)
     poster = UserProfilePublicSerializer()
+    songs = SongSerializer(many=True)
 
     class Meta:
         model = Post
-        fields = ('id', 'title', 'likes', 'comment_count', 'images', 'pdf_files',
+        fields = ('id', 'title', 'likes', 'comment_count', 'images', 'pdf_files', 'songs',
                    'videos', 'comments', 'date_created', 'poster', 'description', 'user_vote', 'user_bookmark')
 
         
@@ -127,8 +147,11 @@ class PostSerializerMultiple(ModelSerializer):
             return 0
         
     def get_user_bookmark(self, obj):
-        user_prof = UserProfile.objects.get(user=self.context.get('request').user)
-        return Bookmark.objects.filter(user=user_prof, post=obj).exists()
+        try:
+            user_prof = UserProfile.objects.get(user=self.context.get('request').user)
+            return Bookmark.objects.filter(user=user_prof, post=obj).exists()
+        except Exception as e:
+            return False
 
 class PostSerializerSingle(ModelSerializer):
     user_vote = serializers.SerializerMethodField()
@@ -138,6 +161,7 @@ class PostSerializerSingle(ModelSerializer):
     pdf_files = PDFSerializer(many=True)
     comments = serializers.SerializerMethodField()
     poster = UserProfilePublicSerializer()
+    songs = SongSerializer(many=True)
 
     class Meta:
         model = Post
@@ -167,25 +191,3 @@ class PostSerializerSingle(ModelSerializer):
         user_prof = UserProfile.objects.get(user=self.context.get('request').user)
         return Bookmark.objects.filter(user=user_prof, post=obj).exists()
         
-
-class NoteSerializer(ModelSerializer):
-    class Meta:
-        model = Note
-        fields = '__all__'
-
-class SongNoteSerializer(ModelSerializer):
-    note = NoteSerializer()
-
-    class Meta:
-        model = SongNote
-        fields = ('note', 'order')
-
-class SongSerializer(ModelSerializer):
-    song_notes = SongNoteSerializer(source='songnote_set', many=True)
-    
-    class Meta:
-        model = Song
-        fields = ('name', 'song_notes', 'id')
-
-
-    

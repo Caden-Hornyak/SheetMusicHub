@@ -3,14 +3,15 @@ import PianoKey from './PianoKey'
 import { Howl } from 'howler'
 import './Piano.css'
 import { attribute_animation, default_ajax } from '../../utility/CommonFunctions'
-import { FaXmark } from "react-icons/fa6";
-import { MdOutlineSaveAlt } from "react-icons/md";
-import { TbShare2 } from "react-icons/tb";
-import { IoMdCheckmark } from "react-icons/io";
-import { FaPlay, FaPause } from "react-icons/fa";
+import { FaXmark } from "react-icons/fa6"
+import { MdOutlineSaveAlt } from "react-icons/md"
+import { TbShare2 } from "react-icons/tb"
+import { IoMdCheckmark } from "react-icons/io"
+import { FaPlay, FaPause } from "react-icons/fa"
 import Tooltip from '../utility/Tooltip'
+import { connect } from 'react-redux'
 
-const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user_interact=true, song=null }) => {
+const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user_interact=true, song=null, isAuthenticated }) => {
   
   // Recording START
   let [recording, set_recording] = useState([false, 0])
@@ -42,10 +43,12 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user
         }
         set_recorded_song([[], []])
       } else {
-        if (type == 'login') {
+        if (type === 'login') {
+          console.log('login')
           set_product(recorded_song[0])
           set_recorded_song([[], []])
-        } else if (type == 'register') {
+          set_recording([false, 0])
+        } else if (type === 'register') {
           set_recording([false, 1])
         } else {
           set_recording([false, 0])
@@ -118,9 +121,19 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user
   // Create Piano END
 
   // Play Piano Key START
+
+ // for play/pause playback
+  let change_playing = (e) => {
+    console.log(e)
+    if (e.repeat) return
+    if (e.type !== 'click' && e.key.toLowerCase() !== ' ') return
+    set_playing(prev_state => prev_state === 'playing' ? 'pause': 'playing')
+  }
+
+
   useEffect(() => {
     const play_piano_key = (e) => {
-      
+      e.preventDefault()
       if (e.repeat) return
       let event = e
       // mouse click handling
@@ -152,7 +165,7 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user
       
       // if recording and not repeat
       if (recording[0] && ((!(key_ind in curr_pressed_keys) && key_state) || ((key_ind in curr_pressed_keys) && !key_state))) {
-        
+        if (key_state) console.log(new Date().getTime())
         if (key_ind in curr_pressed_keys) {
 
           set_recorded_song((prev_song) => {  
@@ -193,11 +206,16 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user
       })
     }
 
+
+    
+
     if (user_interact && visible) {
       document.addEventListener('keydown', play_piano_key)
       document.addEventListener('keyup', play_piano_key)
       document.addEventListener('clickpianokey', play_piano_key)
       document.addEventListener('mouseup', play_piano_key)
+    } else if (!user_interact && visible) {
+      document.addEventListener('keypress', change_playing)
     }
 
     return () => {
@@ -400,8 +418,8 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user
         </div>
       }
       
-      <div id='piano-wrapper'>
-        {user_interact && 
+      <div id='piano-wrapper' onClick={type === 'playback' ? (e) => change_playing(e): undefined}>
+        {user_interact && isAuthenticated &&
           <div id='piano-btn-wrapper'>
             <Tooltip content='Record' direction='bottom' delay={300} >
               <button className='piano-btn' onClick={() => recording[0] ? recording_action('end') : recording_action('start')} >
@@ -411,12 +429,12 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user
             {(type === 'register' || type === 'login') && !recording && <p>{recording[1] === 0 ? 'Press Start To Begin Recording' : 'Confirm Password'}</p>}
           </div>
         }
-        { type == 'playback' && song &&
+        { type === 'playback' && song && playing !== 'playing' &&
           <div id='pianoplayback-btn-wrapper'>
-            <button className='piano-btn' 
-            onClick={() => set_playing(prev_state => prev_state === null || prev_state === 'paused'  ? 'playing': 'paused')}>
-            {playing === 'playing' ? <FaPause /> : <FaPlay />}</button>
-            <button className='piano-btn' onClick={() => set_playing(prev_state => null)}>Go to start</button>
+            <button className='piano-btn' id='piano-playbtn'
+            onClick={() => set_playing('playing')}>
+            <FaPlay /></button>
+            {/* <button className='piano-btn' onClick={() => set_playing(prev_state => null)}>Go to start</button> */}
           </div>
         }
 
@@ -435,4 +453,8 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user
   )
 }
 
-export default Piano
+const mapStateToProps = state => ({
+  isAuthenticated: state.auth.isAuthenticated
+})
+
+export default connect(mapStateToProps, null)(Piano)

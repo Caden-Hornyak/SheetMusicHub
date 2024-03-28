@@ -196,7 +196,7 @@ const Pianokey = ({
         <div ref={glowline} className='glowline-gradient'></div>
       </div>
       <div ref={innerRef} className={`piano-key ${color}-key ${pressed ? 'pressed' : ''}`}
-      onMouseDown={() => click_piano_key()} >{keyboard_key}</div>
+      onMouseDown={() => click_piano_key()} >{user_interact ? keyboard_key : ''}</div>
     </div>
     
   )

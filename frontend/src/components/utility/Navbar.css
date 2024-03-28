@@ -42,7 +42,7 @@ a:hover {
 
         transform: scale(2.5);
         margin: 15px;
-        margin-left: auto;
+        margin-left: 50px;
         margin-right: 30px;
         padding: 0;
         color: var(--text-color);
@@ -63,4 +63,29 @@ a:hover {
         align-items: center;
         background-color: rgb(39, 39, 39);
         box-shadow: 3px 3px 15px rgba(0, 0, 0, .8);
+    }
+
+    .navbar-account-btn {
+        margin-left: auto;
+        display: flex;
+    }
+
+    .navbar-account-btn img {
+
+        border-radius: 10000px;
+        
+        -moz-transform-origin: top left;
+        -o-transform-origin: top left;
+        -webkit-transform-origin: top left;
+    }
+
+    .navbar-account-btn p {
+        margin: 0;
+        margin-right: 14px;
+
+    }
+
+    .navbar-account-btn-inner {
+        display: flex;
+        align-items: center;
     }

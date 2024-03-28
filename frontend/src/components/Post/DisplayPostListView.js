@@ -109,7 +109,7 @@ function DisplayPostListView({ lvh }) {
             :
             posts.length === 0 ?
             <div>
-                <h1>No posts were found</h1>
+                <h1 style={{color: 'var(--text-color)'}}>No posts were found</h1>
             </div>
             : 
             <>

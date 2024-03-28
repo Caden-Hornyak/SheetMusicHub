@@ -116,12 +116,11 @@ hr {
 
     .post-content {
         display: flex;
-        justify-content: left;
+        justify-content: center;
+        width: 600px;
+        height: 500px;
     }
 
-    .post-content > * {
-        margin-left: 40px;
-    }
 
 .background {
     position: fixed;

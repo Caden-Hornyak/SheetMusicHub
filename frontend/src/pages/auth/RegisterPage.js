@@ -9,6 +9,7 @@ import background from '../../images/merry_background.png'
 import Piano from '../../components/piano/Piano.js'
 import { IoMdCheckmark } from "react-icons/io"
 import Navbar from '../../components/utility/Navbar.js'
+import { FaXmark } from "react-icons/fa6"
 
 
 const Register = ({ register_normal_pass, register_piano_pass }) => {
@@ -22,13 +23,17 @@ const Register = ({ register_normal_pass, register_piano_pass }) => {
     let [piano_pass_active, set_piano_pass_active] = useState(true)
     let [piano_password, set_piano_password] = useState(null)
     let [piano_vis, set_piano_vis] = useState(false)
-    let { username, password, re_password } = form_data;
+    let { username, password, re_password } = form_data
+
+    useEffect(() => {
+        set_piano_vis(false)
+    }, [piano_password])
 
     const onChange = e => set_form_data({...form_data, [e.target.name]: e.target.value })
 
     const onSubmit = e => {
 
-        e.preventDefault();
+        e.preventDefault()
         if (piano_pass_active) {
             if (piano_password && piano_password.length === 2 && piano_password[0].length === piano_password[1].length) {
                 for (let i = 0; i < piano_password[0].length; i++) {
@@ -69,14 +74,9 @@ const Register = ({ register_normal_pass, register_piano_pass }) => {
                 return false
             }
         }
-        return true;
+        return true
     }
 
-    useEffect(() => {
-        if (piano_password) {
-            set_piano_vis(false)
-        }
-    }, [piano_password])
 
     if (account_created) {
         return <Navigate to='/login' />
@@ -87,9 +87,9 @@ const Register = ({ register_normal_pass, register_piano_pass }) => {
         <>
             <Navbar />
             <div id='register-page'>
-                <div id='register-piano-wrapper' style={{display: piano_vis ? 'block' : 'none' }}>
+                <div id='register-piano-wrapper' style={{display: piano_vis ? 'flex' : 'none' }}>
+                    <button className='x-btn' onClick={() => set_piano_vis(false)}><FaXmark /></button>
                     <div id='background-darkener' onClick={() => set_piano_vis(false)} ></div>
-                    <button></button>
                     <div id='register-piano'>
                         <Piano type='register' set_product={set_piano_password} visible={piano_vis} />
                     </div>
@@ -141,7 +141,7 @@ const Register = ({ register_normal_pass, register_piano_pass }) => {
                             </div>}
 
                             {/* Cond. btns for norm pass and piano pass */}
-                            {piano_pass_active && <button className='def-btn' onClick={() => set_piano_vis(true)} type='button' disabled={piano_password} >{piano_password ? <IoMdCheckmark /> : 'Create Piano Password'}</button>}
+                            {piano_pass_active && <button className='def-btn' onClick={() => set_piano_vis(true)} type='button' >{piano_password ? <IoMdCheckmark /> : 'Create Piano Password'}</button>}
                             {(piano_pass_active && piano_password) && <button onClick={() => set_piano_password(null)} >Clear Password</button>}
                             {piano_pass_active && <button className='pass-switch-btn' onClick={() => set_piano_pass_active(false)} type='button' >Use Boring Password</button>}
                             {!piano_pass_active && <button className='pass-switch-btn' onClick={() => set_piano_pass_active(true)} type='button' >Use Piano Password</button>}

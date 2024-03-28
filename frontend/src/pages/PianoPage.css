@@ -4,4 +4,5 @@
     top: var(--navbar-height);
     left: 0;
     height: calc(100vh - var(--navbar-height));
+    width: 100vw;
 }
