@@ -6,8 +6,8 @@ import './PianoKey.css'
 import { TbRuler } from 'react-icons/tb'
 
 const Pianokey = ({
-  note, color, keyboard_key, innerRef, pressed, user_interact, pb_visual_mode,
-  type
+  note, color, keyboard_key, piano_height=75, pressed, user_interact, pb_visual_mode,
+  type, timestamps, end_song=null
   }) => {
 
   let load_note = async () => {
@@ -80,51 +80,24 @@ const Pianokey = ({
   let playback_visual_refs = useRef({})
   let timeouts = useRef({})
   let timeouts_counter = useRef(0)
+  let key_wrapper = useRef(null)
 
+  // timing on playback notes
   useEffect(() => {
     if (playback_visuals[pb_counter.current] && curr_pb_anim.current[1]) {
-      curr_pb_anim.current[0].push(attribute_animation(playback_visual_refs.current[pb_counter.current], 'height', '0', '300000px', 1000000))
-      curr_pb_anim.current[1] = false
-    }
-    
-  }, [playback_visuals])
+      const computed_style = window.getComputedStyle(playback_visual_refs.current[pb_counter.current])
+      const height = parseFloat(computed_style.getPropertyValue('height'))
 
-  useEffect(() => {
-    if (pb_visual_mode === 'expand_down') {
+      const duration = 3000 + ((key_wrapper.current.clientHeight / 300) * height)
 
-      let curr_counter = timeouts_counter.current
-      const timeout_id = new Timer((curr_counter) => {
+
+      const f_timeout_id = new Timer(() => {
         audio.current.play()
-        delete timeouts.current[curr_counter]
-      }, 2000, curr_counter)
+      }, (3000 * .75))
 
-      timeouts.current[timeouts_counter.current] = timeout_id
-      timeouts_counter.current += 1
-
-      set_playback_visuals(prev_state => {
-        curr_pb_anim.current[1] = true
-
-        return ({...prev_state,
-          [pb_counter.current]: (
-          <div key={`${pb_counter.current}`} ref={ref => playback_visual_refs.current[pb_counter.current] = ref} className='pb-visualizer-instance'></div>
-          )
-        })
-      })
-    } else if (pb_visual_mode === 'move_down' && curr_pb_anim.current[0]) {
-
-      console.log(curr_pb_anim.current, note)
-      curr_pb_anim.current[0][curr_pb_anim.current[0].length-1].pause()
-      
-      curr_pb_anim.current[0][curr_pb_anim.current[0].length-1] = attribute_animation(playback_visual_refs.current[pb_counter.current], 'top', '0', '300000px', 1000000, 'linear')
-      curr_pb_anim.current[1] = true
-
-
-      let curr_t_counter = timeouts_counter.current
       let curr_pb_counter = pb_counter.current
-      const timeout_id = new Timer((curr_t_counter, curr_pb_counter) => {
-        delete timeouts.current[curr_t_counter]
-        delete playback_visual_refs.current[curr_pb_counter]
-        delete curr_pb_anim.current[curr_pb_counter]
+      let curr_timeout_counter = timeouts_counter.current
+      const s_timeout_id = new Timer((curr_pb_counter, curr_timeout_counter) => {
         set_playback_visuals(prev_state => {
           const new_state = Object.keys(prev_state).filter(key => key !== curr_pb_counter).reduce((acc, key) => {
             acc[key] = prev_state[key]
@@ -132,21 +105,47 @@ const Pianokey = ({
           }, {})
           return new_state
         })
-      }, 3000, curr_t_counter, curr_pb_counter)
+        delete timeouts.current[curr_timeout_counter]
 
-      timeouts.current[timeouts_counter.current] = timeout_id
+        if (end_song !== null) {
+          console.log("HELLO")
+          end_song(null)
+        }
+      }, duration, curr_pb_counter, curr_timeout_counter)
+
+      timeouts.current[timeouts_counter.current] = f_timeout_id
+      timeouts_counter.current += 1
+      timeouts.current[timeouts_counter.current] = s_timeout_id
       timeouts_counter.current += 1
 
-      pb_counter.current += 1
+      console.log(.75 * key_wrapper.current.clientHeight / duration)
+      curr_pb_anim.current[0].push(attribute_animation(playback_visual_refs.current[pb_counter.current], 'top', 
+      `-${height}px`,
+       `${(key_wrapper.current.clientHeight * .75)}px`, duration))
+      curr_pb_anim.current[1] = false
+    }
+    
+  }, [playback_visuals])
 
+  useEffect(() => {
+    if (pb_visual_mode === 'move_down') {
+      set_playback_visuals(prev_state => {
+        curr_pb_anim.current[1] = true
+
+        return ({...prev_state,
+          [pb_counter.current]: (
+          <div key={`${pb_counter.current}`} ref={ref => playback_visual_refs.current[pb_counter.current] = ref} className='pb-visualizer-instance'
+          style={{height: `${(timestamps[1] - timestamps[0]) * 0.3}px`}}></div>
+          )
+        })
+      })
     } else if (pb_visual_mode === 'pause') {
-      
       for (let i = 0; i < curr_pb_anim.current[0].length; i++) {
-        console.log("pause", curr_pb_anim.current, note)
         curr_pb_anim.current[0][i].pause()
       }
     
       for (let timer_key in timeouts.current) {
+        console.log(timeouts.current[timer_key])
         timeouts.current[timer_key].pause()
       }
 
@@ -177,7 +176,7 @@ const Pianokey = ({
     }
 
   return (
-    <div className={`piano-key-wrapper ${color}-wrapper`}>
+    <div className={`piano-key-wrapper ${color}-wrapper`} ref={key_wrapper}>
       <div className='vis-path' >
           {Object.keys(visuals).map((key, index) => {
             return visuals[key]
@@ -195,7 +194,7 @@ const Pianokey = ({
       <div className='glow-line' >
         <div ref={glowline} className='glowline-gradient'></div>
       </div>
-      <div ref={innerRef} className={`piano-key ${color}-key ${pressed ? 'pressed' : ''}`}
+      <div className={`piano-key ${color}-key ${pressed ? 'pressed' : ''}`}
       onMouseDown={() => click_piano_key()} >{user_interact ? keyboard_key : ''}</div>
     </div>
     

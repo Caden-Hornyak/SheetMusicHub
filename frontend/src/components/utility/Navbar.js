@@ -13,7 +13,6 @@ function Navbar( { isAuthenticated, logout, parent_height_setter=() => {}, user_
   let [img_scale, set_img_scale] = useState(0)
 
   let scale_image = (e) => {
-
     const { naturalWidth, naturalHeight } = e.target
     const scale_factor = Math.min(50 / naturalWidth, 50 / naturalHeight)
     set_img_scale(scale_factor)

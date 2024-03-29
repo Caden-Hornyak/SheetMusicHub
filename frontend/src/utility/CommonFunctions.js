@@ -58,17 +58,7 @@ export function Timer(callback, delay) {
         start = new Date()
         timer = setTimeout(function () {
             callback.apply(self, Array.prototype.slice.call(args, 2, args.length))
-            self.destroy()
         }, delay)
-    }
-
-    this.destroy = function() {
-        this.clear()
-        // Remove references to the Timer instance
-        delete self.clear
-        delete self.pause
-        delete self.resume
-        delete self.destroy
     }
 
     this.resume()

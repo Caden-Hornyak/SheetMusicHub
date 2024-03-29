@@ -11,8 +11,48 @@ import { FaPlay, FaPause } from "react-icons/fa"
 import Tooltip from '../utility/Tooltip'
 import { connect } from 'react-redux'
 
-const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user_interact=true, song=null, isAuthenticated }) => {
+const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user_interact=true, song=null, isAuthenticated, multiplayer=false }) => {
   
+  useEffect(() => {
+    const sendMessage = () => {
+      const message = 'hello';
+      // Check if the WebSocket connection is open before sending the message
+      if (socket.readyState === WebSocket.OPEN) {
+        socket.send(message);
+        console.log('Message sent:', message);
+      } else {
+        console.error('WebSocket connection is not open');
+      }
+    };
+
+    console.log(process.env)
+    const url = `ws://localhost:8000/ws/socket-server/`;
+
+    // Create a new WebSocket instance
+    const socket = new WebSocket(url);
+
+    // Add event listeners to handle WebSocket events
+    socket.onopen = () => {
+      console.log('WebSocket connection established');
+    };
+
+    socket.onmessage = (e) => {
+      let data = JSON.parse(e.data)
+      console.log('Received message:', data);
+      // Handle received messages from the WebSocket server
+    };
+
+    socket.onclose = () => {
+      console.log('WebSocket connection closed');
+    };
+
+    // Clean up function to close the WebSocket connection when the component unmounts
+    return () => {
+      socket.close();
+    };
+  }, [])
+
+
   // Recording START
   let [recording, set_recording] = useState([false, 0])
   let [recorded_song, set_recorded_song] = useState([[], []])
@@ -65,7 +105,6 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user
   // Recording END
 
   // Create Piano START
-  let piano_keys_ref = useRef({})
   let [key_to_pkeyind, set_key_to_pkeyind] = useState({})
   let [pkey_to_pkeyind, set_pkey_to_pkeyind] = useState({})
   let [piano, set_piano] = useState([])
@@ -93,8 +132,8 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user
               color={notes[(i % 12)].length === 1 ? 'white' : 'black'} 
               keyboard_key={keyboard_keys[i-start]}
               key={note}
-              innerRef={ref => piano_keys_ref.current[i] = ref}
               pressed={null}
+              piano_height={window.innerWidth >= 1000 ? 75 : 150}
               user_interact={user_interact}
               pb_visual_mode={'none'}
               type={type}
@@ -122,12 +161,17 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user
 
   // Play Piano Key START
 
+  let last_play_ts = useRef(50)
  // for play/pause playback
   let change_playing = (e) => {
-    console.log(e)
-    if (e.repeat) return
-    if (e.type !== 'click' && e.key.toLowerCase() !== ' ') return
-    set_playing(prev_state => prev_state === 'playing' ? 'pause': 'playing')
+    
+    if (e.timeStamp - last_play_ts.current <= 50) return
+    last_play_ts.current = e.timeStamp
+    
+    if (e.type === 'click' || e.code === 'Space') {
+      set_playing(prev_state => prev_state === 'playing' ? 'paused': 'playing')
+    }
+    
   }
 
 
@@ -165,14 +209,13 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user
       
       // if recording and not repeat
       if (recording[0] && ((!(key_ind in curr_pressed_keys) && key_state) || ((key_ind in curr_pressed_keys) && !key_state))) {
-        if (key_state) console.log(new Date().getTime())
         if (key_ind in curr_pressed_keys) {
 
           set_recorded_song((prev_song) => {  
             
             let l = [...prev_song]
 
-            l[recording[1]][curr_pressed_keys[key_ind]].push(new Date().getTime())
+            l[recording[1]][curr_pressed_keys[key_ind]].push(performance.now())
             set_curr_pressed_keys(prev_state => {
               
               const new_state = { ...prev_state }
@@ -187,7 +230,7 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user
             let l = [...prev_song]
 
             set_curr_pressed_keys(prev_state => {
-              let len = l[recording[1]].push([piano[key_ind].props.note, new Date().getTime()]) - 1
+              let len = l[recording[1]].push([piano[key_ind].props.note, performance.now()]) - 1
               return ({
               ...prev_state,
               [key_ind]: len
@@ -235,24 +278,23 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user
   const [window_size, setwindow_size] = useState({
     width: window.innerWidth,
     height: window.innerHeight
-  });
+  })
 
   useEffect(() => {
     const handleResize = () => {
       setwindow_size({
         width: window.innerWidth,
         height: window.innerHeight
-      });
-    };
+      })
+    }
 
     // Listen for window resize events
     window.addEventListener('resize', handleResize);
 
-    // Clean up the event listener
     return () => {
       window.removeEventListener('resize', handleResize);
-    };
-  }, []);
+    }
+  }, [])
 
   useEffect(() => {
     if (window_size['width'] >= 1000) {
@@ -298,10 +340,9 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user
     set_save_prompt([true, true])
   }
 
-  // // Playback START
+  // Playback START
   let [playing, set_playing] = useState(null)
   let start_note_index = useRef(0)
-  let end_note_index = useRef(0)
   let song_player = useRef(null)
   let sp_start_time = useRef(null)
   let sp_anim_frameid = useRef(null)
@@ -315,29 +356,28 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user
         }
         if (start_note_index.current < song.length && 
           song[start_note_index.current]['note']['start_timestamp'] <= timestamp - sp_start_time.current) {
-          
+
+          let timestamps = [
+            song[start_note_index.current]['note']['start_timestamp'], 
+            song[start_note_index.current]['note']['end_timestamp']
+          ]
+
           let pkey_index = pkey_to_pkeyind[song[start_note_index.current]['note']['note']]
+          let ind = start_note_index.current
           set_piano(prev_state => {
             const keys = [...prev_state]
-            keys[pkey_index] = React.cloneElement(keys[pkey_index], { pb_visual_mode: 'expand_down' })
+
+            keys[pkey_index] = React.cloneElement(keys[pkey_index], { pb_visual_mode: 'move_down',
+             timestamps: timestamps, end_song: ind === song.length-1 ? set_playing : null
+            })
             return keys
           })
           start_note_index.current += 1
         }
-        if (end_note_index.current < song.length && 
-          song[end_note_index.current]['note']['end_timestamp'] <= timestamp - sp_start_time.current) {
-          
-          let pkey_index = pkey_to_pkeyind[song[end_note_index.current]['note']['note']]
-          set_piano(prev_state => {
-            const keys = [...prev_state]
-            keys[pkey_index] = React.cloneElement(keys[pkey_index], { pb_visual_mode: 'move_down' })
-            return keys
-          })
-          end_note_index.current += 1
-          }
-          if (start_note_index.current >= song.length && end_note_index.current >= song.length) {
-            set_playing(null)
+          if (start_note_index.current >= song.length) {
             cancelAnimationFrame(sp_anim_frameid.current)
+            sp_start_time.current = null
+            start_note_index.current = 0
           } else {
             if (playing === 'playing') {
               sp_anim_frameid.current = requestAnimationFrame(animate)
@@ -371,7 +411,6 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user
       function reset() {
         sp_start_time.current = null
         start_note_index.current = 0
-        end_note_index.current = 0
       }
 
       return { pause, resume, reset }
@@ -389,6 +428,14 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user
         song_player.current.pause()
       } else if (playing === null) {
         song_player.current.reset()
+        set_piano(prev_state => {
+          const keys = [...prev_state]
+
+          for (let key_key in keys) {
+            keys[key_key] = React.cloneElement(keys[key_key], { pb_visual_mode: 'none' })
+          }
+          return keys
+        })
       }
   }, [playing])
   // Playback END
@@ -429,10 +476,12 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user
             {(type === 'register' || type === 'login') && !recording && <p>{recording[1] === 0 ? 'Press Start To Begin Recording' : 'Confirm Password'}</p>}
           </div>
         }
+
         { type === 'playback' && song && playing !== 'playing' &&
+
           <div id='pianoplayback-btn-wrapper'>
             <button className='piano-btn' id='piano-playbtn'
-            onClick={() => set_playing('playing')}>
+            onClick={(e) => change_playing(e)}>
             <FaPlay /></button>
             {/* <button className='piano-btn' onClick={() => set_playing(prev_state => null)}>Go to start</button> */}
           </div>

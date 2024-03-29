@@ -154,3 +154,13 @@
     opacity: 0;
     z-index: 2
   }
+
+
+  @keyframes expand_down {
+    0% {
+        height: 0;
+    }
+    100% {
+        transform: scale(2);
+    }
+  }

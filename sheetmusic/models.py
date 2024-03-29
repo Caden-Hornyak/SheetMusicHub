@@ -98,8 +98,8 @@ class Song(models.Model):
 
 class Note(models.Model):
     note = models.CharField(max_length=500)
-    start_timestamp = models.IntegerField(default=0)
-    end_timestamp = models.IntegerField(default=0)
+    start_timestamp = models.FloatField(default=0)
+    end_timestamp = models.FloatField(default=0)
 
     def __str__(self):
         return self.note + str(self.start_timestamp)
@@ -125,4 +125,10 @@ class Bookmark(models.Model):
             obj = str(self.post)
 
         return str(self.user) + ' ' + obj
+    
+class Room(models.Model):
+    room_name = models.CharField(max_length=255)
+
+    def __str(self):
+        return self.room_name
 
