@@ -12,13 +12,16 @@ import Tooltip from '../utility/Tooltip'
 import { connect } from 'react-redux'
 
 const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user_interact=true, song=null, 
-                isAuthenticated, room_code='solo', web_socket }) => {
+                isAuthenticated, piano_room='solo', web_socket=null }) => {
   
   useEffect(() => {
-    web_socket.onmessage = (e) => {
-      let data = JSON.parse(e.data)
-      console.log('Received message:', data)
+    if (web_socket !== null) {
+      web_socket.onmessage = (e) => {
+        let data = JSON.parse(e.data)
+        console.log('Received message:', data)
+      }
     }
+    
   }, [])
 
   const mp_send_note = (note) => {
@@ -183,7 +186,7 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user
 
       if (key_ind == null || key_ind == undefined) return
       
-      if (room_code !== 'solo') {
+      if (piano_room !== 'solo') {
         mp_send_note(piano[key_ind].props.note)
       }
 
@@ -464,10 +467,10 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user
             {/* <button className='piano-btn' onClick={() => set_playing(prev_state => null)}>Go to start</button> */}
           </div>
         }
-        {
-          room_code !== 'solo' &&
+        {console.log(piano_room)}
+        {piano_room !== 'solo' &&
           <div>
-            {room_code}
+            {piano_room}
           </div>
         }
 

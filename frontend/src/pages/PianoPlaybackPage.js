@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useRef} from 'react'
-import Piano from '../components/piano/Piano'
+import Piano from '../components/piano/Piano.js'
 import { default_ajax } from '../utility/CommonFunctions'
 import { useParams } from 'react-router-dom'
 import Navbar from '../components/utility/Navbar.js'

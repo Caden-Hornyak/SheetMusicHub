@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom/client'
 import CreatePostPage from './pages/CreatePostPage.js'
 import LoginPage from './pages/auth/LoginPage.js'
 import RegisterPage from './pages/auth/RegisterPage.js'
-import HomePage from './pages/HomePage.js'
+import HomePage from './pages/Homepage.js'
 
 
 import store from './store.js'

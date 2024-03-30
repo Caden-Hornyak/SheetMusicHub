@@ -39,7 +39,7 @@ const FileViewer = ({ uploaded_files, wipe_upload=null, clamp=false }) => {
           Your browser does not support the video tag.
         </video>
       )}
-      {uploaded_files[current_index].type == 'pdf' && <iframe src={URL.createObjectURL(uploaded_files[current_index])}></iframe>}
+      {uploaded_files[current_index].type == 'pdf' && <iframe src={uploaded_files[current_index].file}></iframe>}
       {current_index !== uploaded_files.length-1 && <button className='scroll-button' id='next-img-btn' onClick={(e) => handle_next_click(e)}><IoIosArrowForward /></button>}
       {clamp && is_clamp && <button className='seefullimg-btn'>See Full Image</button>}
     </div>

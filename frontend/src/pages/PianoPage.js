@@ -27,28 +27,40 @@ const PianoPage = () => {
 
   let web_socket = useRef(null)
   let web_socket_open = useRef(false)
+  let room_code = useRef('')
 
   useEffect(() => {
-    console.log(process.env)
-    const url = `ws://localhost:8000/ws/socket-server/`
+    if (multiplayer) {
+      console.log(process.env)
+      const url = `ws://localhost:8000/ws/socket-server/${room_code.current}`
 
-    web_socket.current = new WebSocket(url)
+      web_socket.current = new WebSocket(url)
 
-    web_socket.current.onopen = (e) => {
-      let data = JSON.parse(e.data)
-      web_socket_open.current = true
-      if ('room_code' in data) {
-        set_piano_room(data['room_code'])
+      web_socket.current.onopen = (e) => {
+        console.log('Connection Established')
+      }
+
+      web_socket.current.onmessage = (e) => {
+        
+        let data = JSON.parse(e.data)
+        console.log(data)
+        web_socket_open.current = true
+        if ('room_code' in data) {
+          console.log('Room code, ', data['room_code'])
+          set_piano_room(data['room_code'])
+        }
+      }
+
+      web_socket.current.onclose = () => {
+        console.log('WebSocket connection closed')
       }
     }
 
-    web_socket.current.onclose = () => {
-      console.log('WebSocket connection closed')
-    }
-    
-    
     return () => {
-      web_socket.current.close()
+      if (multiplayer && web_socket.current) {
+        web_socket.current.close()
+      }
+      
     }
   }, [multiplayer])
 
@@ -58,15 +70,19 @@ const PianoPage = () => {
         {piano_room === null &&
         <div>
           <div>
-            <button onClick={() => {}}>Create Room</button>
+            <button onClick={() => {set_multiplayer(true)}}>Create Room</button>
             <button>Join Room</button>
+            {<form>
+              <input type='text'></input>
+            </form>}
+            
           </div>
           <div>
             <button onClick={() => set_piano_room('solo')}>Solo Play</button>
           </div>
         </div>}
-
-        {piano_room === 'solo' || web_socket_open &&
+              
+        {(piano_room === 'solo' || web_socket_open.current) &&
         <div id='pianopage-page' ref={pianopage_ref}>
           <Piano pvh={pianopage_fullheight} piano_room={piano_room} web_socket={web_socket.current}/>
         </div>}
