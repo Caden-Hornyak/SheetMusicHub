@@ -22,12 +22,54 @@ const PianoPage = () => {
       }
   }, [pianopage_fullheight])
 
+  let [piano_room, set_piano_room] = useState(null)
+  let [multiplayer, set_multiplayer] = useState(false)
+
+  let web_socket = useRef(null)
+  let web_socket_open = useRef(false)
+
+  useEffect(() => {
+    console.log(process.env)
+    const url = `ws://localhost:8000/ws/socket-server/`
+
+    web_socket.current = new WebSocket(url)
+
+    web_socket.current.onopen = (e) => {
+      let data = JSON.parse(e.data)
+      web_socket_open.current = true
+      if ('room_code' in data) {
+        set_piano_room(data['room_code'])
+      }
+    }
+
+    web_socket.current.onclose = () => {
+      console.log('WebSocket connection closed')
+    }
+    
+    
+    return () => {
+      web_socket.current.close()
+    }
+  }, [multiplayer])
+
   return (
     <>
         <Navbar parent_height_setter={set_pianopage_fullheight} />
+        {piano_room === null &&
+        <div>
+          <div>
+            <button onClick={() => {}}>Create Room</button>
+            <button>Join Room</button>
+          </div>
+          <div>
+            <button onClick={() => set_piano_room('solo')}>Solo Play</button>
+          </div>
+        </div>}
+
+        {piano_room === 'solo' || web_socket_open &&
         <div id='pianopage-page' ref={pianopage_ref}>
-          <Piano pvh={pianopage_fullheight}/>
-        </div>
+          <Piano pvh={pianopage_fullheight} piano_room={piano_room} web_socket={web_socket.current}/>
+        </div>}
         
     </>
   )

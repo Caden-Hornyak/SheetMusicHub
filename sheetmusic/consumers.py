@@ -2,53 +2,50 @@ from channels.generic.websocket import WebsocketConsumer
 from channels.db import database_sync_to_async
 from .models import Room
 import json
+from asgiref.sync import async_to_sync
+import sys
 
 class RoomConsumer(WebsocketConsumer):
     def connect(self):
-        # self.room_code = self.scope['url_route']['kwargs']['room_code']
-        # await self.channel_layer.group_add(self.room_code, self.channel_name)
-        # await self.accept()
         self.accept()
+
+        room_code = self.scope['url_route']['kwargs'].get('url_input')
+            
+        self.room_group_name = 'test'
+
+        async_to_sync(self.channel_layer.group_add)(
+            self.room_group_name, 
+            self.channel_name
+        )
 
         self.send(text_data=json.dumps({
             'type': 'connection_established',
             'message': 'You are now connected!'
         }))
 
-    # async def disconnect(self, close_code):
-    #     await self.channel_layer.group_discard(self.room_code, self.channel_name)
+        
 
-    # @database_sync_to_async
-    # def get_room(self, room_code):
-    #     return Room.objects.get(code=room_code)
+    def disconnect(self, close_code):
+        pass
 
-    # async def receive(self, text_data):
-    #     # Handle received messages
-    #     pass
+    def receive(self, text_data):
 
+        text_data_json = json.loads(text_data)
+        
+        note = text_data_json['note']
 
+        async_to_sync(self.channel_layer.group_send)(
+            self.room_group_name,
+            {
+                'type': 'handle_note',
+                'note': note
+            }
+        )
 
-# class NoteConsumer(AsyncWebsocketConsumer):
-#     async def connect(self):
-#         self.room_code = self.scope['url_route']['kwargs']['room_code']
-#         self.room_group_name = f'room_{self.room_code}'
-#         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
-#         await self.accept()
+    def handle_note(self, event):
+        note = event['note']
 
-#     async def disconnect(self, close_code):
-#         await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
-
-#     async def receive(self, text_data):
-#         # Handle received notes and broadcast to room group
-#         await self.channel_layer.group_send(
-#             self.room_group_name,
-#             {
-#                 'type': 'note_message',
-#                 'note': text_data
-#             }
-#         )
-
-#     async def note_message(self, event):
-#         note = event['note']
-#         # Handle received note and send to connected clients
-#         await self.send(text_data=note)
+        self.send(text_data=json.dumps({
+            'type': 'note',
+            'note': note
+        }))

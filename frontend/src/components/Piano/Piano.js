@@ -11,57 +11,33 @@ import { FaPlay, FaPause } from "react-icons/fa"
 import Tooltip from '../utility/Tooltip'
 import { connect } from 'react-redux'
 
-const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user_interact=true, song=null, isAuthenticated, multiplayer=false }) => {
+const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user_interact=true, song=null, 
+                isAuthenticated, room_code='solo', web_socket }) => {
   
   useEffect(() => {
-    const sendMessage = () => {
-      const message = 'hello';
-      // Check if the WebSocket connection is open before sending the message
-      if (socket.readyState === WebSocket.OPEN) {
-        socket.send(message);
-        console.log('Message sent:', message);
-      } else {
-        console.error('WebSocket connection is not open');
-      }
-    };
-
-    console.log(process.env)
-    const url = `ws://localhost:8000/ws/socket-server/`;
-
-    // Create a new WebSocket instance
-    const socket = new WebSocket(url);
-
-    // Add event listeners to handle WebSocket events
-    socket.onopen = () => {
-      console.log('WebSocket connection established');
-    };
-
-    socket.onmessage = (e) => {
+    web_socket.onmessage = (e) => {
       let data = JSON.parse(e.data)
-      console.log('Received message:', data);
-      // Handle received messages from the WebSocket server
-    };
-
-    socket.onclose = () => {
-      console.log('WebSocket connection closed');
-    };
-
-    // Clean up function to close the WebSocket connection when the component unmounts
-    return () => {
-      socket.close();
-    };
+      console.log('Received message:', data)
+    }
   }, [])
 
+  const mp_send_note = (note) => {
+    if (web_socket.readyState === WebSocket.OPEN) {
+      web_socket.send(JSON.stringify({
+        'note': note
+      }))
+      console.log('Message sent')
+    } else {
+      console.error('WebSocket connection is not open')
+    }
+  }
+  
 
   // Recording START
   let [recording, set_recording] = useState([false, 0])
   let [recorded_song, set_recorded_song] = useState([[], []])
   let [save_prompt, set_save_prompt] = useState([false, false])
   let [curr_pressed_keys, set_curr_pressed_keys] = useState({})
-
-  // useEffect(() => {
-  //   console.log(recorded_song[0])
-  // }, [recorded_song])
 
   let recording_action = (action) => {
     if (action === 'start') {
@@ -207,6 +183,10 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user
 
       if (key_ind == null || key_ind == undefined) return
       
+      if (room_code !== 'solo') {
+        mp_send_note(piano[key_ind].props.note)
+      }
+
       // if recording and not repeat
       if (recording[0] && ((!(key_ind in curr_pressed_keys) && key_state) || ((key_ind in curr_pressed_keys) && !key_state))) {
         if (key_ind in curr_pressed_keys) {
@@ -248,9 +228,6 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user
         return keys
       })
     }
-
-
-    
 
     if (user_interact && visible) {
       document.addEventListener('keydown', play_piano_key)
@@ -367,13 +344,14 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user
           set_piano(prev_state => {
             const keys = [...prev_state]
 
-            keys[pkey_index] = React.cloneElement(keys[pkey_index], { pb_visual_mode: 'move_down',
+            keys[pkey_index] = React.cloneElement(keys[pkey_index], { pb_visual_mode: ind,
              timestamps: timestamps, end_song: ind === song.length-1 ? set_playing : null
             })
             return keys
           })
           start_note_index.current += 1
         }
+
           if (start_note_index.current >= song.length) {
             cancelAnimationFrame(sp_anim_frameid.current)
             sp_start_time.current = null
@@ -484,6 +462,12 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user
             onClick={(e) => change_playing(e)}>
             <FaPlay /></button>
             {/* <button className='piano-btn' onClick={() => set_playing(prev_state => null)}>Go to start</button> */}
+          </div>
+        }
+        {
+          room_code !== 'solo' &&
+          <div>
+            {room_code}
           </div>
         }
 
