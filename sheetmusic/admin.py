@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import (Post, Image, Comment, Vote, SongNote,
-                     Video, PDF, UserProfile, Song, Note)
+                     Video, PDF, UserProfile, Song, Note, Room)
 # Register your models here.
 admin.site.register(Post)
 admin.site.register(UserProfile)
@@ -12,3 +12,4 @@ admin.site.register(Comment)
 admin.site.register(Vote)
 admin.site.register(Note)
 admin.site.register(SongNote)
+admin.site.register(Room)

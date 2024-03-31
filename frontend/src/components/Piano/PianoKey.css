@@ -58,6 +58,10 @@
     background-color: var(--ten-color);
 }
 
+.pressed.mp-key {
+    background-color: rgb(108, 108, 255);
+}
+
 
 .visualizer-instance {
     background-color: white;
@@ -69,10 +73,16 @@
     border: 1px solid rgba(0, 0, 0, .3);
     box-shadow: 1px 1px 10px white;
     min-height: 20px;
+    z-index: 1;
 }
 
 .visualizer-instance.black-visualizer {
-    z-index: 1;
+    z-index: 2;
+}
+
+.visualizer-instance.mp-visual {
+    background-color: rgb(190, 190, 255);
+    box-shadow: 1px 1px 10px rgb(190, 190, 255);
 }
 
 .pb-visualizer-instance {
@@ -87,6 +97,8 @@
     min-height: 20px;
 
 }
+
+
 
 
 @keyframes flicker {

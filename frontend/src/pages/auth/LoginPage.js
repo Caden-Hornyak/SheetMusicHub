@@ -15,7 +15,7 @@ const LoginPage = ({ login_normal, login_piano }) => {
     const [form_data, set_form_data] = useState({
       username: '',
       password: '',
-  });
+  })
 
   let [piano_pass_active, set_piano_pass_active] = useState(true)
   let [piano_password, set_piano_password] = useState(null)

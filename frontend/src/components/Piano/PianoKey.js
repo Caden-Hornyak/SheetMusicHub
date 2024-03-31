@@ -7,7 +7,7 @@ import { TbRuler } from 'react-icons/tb'
 
 const Pianokey = ({
   note, color, keyboard_key, piano_height=75, pressed, user_interact, pb_visual_mode=null,
-  type, timestamps, end_song=null
+  type, timestamps, end_song=null, mp_pressed=false
   }) => {
 
   let load_note = async () => {
@@ -41,12 +41,12 @@ const Pianokey = ({
 
       set_visuals(prev_state => {
         curr_animation.current[1] = true
-
+        
         return ({
           ...prev_state,
           [counter.current]: (
           <div key={`${counter.current}`} ref={ref => visual_refs.current[counter.current] = ref} 
-          className={`visualizer-instance ${color === 'black' ? 'black-visualizer': ''}`}></div>
+          className={`visualizer-instance ${color === 'black' ? 'black-visualizer': ''}  ${mp_pressed ? 'mp-visual': ''}`}></div>
           )
       })}) 
       
@@ -145,7 +145,8 @@ const Pianokey = ({
 
         return ({...prev_state,
           [pb_counter.current]: (
-          <div key={`${pb_counter.current}`} ref={ref => playback_visual_refs.current[pb_counter.current] = ref} className='pb-visualizer-instance'
+          <div key={`${pb_counter.current}`} ref={ref => playback_visual_refs.current[pb_counter.current] = ref}
+           className={`pb-visualizer-instance`}
           style={{height: `${(timestamps[1] - timestamps[0]) * 0.3}px`}}></div>
           )
         })
@@ -205,7 +206,7 @@ const Pianokey = ({
       <div className='glow-line' >
         <div ref={glowline} className='glowline-gradient'></div>
       </div>
-      <div className={`piano-key ${color}-key ${pressed || pb_pressed ? 'pressed' : ''}`}
+      <div className={`piano-key ${color}-key ${pressed || pb_pressed ? 'pressed' : ''} ${mp_pressed ? 'mp-key': ''}`}
       onMouseDown={() => click_piano_key()} >{user_interact ? keyboard_key : ''}</div>
     </div>
     

@@ -14,20 +14,11 @@ import { connect } from 'react-redux'
 const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user_interact=true, song=null, 
                 isAuthenticated, piano_room='solo', web_socket=null }) => {
   
-  useEffect(() => {
-    if (web_socket !== null) {
-      web_socket.onmessage = (e) => {
-        let data = JSON.parse(e.data)
-        console.log('Received message:', data)
-      }
-    }
-    
-  }, [])
-
-  const mp_send_note = (note) => {
+  const mp_send_note = (note, key_state) => {
     if (web_socket.readyState === WebSocket.OPEN) {
       web_socket.send(JSON.stringify({
-        'note': note
+        'note': note,
+        'key_state': key_state
       }))
       console.log('Message sent')
     } else {
@@ -39,7 +30,7 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user
   // Recording START
   let [recording, set_recording] = useState([false, 0])
   let [recorded_song, set_recorded_song] = useState([[], []])
-  let [save_prompt, set_save_prompt] = useState([false, false])
+  let [save_prompt, set_save_prompt] = useState([false, false, false])
   let [curr_pressed_keys, set_curr_pressed_keys] = useState({})
 
   let recording_action = (action) => {
@@ -50,9 +41,7 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user
         return rec_arr
       })
 
-      console.log("recording")
     } else if (action === 'end') {
-      console.log("stopped recording")
 
       // if second recording
       if (recording[1] === 1) {
@@ -71,7 +60,9 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user
           set_recording([false, 1])
         } else {
           set_recording([false, 0])
-          set_save_prompt(prev_state => [true, false])
+          if (recorded_song[0].length > 0) {
+            set_save_prompt(prev_state => [true, false, false])
+          }
         }
         
       }
@@ -84,8 +75,9 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user
   // Recording END
 
   // Create Piano START
-  let [key_to_pkeyind, set_key_to_pkeyind] = useState({})
-  let [pkey_to_pkeyind, set_pkey_to_pkeyind] = useState({})
+  let key_to_pkeyind = useRef({})
+  let pkey_to_pkeyind = useRef({})
+  let pkey_to_key = useRef({})
   let [piano, set_piano] = useState([])
   let [curr_mouse_click, set_curr_mouse_click] = useState('')
 
@@ -119,16 +111,12 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user
             />
           ]
 
-          set_key_to_pkeyind(prev_state => ({
-            ...prev_state,
-            [keyboard_keys[i-start]]: i-start
-          }))
-          set_pkey_to_pkeyind(prev_state => ({
-            ...prev_state,
-            [note]: i-start
-          }))
-          return new_piano;
-        });
+          key_to_pkeyind.current[keyboard_keys[i-start]] = i-start
+          pkey_to_pkeyind.current[note] = i-start
+          pkey_to_key.current[note] = keyboard_keys[i-start]
+
+          return new_piano
+        })
 
       }
     
@@ -156,7 +144,7 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user
 
   useEffect(() => {
     const play_piano_key = (e) => {
-      e.preventDefault()
+      // e.preventDefault()
       if (e.repeat) return
       let event = e
       // mouse click handling
@@ -182,12 +170,12 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user
       
       
       let key_state = event.type === 'keydown'
-      let key_ind = key_to_pkeyind[pressed_key]
+      let key_ind = key_to_pkeyind.current[pressed_key]
 
       if (key_ind == null || key_ind == undefined) return
       
-      if (piano_room !== 'solo') {
-        mp_send_note(piano[key_ind].props.note)
+      if (piano_room !== 'solo' && !('multiplayer'in event)) {
+        mp_send_note(piano[key_ind].props.note, key_state)
       }
 
       // if recording and not repeat
@@ -227,7 +215,8 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user
 
       set_piano(prev_state => {
         const keys = [...prev_state]
-        keys[key_ind] = React.cloneElement(keys[key_ind], { pressed: key_state }) // Clone the specific PianoKey and update the pressed prop
+        keys[key_ind] = React.cloneElement(keys[key_ind], { pressed: key_state, 
+          mp_pressed: ('multiplayer' in event) })
         return keys
       })
     }
@@ -237,6 +226,22 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user
       document.addEventListener('keyup', play_piano_key)
       document.addEventListener('clickpianokey', play_piano_key)
       document.addEventListener('mouseup', play_piano_key)
+      if (web_socket !== null) {
+        web_socket.onmessage = (e) => {
+          let data = JSON.parse(e.data)
+          if ('note' in data) {
+            const event = new CustomEvent('clickpianokey', {
+              detail: {
+                key: pkey_to_key.current[data['note']],
+                type: data['key_state'] === true ? 'keydown': 'keyup',
+                mouse_click: true,
+                multiplayer: true
+              }
+              })
+              document.dispatchEvent(event)
+            }
+          }
+        }
     } else if (!user_interact && visible) {
       document.addEventListener('keypress', change_playing)
     }
@@ -296,28 +301,31 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user
   }, [window_size])
   // Handle Piano Layer Stacking END
 
-
+  let song_name = useRef('')
   let save_song = async () => {
     console.log(recorded_song)
-     set_recorded_song(prev_song => {
-      let l = [...prev_song[0]]
-      console.log(l)
-      for (let i = 0; i < l.length; i++) {
-        if (l[i].length === 2) {
-          l[i].push(l[i][1] + 50)
-        } else if (l[i].length <= 1) {
-          l.splice(i, 1)
-        } else if (l[i].length > 3) {
-          l[i] = l[i].splice(3, l[i].length - 3)
-        }
+
+    let l = [...recorded_song[0]]
+
+    for (let i = 0; i < l.length; i++) {
+      if (l[i].length === 2) {
+        l[i].push(l[i][1] + 50)
+      } else if (l[i].length <= 1) {
+        l.splice(i, 1)
+      } else if (l[i].length > 3) {
+        l[i] = l[i].splice(3, l[i].length - 3)
       }
-    })
-    let res = await default_ajax('post', 'songs/create-song', { 'song': recorded_song[0], 'name': 'TODO' })
-      if (res !== -1) {
+    }
+
+    let res = await default_ajax('post', 'songs/create-song/', { 'song': l, 'name': song_name.current })
+      if (res === -1) {
         console.log(res)
+      } else {
+        set_recorded_song([[], []])
+        set_save_prompt([true, false, true])
       }
 
-    set_save_prompt([true, true])
+    
   }
 
   // Playback START
@@ -342,7 +350,7 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user
             song[start_note_index.current]['note']['end_timestamp']
           ]
 
-          let pkey_index = pkey_to_pkeyind[song[start_note_index.current]['note']['note']]
+          let pkey_index = pkey_to_pkeyind.current[song[start_note_index.current]['note']['note']]
           let ind = start_note_index.current
           set_piano(prev_state => {
             const keys = [...prev_state]
@@ -424,21 +432,24 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user
   return (
     <>
       {save_prompt[0] && 
-        <div className='piano-saveprompt-screen' onClick={() => set_save_prompt([false, false])}>
+        <div className='piano-saveprompt-screen' onClick={() => set_save_prompt([false, false, false])}>
           
           <div className='piano-saveprompt' onClick={e => e.stopPropagation()} >
-            <button className='close-btn' onClick={() => set_save_prompt([false, false])}><FaXmark /></button>
-              {save_prompt[0] && !save_prompt[1] && <h2>Save or Share Your Recording</h2>}
-              {save_prompt[0] && !save_prompt[1] &&
-              <div>
-                <button className='piano-saveprompt-btn' onClick={() => save_song()} ><MdOutlineSaveAlt /> Save </button>
-                <button className='piano-saveprompt-btn'><TbShare2 /> Share</button>
-              </div>
+            <button className='close-btn' onClick={() => set_save_prompt([false, false, false])}><FaXmark /></button>
+              {(!save_prompt[1] && !save_prompt[2]) && <h2>Save or Share Your Recording</h2>}
+              {save_prompt[1] && 
+                <input className='def-input' placeholder='My Amazing Song'
+                onChange={(e) => song_name.current = e.target.value} id='piano-songname-in'/> 
               }
-              {save_prompt[0] && save_prompt[1] &&
-              <div>
-                <div className='pianosave-checkmark' >Saved! <IoMdCheckmark /></div>
-                <button>Click here to go to thingy</button>
+              {(save_prompt[0] || save_prompt[1]) &&
+                <button className='piano-saveprompt-btn' 
+                onClick={() => save_prompt[1] ? save_song() : set_save_prompt([true, true, false])} >
+                  {save_prompt[1] ? 'Submit' : <><MdOutlineSaveAlt /> Save</>}</button>
+              }
+              {save_prompt[3] &&
+              <div style={{textAlign: 'center'}}>
+                <h1 style={{margin: '0'}} className='pianosave-checkmark' >Saved! <IoMdCheckmark /></h1>
+                <button id='piano-viewsong-btn' className='def-btn' >View Song</button>
               </div>
               }
 
@@ -451,7 +462,7 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user
           <div id='piano-btn-wrapper'>
             <Tooltip content='Record' direction='bottom' delay={300} >
               <button className='piano-btn' onClick={() => recording[0] ? recording_action('end') : recording_action('start')} >
-              <div className='red-dot'></div></button>
+              <div className={`red-dot ${recording[0] ? 'active': ''}`}></div></button>
             </Tooltip>
             {recording[0] && <button className='piano-btn' id='clear-song-btn' onClick={() => clear_song()} ><FaXmark /></button>}
             {(type === 'register' || type === 'login') && !recording && <p>{recording[1] === 0 ? 'Press Start To Begin Recording' : 'Confirm Password'}</p>}
@@ -464,10 +475,8 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user
             <button className='piano-btn' id='piano-playbtn'
             onClick={(e) => change_playing(e)}>
             <FaPlay /></button>
-            {/* <button className='piano-btn' onClick={() => set_playing(prev_state => null)}>Go to start</button> */}
           </div>
         }
-        {console.log(piano_room)}
         {piano_room !== 'solo' &&
           <div>
             {piano_room}

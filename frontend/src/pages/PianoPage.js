@@ -27,13 +27,13 @@ const PianoPage = () => {
 
   let web_socket = useRef(null)
   let web_socket_open = useRef(false)
-  let room_code = useRef('')
+  let entered_code = useRef('')
 
   useEffect(() => {
     if (multiplayer) {
-      console.log(process.env)
-      const url = `ws://localhost:8000/ws/socket-server/${room_code.current}`
-
+      
+      const url = `ws://localhost:8000/ws/socket-server/${entered_code.current}/`
+      console.log(url)
       web_socket.current = new WebSocket(url)
 
       web_socket.current.onopen = (e) => {
@@ -43,7 +43,7 @@ const PianoPage = () => {
       web_socket.current.onmessage = (e) => {
         
         let data = JSON.parse(e.data)
-        console.log(data)
+        
         web_socket_open.current = true
         if ('room_code' in data) {
           console.log('Room code, ', data['room_code'])
@@ -72,10 +72,8 @@ const PianoPage = () => {
           <div>
             <button onClick={() => {set_multiplayer(true)}}>Create Room</button>
             <button>Join Room</button>
-            {<form>
-              <input type='text'></input>
-            </form>}
-            
+              <input type='text' onChange={(e) => {entered_code.current = e.target.value}}></input>
+              <button onClick={() => set_multiplayer(true)} >Join Room (with code)</button>
           </div>
           <div>
             <button onClick={() => set_piano_room('solo')}>Solo Play</button>

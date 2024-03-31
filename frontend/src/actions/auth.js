@@ -61,7 +61,7 @@ export const register_normal_pass = (username, password, re_password) => async d
 
     try {
 
-        const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/accounts/register/normal`, body, config);
+        const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/accounts/register/normal/`, body, config);
 
         
         if (res.data.error) {
@@ -93,7 +93,7 @@ export const register_piano_pass = (username, piano_password) => async dispatch 
     const body = JSON.stringify({ username, piano_password });
 
     try {
-        const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/accounts/register/piano`, body, config);
+        const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/accounts/register/piano/`, body, config);
 
         
         if (res.data.error) {
@@ -127,7 +127,7 @@ export const login_normal = (username, password) => async dispatch => {
     const body = JSON.stringify({ username, password });
 
     try {
-        const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/accounts/login/normal`, body, config);
+        const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/accounts/login/normal/`, body, config);
         
         if (res.data.error) {
             dispatch({
@@ -163,7 +163,7 @@ export const login_piano = (username, piano_password) => async dispatch => {
     const body = JSON.stringify({ username, piano_password });
 
     try {
-        const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/accounts/login/piano`, body, config);
+        const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/accounts/login/piano/`, body, config);
 
         
         if (res.data.error) {

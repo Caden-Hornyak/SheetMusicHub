@@ -168,8 +168,8 @@ const CreatePostPage = () => {
                 <div id='createpost-wrapper'>
                     <h2>Create a post</h2>
                     <form onSubmit={(e) => handleSubmit(e)} id='createpost-form'>
-                        <input className='createpost-input' type='text' id='title' name='title' placeholder='Title' onChange={handle_change}/>
-                        <textarea className='createpost-input' type='text' id='description' name='description' placeholder='Description' onChange={handle_change} />
+                        <input className='def-input' type='text' id='title' name='title' placeholder='Title' onChange={handle_change}/>
+                        <textarea className='def-input' type='text' id='description' name='description' placeholder='Description' onChange={handle_change} />
                         <div onClick={() => set_display_songs(prev_state => !prev_state)}>
                             Share Your Songs
                         {display_songs &&

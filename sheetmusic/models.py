@@ -127,8 +127,9 @@ class Bookmark(models.Model):
         return str(self.user) + ' ' + obj
     
 class Room(models.Model):
-    room_name = models.CharField(max_length=255)
+    room_code = models.CharField(max_length=6, primary_key=True, unique=True)
+    user_count = models.IntegerField(default=0)
 
-    def __str(self):
-        return self.room_name
+    def __str__(self):
+        return self.room_code
 

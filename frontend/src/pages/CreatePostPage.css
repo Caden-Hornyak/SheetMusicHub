@@ -33,8 +33,7 @@
     width: 100%;
 }
 
-#createpost-form > input,
-#createpost-form > textarea {
+.def-input {
     background-color: var(--thirty-color);
     border: 1px var(--text-color) solid;
     border-radius: 5px;
@@ -45,8 +44,8 @@
     transition: border 1s ease;
 }
 
-#createpost-form > input:focus,
-#createpost-form > textarea:focus {
+
+.def-input:focus {
     border: 1px solid var(--ten-color);
 }
 
