@@ -5,4 +5,54 @@
     left: 0;
     height: calc(100vh - var(--navbar-height));
     width: 100vw;
+    background-color: var(--thirty-color);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+.pianopage-roomwrapper {
+    width: 500px;
+    height: 425px;
+    margin: 15px;
+    background-color: rgba(255, 255, 255, 0.05);
+    padding: 15px 30px;
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    color: var(--text-color);
+}
+
+.pianopage-roomwrapper > button {
+    width: 90%;
+    margin-left: 30px;
+}
+
+#pianopage-roomcode-in {
+    width: 350px;
+    margin-left: 30px;
+    background-color: white;
+    color: black;
+    height: 40px;
+}
+
+.pianopage-roomcode-btn {
+    background: transparent;
+    outline: none;
+    border: none;
+
+}
+
+.pianopage-roomcode-btn svg {
+    color: white;
+    transform: rotate(45deg) scale(2);
+    margin-left: 10px;
+    transition: all ease 0.25s;
+}
+
+.pianopage-roomcode-btn.active:hover svg {
+    color: var(--ten-color);
+    margin-left: 20px;
 }

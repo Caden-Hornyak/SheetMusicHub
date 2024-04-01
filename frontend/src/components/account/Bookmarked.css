@@ -59,3 +59,7 @@
 .bookmark-topbar-btn.active:hover {
     transform: none;
 }
+
+#bookmarked-tabs > div {
+    padding: 15px;
+}

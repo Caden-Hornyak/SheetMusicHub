@@ -33,6 +33,12 @@ a:hover {
         font-weight: bold;
         color: var(--text-color);
         transition: color ease .25s;
+        width: 100px;
+        height: 75px;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
 
     .navbar-btn {
@@ -89,3 +95,11 @@ a:hover {
         display: flex;
         align-items: center;
     }
+
+    .site-logo {
+
+        transform: scale(.45);
+        overflow: hidden;
+    }
+
+

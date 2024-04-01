@@ -71,3 +71,15 @@
     height: 100%;
     width: 700px;
 }
+
+#profile-tabs {
+    padding: 15px;
+    display: flex;
+    flex: 1;
+    height: auto;
+}
+
+#bookmarked-tabs {
+    flex: 1;
+    padding: 15px;
+}

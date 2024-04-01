@@ -54,6 +54,10 @@
 
 #profile-posttab {
     overflow-y: auto;
-    height: 51%;
+    height: 100%;
+    width: 100%;
+}
+
+#profile-tabs > div {
     padding: 15px;
 }

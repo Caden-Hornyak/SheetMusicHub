@@ -147,19 +147,16 @@ const CreatePostPage = () => {
         }
     }
 
-    let wipe_upload = (file=null) => {
-        if (file === null) {
-            set_form_files([])
-            set_upload_count(0)
-        } else {
-            set_form_files(prev_state => prev_state.filter(curr_file => curr_file !== file))
-            set_upload_count(prev_state => prev_state - 1)
-        }
+    let wipe_upload = () => {
+        set_form_files([])
+        set_upload_count(0)
     }
 
     useEffect(() => {
         dotPulse.register()
     }, [])
+
+    console.log(form_files)
 
     return(
         <>
@@ -170,10 +167,11 @@ const CreatePostPage = () => {
                     <form onSubmit={(e) => handleSubmit(e)} id='createpost-form'>
                         <input className='def-input' type='text' id='title' name='title' placeholder='Title' onChange={handle_change}/>
                         <textarea className='def-input' type='text' id='description' name='description' placeholder='Description' onChange={handle_change} />
-                        <div onClick={() => set_display_songs(prev_state => !prev_state)}>
-                            Share Your Songs
+                        <div >
+                        <button type='button' onClick={() => set_display_songs(prev_state => !prev_state)}
+                        className='def-btn' id='creatpostpage-songbtn' >Use a song</button>
                         {display_songs &&
-                            <div onClick={e => e.stopPropagation()}>
+                            <div onClick={e => e.stopPropagation()} className='createpost-page-songs'>
                                 {!user_songs ? 
                                     <p>{<l-dot-pulse
                                     size="43"

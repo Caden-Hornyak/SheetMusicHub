@@ -53,26 +53,32 @@ const Pianokey = ({
       attribute_animation(glowline.current, 'opacity', '0', '1', 600, 'cubic-bezier(0,.99,.26,.99)')
 
     } else if (!pressed && pressed !== null && counter.current in visual_refs.current && curr_animation.current[0]) {
-
+        console.log(visual_refs.current, counter.current)
         curr_animation.current[0].pause()
         attribute_animation(visual_refs.current[counter.current], 'bottom', '0', '300000px', 1000000)
         attribute_animation(glowline.current, 'opacity', '1', '0', 3000, 'cubic-bezier(.19,.98,.24,1.01)')
 
         let curr_counter = counter.current
         setTimeout(() => {
-          delete visual_refs.current[curr_counter]
+          
           set_visuals(prev_state => {
-            const new_state = Object.keys(prev_state).filter(key => key !== curr_counter).reduce((acc, key) => {
-              acc[key] = prev_state[key]
+            let l = {...prev_state}
+            const new_state = Object.keys(l).filter(key =>  key !== curr_counter.toString()).reduce((acc, key) => {
+              acc[key] = l[key]
               return acc
             }, {})
             return new_state
           })
+          delete visual_refs.current[curr_counter]
         }, 3000, curr_counter)
           
         counter.current += 1
     }
   }, [pressed])
+
+  useEffect(() => {
+    console.log(visuals)
+  }, [visuals])
 
   let [playback_visuals, set_playback_visuals] = useState([])
   let pb_counter = useRef(0)
@@ -102,17 +108,21 @@ const Pianokey = ({
 
       const s_timeout_id = new Timer((curr_pb_counter, curr_timeout_counter) => {
         set_playback_visuals(prev_state => {
+          delete timeouts.current[curr_timeout_counter]
+          delete playback_visual_refs.current[curr_pb_counter]
+          delete curr_pb_anim.current[0][curr_pb_counter]
+          set_pb_pressed(false)
+          attribute_animation(glowline.current, 'opacity', '1', '0', 3000, 'cubic-bezier(.19,.98,.24,1.01)')
+
           const new_state = Object.keys(prev_state).filter(key => key !== curr_pb_counter).reduce((acc, key) => {
             acc[key] = prev_state[key]
             return acc
           }, {})
           return new_state
+
+          
         })
-        delete timeouts.current[curr_timeout_counter]
-        delete playback_visual_refs.current[curr_pb_counter]
-        delete curr_pb_anim.current[0][curr_pb_counter]
-        set_pb_pressed(false)
-        attribute_animation(glowline.current, 'opacity', '1', '0', 3000, 'cubic-bezier(.19,.98,.24,1.01)')
+        
 
         if (end_song !== null) {
           end_song(null)

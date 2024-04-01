@@ -33,7 +33,7 @@ const LikeDislike = ({ object, object_id, likes, user_vote }) => {
 
         try {
             // call patch for object (comment or post)
-            res = await axios.post(`${process.env.REACT_APP_API_URL}/api/votes/${object}/${object_id}`, body, config);
+            res = await axios.post(`${process.env.REACT_APP_API_URL}/api/votes/${object}/${object_id}/`, body, config);
             
             if (res.data.error) {
                 console.log(res.data.error)

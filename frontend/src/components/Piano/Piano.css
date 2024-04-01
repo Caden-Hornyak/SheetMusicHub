@@ -221,3 +221,14 @@
 #piano-songname-in {
     width: 50%;
 }
+
+#piano-roomcode {
+    position: absolute;
+    color: var(--text-color);
+    font-size: 2rem;
+    font-weight: bold;
+
+    right: 40px;
+    top: 35px;
+
+}

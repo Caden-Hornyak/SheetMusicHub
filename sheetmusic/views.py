@@ -95,13 +95,14 @@ class Posts(APIView):
                 else:
                     print(f'Unsupported filetype!', file=sys.stderr)
 
-            for song_id in json.loads(data['songs']):
-                try:
-                    song = Song.objects.get(id=song_id)
-                except Exception as e:
-                    song = ''
-                
-                if song: post.songs.add(song)
+            if 'songs' in data:
+                for song_id in json.loads(data['songs']):
+                    try:
+                        song = Song.objects.get(id=song_id)
+                    except Exception as e:
+                        song = ''
+                    
+                    if song: post.songs.add(song)
 
                 
             post.save()

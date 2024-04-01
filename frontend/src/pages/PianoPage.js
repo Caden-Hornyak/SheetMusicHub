@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react'
 import Piano from '../components/piano/Piano.js'
 import Navbar from '../components/utility/Navbar.js'
 import { attribute_animation } from '../utility/CommonFunctions.js'
+import { TbLocationFilled } from "react-icons/tb";
+
 
 import './PianoPage.css'
 
@@ -27,13 +29,13 @@ const PianoPage = () => {
 
   let web_socket = useRef(null)
   let web_socket_open = useRef(false)
-  let entered_code = useRef('')
+  let [entered_code, set_entered_code] = useState('')
 
   useEffect(() => {
     if (multiplayer) {
       
-      const url = `ws://localhost:8000/ws/socket-server/${entered_code.current}/`
-      console.log(url)
+      const url = `ws://localhost:8000/ws/socket-server/${entered_code}/`
+
       web_socket.current = new WebSocket(url)
 
       web_socket.current.onopen = (e) => {
@@ -67,23 +69,33 @@ const PianoPage = () => {
   return (
     <>
         <Navbar parent_height_setter={set_pianopage_fullheight} />
-        {piano_room === null &&
-        <div>
-          <div>
-            <button onClick={() => {set_multiplayer(true)}}>Create Room</button>
-            <button>Join Room</button>
-              <input type='text' onChange={(e) => {entered_code.current = e.target.value}}></input>
-              <button onClick={() => set_multiplayer(true)} >Join Room (with code)</button>
-          </div>
-          <div>
-            <button onClick={() => set_piano_room('solo')}>Solo Play</button>
-          </div>
-        </div>}
-              
-        {(piano_room === 'solo' || web_socket_open.current) &&
         <div id='pianopage-page' ref={pianopage_ref}>
-          <Piano pvh={pianopage_fullheight} piano_room={piano_room} web_socket={web_socket.current}/>
-        </div>}
+          {piano_room === null &&
+          <>
+            <div className='pianopage-roomwrapper'>
+              <h2>Private</h2>
+              <button className='def-btn' onClick={() => set_piano_room('solo')}>Solo Play</button>
+              <h2>Host</h2>
+              <button className='def-btn' onClick={() => {set_multiplayer(true)}}>Create Room</button>
+              
+              <h2>Join</h2>
+              <div>
+                <input type='text' className='def-input' id='pianopage-roomcode-in' placeholder='Room Code'
+                onChange={(e) => {set_entered_code(e.target.value)}}></input>
+                <button  onClick={() => set_multiplayer(true)}
+                className={`pianopage-roomcode-btn ${entered_code.length === 6 ? 'active': 'disabled'}`}>
+                  <TbLocationFilled /></button>
+              </div>
+              
+            </div>
+
+            
+          </>}
+                
+          {(piano_room === 'solo' || web_socket_open.current) &&
+            <Piano pvh={pianopage_fullheight} piano_room={piano_room} web_socket={web_socket.current}/>
+          }
+        </div>
         
     </>
   )

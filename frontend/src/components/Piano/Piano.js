@@ -478,7 +478,7 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user
           </div>
         }
         {piano_room !== 'solo' &&
-          <div>
+          <div id='piano-roomcode'>
             {piano_room}
           </div>
         }

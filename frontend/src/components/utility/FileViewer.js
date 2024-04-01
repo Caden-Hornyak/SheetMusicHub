@@ -3,6 +3,7 @@ import './FileViewer.css'
 import { BiLeftArrow, BiRightArrow, BiX } from "react-icons/bi"
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io"
 import Piano from '../piano/Piano'
+import { FaXmark } from "react-icons/fa6"
 
 const FileViewer = ({ uploaded_files, wipe_upload=null, clamp=false }) => {
 
@@ -28,18 +29,19 @@ const FileViewer = ({ uploaded_files, wipe_upload=null, clamp=false }) => {
 
   return (
     <div className="file-viewer" style={{overflow: clamp ? 'hidden': undefined, maxHeight: clamp ? '550px': undefined}} >
-      {wipe_upload && <button onClick={() => wipe_upload(uploaded_files[current_index])} ></button>}
+      {console.log(uploaded_files)}
+      {wipe_upload && <button onClick={() => wipe_upload()} type='button' id='fileview-wipefilebtn'
+      style={{top: uploaded_files[current_index].type === 'application' ? '50px': undefined}}><FaXmark /></button>}
       {current_index !== 0 && <button className='scroll-button' id='prev-img-btn' onClick={(e) => handle_prev_click(e)}><IoIosArrowBack /></button>}
-      {uploaded_files[current_index].type == 'image' && <img onLoad={(e) => get_orig_file_dim(e)} src={uploaded_files[current_index].file}></img>}
-      {console.log(uploaded_files[current_index])}
-      {uploaded_files[current_index].type == 'song' && <Piano type='playback' user_interact={false} song={uploaded_files[current_index].song_notes} />}
-      {uploaded_files[current_index].type == 'video' && (
+      {uploaded_files[current_index].type === 'image' && <img onLoad={(e) => get_orig_file_dim(e)} src={uploaded_files[current_index].file}></img>}
+      {uploaded_files[current_index].type === 'song' && <Piano type='playback' user_interact={false} song={uploaded_files[current_index].song_notes} />}
+      {uploaded_files[current_index].type === 'video' && (
         <video controls width="400" height="300">
-          <source src={URL.createObjectURL(uploaded_files[current_index])} type={uploaded_files[current_index].type} />
+          <source src={uploaded_files[current_index].file} type={uploaded_files[current_index].type} />
           Your browser does not support the video tag.
         </video>
       )}
-      {uploaded_files[current_index].type == 'pdf' && <iframe src={uploaded_files[current_index].file}></iframe>}
+      {uploaded_files[current_index].type === 'application' && <iframe className='fileviewer-pdf' src={uploaded_files[current_index].file}></iframe>}
       {current_index !== uploaded_files.length-1 && <button className='scroll-button' id='next-img-btn' onClick={(e) => handle_next_click(e)}><IoIosArrowForward /></button>}
       {clamp && is_clamp && <button className='seefullimg-btn'>See Full Image</button>}
     </div>
