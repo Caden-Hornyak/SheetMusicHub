@@ -75,8 +75,8 @@
 #profile-tabs {
     padding: 15px;
     display: flex;
+    overflow-y: scroll;
     flex: 1;
-    height: auto;
 }
 
 #bookmarked-tabs {

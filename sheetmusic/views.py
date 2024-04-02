@@ -36,7 +36,6 @@ def piano_pass_convert(piano_password):
         stored_password += ''.join(curr_chord) + '|'
         curr_chord.clear()
     
-    print(stored_password, file=sys.stderr)
     return stored_password
 
 
@@ -60,36 +59,24 @@ class Posts(APIView):
             user_prof = UserProfile.objects.get(user=request.user)
             post = Post.objects.create(title=data['title'], description=data['description'], poster=user_prof)
             
-
+            print(uploaded_files, file=sys.stderr)
             for uploaded_file, file_type in zip(uploaded_files, file_types):
                 if file_type.startswith('image'): file_type='image'
                 elif file_type.startswith('video'): file_type='video'
                 elif file_type == 'application/pdf': file_type='pdf'
                 else: pass
-                
-                file_path = os.path.join(settings.MEDIA_ROOT, (file_type+'s'), uploaded_file.name)
-                default_storage.save(file_path, uploaded_file)
 
 
                 if file_type == 'image':
-                    image = Image(name=uploaded_file.name)
-                    with open(file_path, 'rb') as f:
-                        image.file.save(uploaded_file.name, File(f), save=True)
-                    image.save()
+                    image = Image.objects.create(name=uploaded_file.name, file=uploaded_file)
                     post.images.add(image)
 
                 elif file_type == 'video':
-                    video = Video(name=uploaded_file.name)
-                    with open(file_path, 'rb') as f:
-                        video.file.save(uploaded_file.name, File(f), save=True)
-                    video.save()
+                    video = Video.objects.create(name=uploaded_file.name, file=uploaded_file)
                     post.videos.add(video)
 
                 elif file_type == 'pdf':
-                    pdf = PDF(name=uploaded_file.name)
-                    with open(file_path, 'rb') as f:
-                        pdf.file.save(uploaded_file.name, File(f), save=True)
-                    pdf.save()
+                    pdf = PDF.objects.create(name=uploaded_file.name, file=uploaded_file)
                     post.pdf_files.add(pdf)
 
                 else:
@@ -157,7 +144,7 @@ class RegisterView(APIView):
                     return Response({ 'error': 'Passwords do not match'})
                 else:
                     user = User.objects.create_user(username=username, password=piano_pass)
-                    user_profile = UserProfile.objects.create(user=user, first_name='', last_name='')
+                    user_profile = UserProfile.objects.create(user=user, first_name='', last_name='', piano_password=True)
 
                     return Response({ 'success': 'Account Created'})
                 
@@ -275,23 +262,38 @@ class UserProfiles(APIView):
     
     # update user profile
     def put(self, request, format=None):
-        try:
+        # try:
             user = self.request.user
-            username= user.username
+            user_prof = UserProfile.objects.get(user=user)
+            
+            data = request.data
 
-            data = self.request.data
-            first_name = data['first_name']
-            last_name = data['last_name']
+            if len(data['first_name']) > 0:
+                user_prof.first_name = data['first_name']
 
-            UserProfile.objects.filter(user=user).update(first_name=first_name, last_name=last_name)
+            if len(data['password']) > 0:
+                if data['password'] == data['conf_password']:
+                    user.set_password(data['password'])
 
-            user_profile = UserProfile.objects.get(user=user)
-            serializer = UserProfileSerializer(user_profile)
+            if len(data['last_name']) > 0:
+                user_prof.last_name = data['last_name']
 
-            return Response({ 'profile ': serializer.data })
-        except Exception as e:
-            print(e, file=sys.stderr)
-            return Response({ 'error': 'There was an error updating the user profile.'})
+            if len(data['username']) > 0:
+                user.username = data['username']
+
+            if data['profile_picture']:
+                uploaded_img = request.FILES['profile_picture']
+
+                user_prof.profile_picture = uploaded_img
+
+            user_prof.save()
+            user.save()
+
+
+            return Response({ 'success ': 'Successfully updated profile' })
+        # except Exception as e:
+        #     print(e, file=sys.stderr)
+        #     return Response({ 'error': 'There was an error updating the user profile.'})
 
 @method_decorator(ensure_csrf_cookie, name='dispatch')
 class Votes(APIView):
@@ -426,7 +428,9 @@ class Songs(APIView):
 
             
             song_instance.save()
-            return Response({ 'success': 'Song created' })
+
+            serializer = SongSerializer(song_instance)
+            return Response({ 'song': serializer.data })
         
         except Exception as e:
             print('Songs:post ', e, file=sys.stderr)

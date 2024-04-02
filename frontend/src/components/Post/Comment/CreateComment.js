@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import axios from '../../../configs/axiosConfig'
 import Cookies from 'js-cookie'
 import './CreateComment.css'
-import { BiImageAdd } from "react-icons/bi";
 
 const CreateComment = ({ object_type, object_id, update_object, par_state, close_reply, written_text, setwritten_text}) => {
 
@@ -49,8 +48,8 @@ const CreateComment = ({ object_type, object_id, update_object, par_state, close
       <div id='reply-cont'>
         <textarea placeholder="Comment" onChange={(e) => setwritten_text(e.target.value)} defaultValue={written_text} ></textarea>
         <div id="comment-reply-lower" >
-          <BiImageAdd id="comment-addimage"/>
-          <button className="comment-reply-buttons" onClick={() => close_reply(false)} >Close</button>
+          <button className="comment-reply-buttons" onClick={() => close_reply(false)}
+          style={{marginLeft: 'auto'}} >Close</button>
           <button className={`comment-reply-buttons ${written_text === '' ? 'disabled' : ''}`} onClick={() => create_comment(written_text)} disabled={written_text === ''} >Send</button>
         </div>
       </div>

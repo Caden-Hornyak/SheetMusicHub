@@ -17,7 +17,7 @@ const Register = ({ register_normal_pass, register_piano_pass }) => {
         username: '',
         password: '',
         re_password: ''
-    });
+    })
 
     let [account_created, set_account_created] = useState(false)
     let [piano_pass_active, set_piano_pass_active] = useState(true)

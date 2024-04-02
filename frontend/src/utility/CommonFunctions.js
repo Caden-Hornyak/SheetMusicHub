@@ -8,24 +8,33 @@ export const attribute_animation = (object, attribute, start, end, duration, eas
     )
 }
 
-export const default_ajax = async (action, url, action_body='') => {
+export const default_ajax = async (action, url, action_body='', stringify=true) => {
 
     const config = {
         headers: {
             'Accept': 'application/json',
-            'Content-Type': 'application/json',
             'X-CSRFToken': Cookies.get('csrftoken')
         },
         withCredentials: true
       }
     
       try {
+        let body
+        if (stringify) {
+            body = JSON.stringify(action_body)
+        } else {
+            body = action_body
+        }
+
         let res
-        if (action == 'post') {
-            const body = JSON.stringify(action_body)
+        if (action === 'post') {
             res = await axios.post(`${process.env.REACT_APP_API_URL}/api/${url}`, body, config)
-        } else if (action == 'get') {
+        } else if (action === 'get') {
             res = await axios.get(`${process.env.REACT_APP_API_URL}/api/${url}`, config)
+        } else if (action === 'put') {
+            res = await axios.put(`${process.env.REACT_APP_API_URL}/api/${url}`, body, config)
+        } else {
+            return -1
         }
         
         if (res.data.error) {

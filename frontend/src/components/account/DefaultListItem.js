@@ -22,12 +22,10 @@ const DefaultListItem = ({ list, DefaultIcon=<BiBarChartAlt />, header='', text=
 
             for (let file_key in item[files]) {
                 let file = item[files][file_key]
-                console.log(file)
                 if (file.type == 'image') {
                     chosen_image = file.file
                 }
             }
-            
             return (
                 <div key={item.id} className='defaultlistitem-wrapper' style={{backgroundColor: item.id in highlights ? 'rgba(255, 255, 255, 0.3)' : undefined}}
                 onClick={selection === null ? () => navigate(url+item[id]) : () => set_highlights(prev_state => ({...prev_state, [item.id]: true}))}>
@@ -38,11 +36,11 @@ const DefaultListItem = ({ list, DefaultIcon=<BiBarChartAlt />, header='', text=
                         <>
                         {DefaultIcon}
                         </>
-                        }
+                    }
                     </div>
                     <div className='defaultlistitem-right'>
-                        {header && <h3>{item[header]}</h3>}
-                        {text && <p>{item[text]}</p>}
+                        <h3>{item[header]}</h3>
+                        <p>{item[text]}</p>
                     </div>
                 </div>
             )

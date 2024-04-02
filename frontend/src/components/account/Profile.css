@@ -52,12 +52,11 @@
     transform: none;
 }
 
-#profile-posttab {
-    overflow-y: auto;
-    height: 100%;
-    width: 100%;
-}
 
 #profile-tabs > div {
     padding: 15px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: scroll;
 }

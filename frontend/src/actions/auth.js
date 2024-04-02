@@ -1,4 +1,4 @@
-import axios from '../configs/axiosConfig';
+import axios from '../configs/axiosConfig'
 import {
     REGISTER_SUCCESS,
     REGISTER_FAIL,
@@ -9,9 +9,9 @@ import {
     AUTHENTICATED_SUCCESS,
     AUTHENTICATED_FAIL,
     
-} from './types';
+} from './types'
 import Cookies from 'js-cookie'
-import { load_user } from './profile';
+import { load_user } from './profile'
 
 export const checkAuthenticated = () => async dispatch => {
 
@@ -20,30 +20,30 @@ export const checkAuthenticated = () => async dispatch => {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         }
-    };
+    }
 
     try {
 
-        const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/accounts/check-authenticated/`, config);
+        const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/accounts/check-authenticated/`, config)
 
         if (res.data.error) {
 
             dispatch({
                 type: AUTHENTICATED_FAIL,
                 payload: false
-            });
+            })
         } else {
             dispatch({
                 type: AUTHENTICATED_SUCCESS,
                 payload: true
-            });
+            })
         }
 
     } catch (err) {
         dispatch({
             type: AUTHENTICATED_FAIL,
             payload: false
-        });
+        })
     }
 }
 
@@ -55,19 +55,19 @@ export const register_normal_pass = (username, password, re_password) => async d
             'Content-Type': 'application/json',
             'X-CSRFToken': Cookies.get('csrftoken')
         }
-    };
+    }
 
-    const body = JSON.stringify({ username, password, re_password });
+    const body = JSON.stringify({ username, password, re_password })
 
     try {
 
-        const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/accounts/register/normal/`, body, config);
+        const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/accounts/register/normal/`, body, config)
 
         
         if (res.data.error) {
             dispatch({
                 type: REGISTER_FAIL
-            });
+            })
         } else {
             dispatch({
                 type: REGISTER_SUCCESS
@@ -76,7 +76,7 @@ export const register_normal_pass = (username, password, re_password) => async d
     } catch (err) {
         dispatch({
             type: REGISTER_FAIL
-        });
+        })
     }
 }
 
@@ -88,18 +88,18 @@ export const register_piano_pass = (username, piano_password) => async dispatch 
             'Content-Type': 'application/json',
             'X-CSRFToken': Cookies.get('csrftoken')
         }
-    };
+    }
 
-    const body = JSON.stringify({ username, piano_password });
+    const body = JSON.stringify({ username, piano_password })
 
     try {
-        const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/accounts/register/piano/`, body, config);
+        const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/accounts/register/piano/`, body, config)
 
         
         if (res.data.error) {
             dispatch({
                 type: REGISTER_FAIL
-            });
+            })
         } else {
             dispatch({
                 type: REGISTER_SUCCESS
@@ -108,7 +108,7 @@ export const register_piano_pass = (username, piano_password) => async dispatch 
     } catch (err) {
         dispatch({
             type: REGISTER_FAIL
-        });
+        })
     }
 }
 
@@ -122,29 +122,29 @@ export const login_normal = (username, password) => async dispatch => {
             'X-CSRFToken': Cookies.get('csrftoken')
         },
         withCredentials: true
-    };
+    }
 
-    const body = JSON.stringify({ username, password });
+    const body = JSON.stringify({ username, password })
 
     try {
-        const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/accounts/login/normal/`, body, config);
+        const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/accounts/login/normal/`, body, config)
         
         if (res.data.error) {
             dispatch({
                 type: LOGIN_FAIL
-            });
+            })
         } else {
             dispatch({
                 type: LOGIN_SUCCESS
-            });
+            })
 
-            load_user();
+            load_user()
         }
     } catch (err) {
         console.log(err)
         dispatch({
             type: LOGIN_FAIL
-        });
+        })
     }
 }
 
@@ -158,30 +158,30 @@ export const login_piano = (username, piano_password) => async dispatch => {
             'X-CSRFToken': Cookies.get('csrftoken')
         },
         withCredentials: true
-    };
+    }
 
-    const body = JSON.stringify({ username, piano_password });
+    const body = JSON.stringify({ username, piano_password })
 
     try {
-        const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/accounts/login/piano/`, body, config);
+        const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/accounts/login/piano/`, body, config)
 
         
         if (res.data.error) {
             dispatch({
                 type: LOGIN_FAIL
-            });
+            })
         } else {
             dispatch({
                 type: LOGIN_SUCCESS
-            });
+            })
 
-            load_user();
+            load_user()
         }
     } catch (err) {
         console.log(err)
         dispatch({
             type: LOGIN_FAIL
-        });
+        })
     }
 }
 
@@ -194,7 +194,7 @@ export const logout = () => async dispatch => {
             'Content-Type': 'application/json',
             'X-CSRFToken': Cookies.get('csrftoken')
         }
-    };
+    }
 
     const body = JSON.stringify({
         'withCredentials': true
@@ -202,12 +202,12 @@ export const logout = () => async dispatch => {
 
     try {
 
-        const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/accounts/logout/`, body, config);
+        const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/accounts/logout/`, body, config)
         
         if (res.data.error) {
             dispatch({
                 type: LOGOUT_FAIL
-            });
+            })
         } else {
             dispatch({
                 type: LOGOUT_SUCCESS,
@@ -216,7 +216,7 @@ export const logout = () => async dispatch => {
     } catch (err) {
         dispatch({
             type: LOGOUT_FAIL
-        });
+        })
     }
 }
 

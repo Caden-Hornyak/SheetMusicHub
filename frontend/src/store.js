@@ -10,6 +10,6 @@ const store = configureStore({
     preloadedState: initialState,
     middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(thunk),
     devTools: process.env.NODE_ENV !== 'production', // Use devTools only in non-production environment
-  });
+  })
 
 export default store;

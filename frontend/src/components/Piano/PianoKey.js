@@ -53,7 +53,6 @@ const Pianokey = ({
       attribute_animation(glowline.current, 'opacity', '0', '1', 600, 'cubic-bezier(0,.99,.26,.99)')
 
     } else if (!pressed && pressed !== null && counter.current in visual_refs.current && curr_animation.current[0]) {
-        console.log(visual_refs.current, counter.current)
         curr_animation.current[0].pause()
         attribute_animation(visual_refs.current[counter.current], 'bottom', '0', '300000px', 1000000)
         attribute_animation(glowline.current, 'opacity', '1', '0', 3000, 'cubic-bezier(.19,.98,.24,1.01)')
@@ -62,12 +61,13 @@ const Pianokey = ({
         setTimeout(() => {
           
           set_visuals(prev_state => {
-            let l = {...prev_state}
-            const new_state = Object.keys(l).filter(key =>  key !== curr_counter.toString()).reduce((acc, key) => {
-              acc[key] = l[key]
-              return acc
-            }, {})
-            return new_state
+            let l = {}
+            for (let key in prev_state) {
+              if (key !== curr_counter) {
+                l[key] = prev_state[key]
+              }
+            }
+            return l
           })
           delete visual_refs.current[curr_counter]
         }, 3000, curr_counter)
@@ -76,9 +76,6 @@ const Pianokey = ({
     }
   }, [pressed])
 
-  useEffect(() => {
-    console.log(visuals)
-  }, [visuals])
 
   let [playback_visuals, set_playback_visuals] = useState([])
   let pb_counter = useRef(0)
@@ -114,13 +111,13 @@ const Pianokey = ({
           set_pb_pressed(false)
           attribute_animation(glowline.current, 'opacity', '1', '0', 3000, 'cubic-bezier(.19,.98,.24,1.01)')
 
-          const new_state = Object.keys(prev_state).filter(key => key !== curr_pb_counter).reduce((acc, key) => {
-            acc[key] = prev_state[key]
-            return acc
-          }, {})
-          return new_state
-
-          
+          let l = {}
+          for (let key in prev_state) {
+            if (key !== curr_pb_counter) {
+              l[key] = prev_state[key]
+            }
+          }
+          return l
         })
         
 

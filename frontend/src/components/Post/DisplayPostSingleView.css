@@ -1,5 +1,6 @@
 ::-webkit-scrollbar {
-    width: .5em;
+    width: 7px;
+    height: 7px;
 }
 
 ::-webkit-scrollbar-track {
@@ -13,7 +14,7 @@
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: var(--ten-color);
+    background: color-mix(in srgb, var(--text-color), rgb(133, 133, 133));
 }
 
 .final-container {
@@ -26,7 +27,7 @@
     background-color: var(--thirty-color)
 }
 .singlepost-body {
-
+    height: 100%;
     display: flex;
     justify-content: center;
 
@@ -60,8 +61,13 @@ hr {
     }
 
 .singlepost-post {
+    display: flex;
+    flex-direction: column;
     width: 600px;
     min-width: 600px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    padding: 10px;
 }
 
     .singlepost-post-wrapper {
@@ -70,12 +76,12 @@ hr {
         box-shadow: 7px 7px 30px black;
         border-radius: 15px;
 
-        /* height: auto; */
         width: 1300px;
-        margin-top: 15px;
-
+        margin: 30px;
+        min-height: 800px;
         display: flex;
         padding: 25px;
+        padding-top: 60px;
 
 
         min-width: 1000px;
@@ -97,14 +103,14 @@ hr {
 
         margin: 30px;
         margin-top: 15px;
-        width: 600px;
+        /* width: 600px; */
         padding: 10px;
-        height: 90%;
+        height: 95%;
         
         overflow: auto;
         background-color: var(--thirty-color);
 
-        min-width: 400px;
+        min-width: 300px;
         z-index: 1;
 
         color: var(--text-color);
@@ -139,11 +145,10 @@ hr {
 
 #singlepost-lower {
     padding: 10px;
-    height: 30px;
+    /* height: 30px; */
     display: flex;
 
     align-items: center;
-    background-color: none;
 }
 
 #singlepost-title {
@@ -163,4 +168,26 @@ hr {
     margin-top: 15px;
     width: 90%;
     overflow-wrap: break-word;
+}
+
+.listview-gobackbtn {
+    position: absolute;
+    margin: 15px;
+    margin-right: 25px;
+    top: 0;
+    right: 0;
+
+    border: none;
+    outline: none;
+    background-color: color-mix(in srgb, var(--thirty-color), rgb(59, 59, 59));
+    border-radius: 15px;
+    color: var(--text-color);
+    padding: 10px;
+    box-shadow: 3px 3px 15px black;
+    transition: all ease 0.25s;
+}
+
+.listview-gobackbtn:hover {
+    background-color: var(--ten-color);
+    transform: scale(1.01);
 }

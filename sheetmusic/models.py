@@ -74,6 +74,7 @@ class UserProfile(models.Model):
     posts = models.ManyToManyField('Post', blank=True, related_name='created_post')
     songs = models.ManyToManyField('Song', blank=True)
     profile_picture = models.ImageField(upload_to='images/', default='images/default_profpic.png')
+    piano_password = models.BooleanField(default=False)
 
     def __str__(self):
         return str(self.user)

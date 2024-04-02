@@ -67,7 +67,6 @@ const CreatePostPage = () => {
                     alert('More than 10 files uploaded. Only uploaded the first ten')
                     break
                 }
-                console.log(file)
                 set_form_files(prev_state => [...prev_state, file])
                 set_upload_count(prev_state => prev_state + 1)
 
@@ -119,11 +118,10 @@ const CreatePostPage = () => {
                 for (let selection in selections.current) {
                     songs.push(selection)
                 }
-                console.log(songs)
                 post_form_data.append('songs', JSON.stringify(songs))
                 
             }
-            console.log(selections.current)
+            console.log(post_form_data)
             const config = {
                 headers: {
                     'X-CSRFToken': Cookies.get('csrftoken')
@@ -133,12 +131,12 @@ const CreatePostPage = () => {
             const res = await axios.post(`${process.env.REACT_APP_API_URL}/api/posts/create-post/`,
                 post_form_data,
                 config 
-                );
+                )
             
             if (res.data.error) {
                 console.log(res.data.error) 
             } else {
-                navigate(`/posts/${res.data.id}`)
+                navigate(`/posts/${res.data.id}/`)
             }
 
         } catch (error) {
@@ -156,8 +154,6 @@ const CreatePostPage = () => {
         dotPulse.register()
     }, [])
 
-    console.log(form_files)
-
     return(
         <>
             <Navbar parent_height_setter={set_cpp_fullheight}/>
@@ -166,7 +162,7 @@ const CreatePostPage = () => {
                     <h2>Create a post</h2>
                     <form onSubmit={(e) => handleSubmit(e)} id='createpost-form'>
                         <input className='def-input' type='text' id='title' name='title' placeholder='Title' onChange={handle_change}/>
-                        <textarea className='def-input' type='text' id='description' name='description' placeholder='Description' onChange={handle_change} />
+                        <textarea className='def-input' type='text' id='description' name='description' placeholder='Description (optional)' onChange={handle_change} />
                         <div >
                         <button type='button' onClick={() => set_display_songs(prev_state => !prev_state)}
                         className='def-btn' id='creatpostpage-songbtn' >Use a song</button>
@@ -195,7 +191,7 @@ const CreatePostPage = () => {
                         <DropBox uploaded_files={form_files} handle_change={handle_change} wipe_upload={wipe_upload} />
                         <div id='createpostpage-lower'>
                             <button type='button' onClick={() => navigate('/')} >Cancel</button>
-                            <button type='submit'>Submit</button>
+                            <button type='submit' disabled={form_data.title.length === 0}>Submit</button>
                         </div>
                         
                     </form>

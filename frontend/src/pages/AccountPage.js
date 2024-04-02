@@ -27,19 +27,6 @@ const ProfilePage = ({ isAuthenticated }) => {
             }
         }
     }, [pp_fullheight])
-
-    useEffect(() => {
-      (async () => {
-        // if (!isAuthenticated) {
-        //   return navigate('/')
-        // }
-      
-        })()
-      
-    }, [isAuthenticated])
-
-    
-
     
   return (
     <>

@@ -87,10 +87,10 @@ const DisplayPostSingleView = (props) => {
 
   return (
     <div className='final-container'>
-        <BiArrowBack className='back-arrow' onClick={() => goBack()}/>
         <div className='singlepost-body'>
             <img className='background' src={background} alt="Sheet Music"></img>
             <div className="singlepost-post-wrapper">
+            <button onClick={() => goBack()} className='listview-gobackbtn'>Close Post</button>
                 <div className='singlepost-post'>
                     <div id='singlepost-upper' >
                         <div id='singlepost-title' >{post.title}</div>

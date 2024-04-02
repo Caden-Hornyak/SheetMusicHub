@@ -10,10 +10,13 @@ import { IoMdCheckmark } from "react-icons/io"
 import { FaPlay, FaPause } from "react-icons/fa"
 import Tooltip from '../utility/Tooltip'
 import { connect } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
 
 const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user_interact=true, song=null, 
                 isAuthenticated, piano_room='solo', web_socket=null }) => {
   
+  const navigate = useNavigate()
+
   const mp_send_note = (note, key_state) => {
     if (web_socket.readyState === WebSocket.OPEN) {
       web_socket.send(JSON.stringify({
@@ -142,90 +145,102 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user
   }
 
 
-  useEffect(() => {
-    const play_piano_key = (e) => {
-      // e.preventDefault()
-      if (e.repeat) return
-      let event = e
-      // mouse click handling
+  let add_key_listeners = () => {
+    document.addEventListener('keydown', play_piano_key)
+    document.addEventListener('keyup', play_piano_key)
+    document.addEventListener('clickpianokey', play_piano_key)
+    document.addEventListener('mouseup', play_piano_key)
+  }
 
-      if (event.type === 'mouseup' && curr_mouse_click === '') {
-        return
-      } else if (event.type === 'mouseup') {
-        event = {
-          key: curr_mouse_click,
-          type: 'keyup'
-        }
-      } else if (event.type === 'clickpianokey') {
-        event = event.detail
-        set_curr_mouse_click(prev_state => event.key)
+  let remove_key_listeners = () => {
+    document.removeEventListener('keydown', play_piano_key)
+    document.removeEventListener('keyup', play_piano_key)
+    document.removeEventListener('clickpianokey', play_piano_key)
+    document.removeEventListener('mouseup', play_piano_key)
+  }
+
+  const play_piano_key = (e) => {
+    // e.preventDefault()
+    if (e.repeat) return
+    let event = e
+    // mouse click handling
+
+    if (event.type === 'mouseup' && curr_mouse_click === '') {
+      return
+    } else if (event.type === 'mouseup') {
+      event = {
+        key: curr_mouse_click,
+        type: 'keyup'
       }
-
-      
-      let pressed_key = event.key.toLowerCase()
-  
-      if (pressed_key === 'shift') {
-        pressed_key = event.location === 1 ? 'l_shft': 'r_shft'
-      }
-      
-      
-      let key_state = event.type === 'keydown'
-      let key_ind = key_to_pkeyind.current[pressed_key]
-
-      if (key_ind == null || key_ind == undefined) return
-      
-      if (piano_room !== 'solo' && !('multiplayer'in event)) {
-        mp_send_note(piano[key_ind].props.note, key_state)
-      }
-
-      // if recording and not repeat
-      if (recording[0] && ((!(key_ind in curr_pressed_keys) && key_state) || ((key_ind in curr_pressed_keys) && !key_state))) {
-        if (key_ind in curr_pressed_keys) {
-
-          set_recorded_song((prev_song) => {  
-            
-            let l = [...prev_song]
-
-            l[recording[1]][curr_pressed_keys[key_ind]].push(performance.now())
-            set_curr_pressed_keys(prev_state => {
-              
-              const new_state = { ...prev_state }
-              delete new_state[key_ind]
-              return new_state
-            })
-            
-            return l
-          })
-        } else {
-          set_recorded_song((prev_song) => {
-            let l = [...prev_song]
-
-            set_curr_pressed_keys(prev_state => {
-              let len = l[recording[1]].push([piano[key_ind].props.note, performance.now()]) - 1
-              return ({
-              ...prev_state,
-              [key_ind]: len
-            })})
-            
-            return l
-          })
-        }
-        
-      }
-
-      set_piano(prev_state => {
-        const keys = [...prev_state]
-        keys[key_ind] = React.cloneElement(keys[key_ind], { pressed: key_state, 
-          mp_pressed: ('multiplayer' in event) })
-        return keys
-      })
+    } else if (event.type === 'clickpianokey') {
+      event = event.detail
+      set_curr_mouse_click(prev_state => event.key)
     }
 
+    
+    let pressed_key = event.key.toLowerCase()
+
+    if (pressed_key === 'shift') {
+      pressed_key = event.location === 1 ? 'l_shft': 'r_shft'
+    }
+    
+    
+    let key_state = event.type === 'keydown'
+    let key_ind = key_to_pkeyind.current[pressed_key]
+
+    if (key_ind == null || key_ind == undefined) return
+    
+    if (piano_room !== 'solo' && !('multiplayer'in event)) {
+      mp_send_note(piano[key_ind].props.note, key_state)
+    }
+
+    // if recording and not repeat
+    if (recording[0] && ((!(key_ind in curr_pressed_keys) && key_state) || ((key_ind in curr_pressed_keys) && !key_state))) {
+      if (key_ind in curr_pressed_keys) {
+
+        set_recorded_song((prev_song) => {  
+          
+          let l = [...prev_song]
+
+          l[recording[1]][curr_pressed_keys[key_ind]].push(performance.now())
+          set_curr_pressed_keys(prev_state => {
+            
+            const new_state = { ...prev_state }
+            delete new_state[key_ind]
+            return new_state
+          })
+          
+          return l
+        })
+      } else {
+        set_recorded_song((prev_song) => {
+          let l = [...prev_song]
+
+          set_curr_pressed_keys(prev_state => {
+            let len = l[recording[1]].push([piano[key_ind].props.note, performance.now()]) - 1
+            return ({
+            ...prev_state,
+            [key_ind]: len
+          })})
+          
+          return l
+        })
+      }
+      
+    }
+
+    set_piano(prev_state => {
+      const keys = [...prev_state]
+      keys[key_ind] = React.cloneElement(keys[key_ind], { pressed: key_state, 
+        mp_pressed: ('multiplayer' in event) })
+      return keys
+    })
+  }
+
+  useEffect(() => {
     if (user_interact && visible) {
-      document.addEventListener('keydown', play_piano_key)
-      document.addEventListener('keyup', play_piano_key)
-      document.addEventListener('clickpianokey', play_piano_key)
-      document.addEventListener('mouseup', play_piano_key)
+      add_key_listeners()
+
       if (web_socket !== null) {
         web_socket.onmessage = (e) => {
           let data = JSON.parse(e.data)
@@ -243,18 +258,22 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user
           }
         }
     } else if (!user_interact && visible) {
-      document.addEventListener('keypress', change_playing)
+      document.addEventListener('mouseup', play_piano_key)
     }
 
     return () => {
-      document.removeEventListener('keydown', play_piano_key)
-      document.removeEventListener('keyup', play_piano_key)
-      document.removeEventListener('clickpianokey', play_piano_key)
-      document.removeEventListener('mouseup', play_piano_key)
+      remove_key_listeners()
     }
   }, [visible, piano, user_interact, recording])
   // Play Piano Key END
 
+  useEffect(() => {
+    if (save_prompt[0]) {
+      remove_key_listeners()
+    } else {
+      add_key_listeners()
+    }
+  }, [save_prompt])
 
   // Handle Piano Layer Stacking START
   let [piano_styling, set_piano_styling] = useState(null)
@@ -274,10 +293,10 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user
     }
 
     // Listen for window resize events
-    window.addEventListener('resize', handleResize);
+    window.addEventListener('resize', handleResize)
 
     return () => {
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('resize', handleResize)
     }
   }, [])
 
@@ -302,8 +321,10 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user
   // Handle Piano Layer Stacking END
 
   let song_name = useRef('')
+  let last_song_id = useRef(null)
+
   let save_song = async () => {
-    console.log(recorded_song)
+    
 
     let l = [...recorded_song[0]]
 
@@ -321,6 +342,8 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user
       if (res === -1) {
         console.log(res)
       } else {
+        console.log(res)
+        last_song_id.current = res.song.id
         set_recorded_song([[], []])
         set_save_prompt([true, false, true])
       }
@@ -429,6 +452,13 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user
   }, [playing])
   // Playback END
 
+  let song_redirect = () => {
+    if (last_song_id.current) {
+      navigate(`/songs/${last_song_id.current}`)
+    }
+    
+  }
+
   return (
     <>
       {save_prompt[0] && 
@@ -441,15 +471,15 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user
                 <input className='def-input' placeholder='My Amazing Song'
                 onChange={(e) => song_name.current = e.target.value} id='piano-songname-in'/> 
               }
-              {(save_prompt[0] || save_prompt[1]) &&
+              {(!save_prompt[2]) &&
                 <button className='piano-saveprompt-btn' 
                 onClick={() => save_prompt[1] ? save_song() : set_save_prompt([true, true, false])} >
                   {save_prompt[1] ? 'Submit' : <><MdOutlineSaveAlt /> Save</>}</button>
               }
-              {save_prompt[3] &&
+              {save_prompt[2] &&
               <div style={{textAlign: 'center'}}>
                 <h1 style={{margin: '0'}} className='pianosave-checkmark' >Saved! <IoMdCheckmark /></h1>
-                <button id='piano-viewsong-btn' className='def-btn' >View Song</button>
+                <button id='piano-viewsong-btn' className='def-btn' onClick={() => song_redirect()}>View Song</button>
               </div>
               }
 

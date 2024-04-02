@@ -55,8 +55,6 @@
         height: 100%;
     }
 
-/* #comment-addimage {
-} */
 
 .comment-reply-buttons {
     border: none;
@@ -64,14 +62,23 @@
     padding: 7px 15px;
     margin: 0px 5px;
     color: var(--font-color);
-    background-color: var(--thirty-color);
+    background-color: rgba(0, 0, 0, 0.3);
+    transition: all 0.25s ease;
+    
+}
+
+.comment-reply-buttons:hover {
+    background-color: var(--ten-color);
+    transform: scale(1.05);
     
 }
 
 #comment-reply-lower {
-    background-color: rgba(255, 255, 255, .1);
+    background-color: rgba(143, 143, 143, 0.05);
     border-radius: 0px 0px 0px 15px;
     padding: 5px;
+
+    display: flex;
 }
 
 .disabled {
