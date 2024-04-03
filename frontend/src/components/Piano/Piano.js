@@ -53,6 +53,7 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user
           set_product(recorded_song)
         }
         set_recorded_song([[], []])
+        set_recording([false, 0])
       } else {
         if (type === 'login') {
           console.log('login')
@@ -64,7 +65,7 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user
         } else {
           set_recording([false, 0])
           if (recorded_song[0].length > 0) {
-            set_save_prompt(prev_state => [true, false, false])
+            set_save_prompt([true, false, false])
           }
         }
         
@@ -338,11 +339,10 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user
       }
     }
 
-    let res = await default_ajax('post', 'songs/create-song/', { 'song': l, 'name': song_name.current })
+    let res = await default_ajax('post', 'songs/create-song/', { song: l, name: song_name.current }, false)
       if (res === -1) {
         console.log(res)
       } else {
-        console.log(res)
         last_song_id.current = res.song.id
         set_recorded_song([[], []])
         set_save_prompt([true, false, true])
@@ -488,14 +488,17 @@ const Piano = ({ start=12, end=60, type='', set_product=null, visible=true, user
       }
       
       <div id='piano-wrapper' onClick={type === 'playback' ? (e) => change_playing(e): undefined}>
-        {user_interact && isAuthenticated &&
+        {(user_interact && (isAuthenticated || (type === 'register' || type === 'login'))) &&
           <div id='piano-btn-wrapper'>
             <Tooltip content='Record' direction='bottom' delay={300} >
               <button className='piano-btn' onClick={() => recording[0] ? recording_action('end') : recording_action('start')} >
               <div className={`red-dot ${recording[0] ? 'active': ''}`}></div></button>
             </Tooltip>
             {recording[0] && <button className='piano-btn' id='clear-song-btn' onClick={() => clear_song()} ><FaXmark /></button>}
-            {(type === 'register' || type === 'login') && !recording && <p>{recording[1] === 0 ? 'Press Start To Begin Recording' : 'Confirm Password'}</p>}
+            {((type === 'register') && !recording[0]) && 
+            <p className='piano-record-tip' >{recording[1] === 0 ? 'Press the Record Button to Set Your Password!' : 'Now Press Record Again and Confirm Your Password.'}</p>}
+            {((type === 'login') && !recording[0]) && 
+            <p className='piano-record-tip' >Press Record to Enter Your Password.</p>}
           </div>
         }
 

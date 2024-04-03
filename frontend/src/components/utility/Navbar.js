@@ -10,14 +10,7 @@ import site_logo from '../../images/site_logo.png'
 function Navbar( { isAuthenticated, logout, parent_height_setter=() => {}, user_profile}) {
   let [visible, set_visible] = useState(null)
   let navbar_links = useRef(null)
-  let [img_scale, set_img_scale] = useState(0)
   const location = useLocation()
-
-  let scale_image = (e) => {
-    const { naturalWidth, naturalHeight } = e.target
-    const scale_factor = Math.min(50 / naturalWidth, 50 / naturalHeight)
-    set_img_scale(scale_factor)
-  }
 
   // click == curr page ? refresh
   let nb_navigate = (e, path) => {
@@ -40,8 +33,8 @@ function Navbar( { isAuthenticated, logout, parent_height_setter=() => {}, user_
           <div className='navbar-account-btn-inner'>
             <p>{user_profile.username} </p>
             <div style={{position: 'relative', height: '50px', width: '50px'}}>
-             <img className='account-profimg' style={{transform: `scale(${img_scale})`}} 
-             onLoad={(e) => scale_image(e)} src={user_profile.profile_picture} alt='User profile image'/>
+             <img className='account-profimg' 
+             src={user_profile.profile_picture}/>
             </div>
             
           </div>

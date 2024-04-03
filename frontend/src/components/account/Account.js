@@ -4,10 +4,16 @@ import { useNavigate } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { default_ajax } from '../../utility/CommonFunctions'
 import { load_user } from '../../actions/profile.js'
+import Piano from '../piano/Piano.js'
 
 const Account = ({ isAuthenticated, user_profile, load_user}) => {
 
     let navigate = useNavigate()
+
+    let [piano_password, set_piano_password] = useState(null)
+    let [piano_vis, set_piano_vis] = useState(false)
+    let [pass_mode, set_pass_mode] = useState(user_profile.piano_password)
+
     let [form_data, set_form_data] = useState({
       username: user_profile.username,
       first_name: user_profile.first_name,
@@ -34,7 +40,7 @@ const Account = ({ isAuthenticated, user_profile, load_user}) => {
         if (!isAuthenticated) {
             navigate('/')
         }
-    }, [])
+    }, [isAuthenticated])
 
     let change_profile = async () => {
       console.log(form_data)
@@ -45,6 +51,7 @@ const Account = ({ isAuthenticated, user_profile, load_user}) => {
       post_form_data.append('first_name', form_data.first_name)
       post_form_data.append('last_name', form_data.last_name)
       post_form_data.append('profile_picture', form_data.profile_picture)
+      post_form_data.append('password_type', pass_mode ? 'piano': 'normal')
 
       let res = await default_ajax('put', 'profile/update-profile/', post_form_data, false)
 
@@ -54,13 +61,20 @@ const Account = ({ isAuthenticated, user_profile, load_user}) => {
       }
     }
 
+    useEffect(() => {
+      if (piano_password) {
+        set_piano_vis(false)
+      }
+      
+    }, [piano_password])
+
 
   return (
     <>
         {(user_profile && mode === 'view') &&
         <div className='accountpage-top'>
           <div className='image-container'>
-            <img className='accountpage-profimg' 
+            <img className='accountpage-profimg' style={{borderRadius: '1000px'}}
               src={user_profile.profile_picture} alt='User profile image'/>
           </div>
              
@@ -71,10 +85,12 @@ const Account = ({ isAuthenticated, user_profile, load_user}) => {
         </div>}
         {(user_profile && mode === 'edit') &&
         <div className='editprofile-wrapper'>
-          
+          {piano_vis &&
+                <Piano type='register' set_product={set_piano_password} visible={piano_vis} />}
+
           <form className='editprofile-form' onSubmit={() => change_profile()}>
             <div className='image-container'>
-              <img className='accountpage-profimg' 
+              <img className='accountpage-profimg' style={{borderRadius: '1000px'}}
                 src={user_profile.profile_picture} alt='User profile image'/>
                 <input type='file' name='profile_picture' style={{marginLeft: '20px'}} onChange={(e) => change_formdata(e)} accept='image/*'/>
             </div>
@@ -82,11 +98,25 @@ const Account = ({ isAuthenticated, user_profile, load_user}) => {
             <label style={{marginTop: '40px'}} htmlFor='username'>Username: </label>
             <input className='def-input' name='username'  onChange={(e) => change_formdata(e)} value={form_data.username} />
 
-            <label htmlFor='password'>Password: </label>
-            <input className='def-input' name='password' onChange={(e) => change_formdata(e)} />
+            <button type='button' className='accountpage-changepassbtn' onClick={() => set_pass_mode(prev_state => !prev_state)}>Change Type of Password</button>
 
-            <label htmlFor='conf_password'>Confirm Password: </label>
-            <input className='def-input' name='conf_password' onChange={(e) => change_formdata(e)}/>
+            {pass_mode ?
+              <>
+                <button type='button' className='def-btn' onClick={() => set_piano_vis(true)} disabled={piano_password !== null}>Set Piano Password</button>
+                {piano_password !== null && <button id='clearpass-btn' type='button' style={{borderRadius: '25px'}} 
+                onClick={() => set_piano_password(null)}>Clear Password</button>}
+              </>
+            :
+              <>
+                <label htmlFor='password'>Password: </label>
+                <input className='def-input' name='password' onChange={(e) => change_formdata(e)} />
+                
+                <label htmlFor='conf_password'>Confirm Password: </label>
+                <input className='def-input' name='conf_password' onChange={(e) => change_formdata(e)}/>
+              </>
+            }
+
+            
 
           </form>
           

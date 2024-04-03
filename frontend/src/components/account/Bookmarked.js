@@ -17,7 +17,6 @@ const Bookmarked = () => {
 
     let get_posts = async () => {
         let res = await default_ajax('get', 'bookmarks/post')
-        console.log(res)
         set_bookmarked_posts(res)
     }
 

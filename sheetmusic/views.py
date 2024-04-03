@@ -59,7 +59,6 @@ class Posts(APIView):
             user_prof = UserProfile.objects.get(user=request.user)
             post = Post.objects.create(title=data['title'], description=data['description'], poster=user_prof)
             
-            print(uploaded_files, file=sys.stderr)
             for uploaded_file, file_type in zip(uploaded_files, file_types):
                 if file_type.startswith('image'): file_type='image'
                 elif file_type.startswith('video'): file_type='video'
@@ -170,6 +169,7 @@ class RegisterView(APIView):
             
         except Exception as e:
             print("RegisterView-POST: ", e, file=sys.stderr)
+            return Response({ 'error': 'Failed to Create Account'})
         
 @method_decorator(ensure_csrf_cookie, name='dispatch')
 class GetCSRFToken(APIView):
@@ -262,7 +262,7 @@ class UserProfiles(APIView):
     
     # update user profile
     def put(self, request, format=None):
-        # try:
+        try:
             user = self.request.user
             user_prof = UserProfile.objects.get(user=user)
             
@@ -272,14 +272,29 @@ class UserProfiles(APIView):
                 user_prof.first_name = data['first_name']
 
             if len(data['password']) > 0:
-                if data['password'] == data['conf_password']:
-                    user.set_password(data['password'])
+                if data['password_type'] == 'piano':
+                    piano_pass = json.loads(data['password'])
+                    pass_l = piano_pass[0]
+                    pass_re_l = piano_pass[1]
+
+                    piano_pass = piano_pass_convert(pass_l)
+                    piano_pass_re = piano_pass_convert(pass_re_l)
+
+                    if piano_pass != piano_pass_re:
+                        return Response({ 'error': 'Passwords do not match'})
+                    else:
+                        user.set_password(piano_pass)
+                else:
+                    if data['password'] == data['conf_password']:
+                        user.set_password(data['password'])
 
             if len(data['last_name']) > 0:
                 user_prof.last_name = data['last_name']
 
             if len(data['username']) > 0:
                 user.username = data['username']
+                        
+
 
             if data['profile_picture']:
                 uploaded_img = request.FILES['profile_picture']
@@ -291,9 +306,9 @@ class UserProfiles(APIView):
 
 
             return Response({ 'success ': 'Successfully updated profile' })
-        # except Exception as e:
-        #     print(e, file=sys.stderr)
-        #     return Response({ 'error': 'There was an error updating the user profile.'})
+        except Exception as e:
+            print(e, file=sys.stderr)
+            return Response({ 'error': 'There was an error updating the user profile.'})
 
 @method_decorator(ensure_csrf_cookie, name='dispatch')
 class Votes(APIView):
@@ -408,7 +423,7 @@ class Songs(APIView):
     def post(self, request, format=None):
         try:
             data = self.request.data
-            print(data, file=sys.stderr)
+            
             user_song = data['song']
             name = data['name']
 

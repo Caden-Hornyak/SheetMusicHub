@@ -42,7 +42,7 @@ const Comment = ({ comment, getComments, thread_style }) => {
     <div style={{...thread_style, ...comment_hier_margin}} className='comment'>
       <div className='upper-comment'>
           {!thread && <div id='thread-container' onClick={() => close_thread()}><div className='comment-thread' style={thread_closed}  ></div></div>}
-          <div id='comment-image'><img src={comment.poster.profile_picture}></img></div>
+          <div id='comment-image'><img src={comment.poster.profile_picture} style={{borderRadius: '50px'}}></img></div>
           <div id='comment-name' >{curr_comment.poster.username}</div>
           <div><RelativeTime object_date={curr_comment.date_created}/></div>
       </div>

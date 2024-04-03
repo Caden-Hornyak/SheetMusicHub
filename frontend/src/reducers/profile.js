@@ -10,7 +10,8 @@ const initialState = {
         username: '',
         first_name: '',
         last_name: '',
-        profile_picture: ''
+        profile_picture: '', 
+        piano_password: false
     }
     
 }
@@ -27,7 +28,8 @@ export default function(state = initialState, action) {
                     username: payload.username,
                     first_name: payload.profile.first_name,
                     last_name: payload.profile.last_name,
-                    profile_picture: payload.profile.profile_picture
+                    profile_picture: payload.profile.profile_picture,
+                    piano_password: payload.profile.piano_password
                 }
             }
         case LOAD_USER_PROFILE_FAIL:
@@ -37,7 +39,8 @@ export default function(state = initialState, action) {
                     username: '',
                     first_name: '',
                     last_name: '',
-                    user_profile: ''
+                    user_profile: '',
+                    piano_password: false
                 }
                 
             }

@@ -29,7 +29,6 @@ const FileViewer = ({ uploaded_files, wipe_upload=null, clamp=false }) => {
 
   return (
     <div className="file-viewer" style={{overflow: clamp ? 'hidden': undefined, maxHeight: clamp ? '550px': undefined}} >
-      {console.log(uploaded_files)}
       {wipe_upload && <button onClick={() => wipe_upload()} type='button' id='fileview-wipefilebtn'
       style={{top: uploaded_files[current_index].type === 'application' ? '50px': undefined}}><FaXmark /></button>}
       {current_index !== 0 && <button className='scroll-button' id='prev-img-btn' onClick={(e) => handle_prev_click(e)}><IoIosArrowBack /></button>}

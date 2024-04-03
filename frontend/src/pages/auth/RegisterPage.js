@@ -36,18 +36,8 @@ const Register = ({ register_normal_pass, register_piano_pass }) => {
         e.preventDefault()
         if (piano_pass_active) {
             if (piano_password && piano_password.length === 2 && piano_password[0].length === piano_password[1].length) {
-                for (let i = 0; i < piano_password[0].length; i++) {
-                    if (!compare_arrays(piano_password[0][i][0].sort(), piano_password[1][i][0])) {
-                        console.log(piano_password[0][i][0].sort(), piano_password[1][i][0].sort())
-                        alert('Piano Passwords Do Not Match')
-                        set_piano_password(null)
-                        return
-                    }
-                }   
-                // TODO fix this not calling thing
                 register_piano_pass(username, piano_password)
                 set_account_created(true)
-
             } else {
                 alert('Piano Password Invalid :(')
                 set_piano_password(null)
@@ -141,8 +131,9 @@ const Register = ({ register_normal_pass, register_piano_pass }) => {
                             </div>}
 
                             {/* Cond. btns for norm pass and piano pass */}
-                            {piano_pass_active && <button className='def-btn' onClick={() => set_piano_vis(true)} type='button' >{piano_password ? <IoMdCheckmark /> : 'Create Piano Password'}</button>}
-                            {(piano_pass_active && piano_password) && <button onClick={() => set_piano_password(null)} >Clear Password</button>}
+                            {piano_pass_active && <button className='def-btn' onClick={() => set_piano_vis(true)} disabled={piano_password !== null}
+                            type='button' >{piano_password ? <IoMdCheckmark /> : 'Create Piano Password'}</button>}
+                            {(piano_pass_active && piano_password) && <button onClick={() => set_piano_password(null)} id='clearpass-btn'>Clear Password</button>}
                             {piano_pass_active && <button className='pass-switch-btn' onClick={() => set_piano_pass_active(false)} type='button' >Use Boring Password</button>}
                             {!piano_pass_active && <button className='pass-switch-btn' onClick={() => set_piano_pass_active(true)} type='button' >Use Piano Password</button>}
                             <button className='def-btn' type='submit' disabled={

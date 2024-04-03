@@ -94,7 +94,8 @@ const LoginPage = ({ login_normal, login_piano }) => {
                 />
             </div>}
 
-            {piano_pass_active && <button className='def-btn' onClick={() => set_piano_vis(true)} type='button' >{piano_password ? <IoMdCheckmark /> : 'Enter Piano Password'}</button>}
+            {piano_pass_active && <button className='def-btn' disabled={piano_password !== null}
+            onClick={() => set_piano_vis(true)} type='button' >{piano_password ? <IoMdCheckmark /> : 'Enter Piano Password'}</button>}
             {(piano_pass_active && piano_password) && <button id='clearpass-btn' onClick={() => set_piano_password(null)} >Clear Password</button>}
 
             {piano_pass_active && <button className='pass-switch-btn' onClick={() => set_piano_pass_active(false)} type='button' >Use Boring Password</button>}

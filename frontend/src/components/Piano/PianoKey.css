@@ -39,6 +39,7 @@
     height: var(--black-key-height);
     width: 100%;
     bottom: calc(var(--white-key-height) - var(--black-key-height));
+    border: 1px black solid;
     z-index: 2;
 }
 

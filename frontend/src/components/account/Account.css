@@ -53,3 +53,17 @@
     padding: 50px;
 }
 
+.accountpage-changepassbtn {
+    padding-bottom: 15px;
+    outline: none;
+    border: none;
+    background-color: transparent;
+    color: rgba(255, 255, 255, 0.3);
+    align-self: flex-start;
+    transition: all ease 0.25s;
+}
+
+.accountpage-changepassbtn:hover {
+    color: var(--ten-color);
+}
+

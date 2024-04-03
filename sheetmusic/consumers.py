@@ -11,15 +11,14 @@ class RoomConsumer(WebsocketConsumer):
     def connect(self):
 
         self.accept()
-        self.scope['session']['room_id'] = 'your_room_id'
-        self.scope['session'].save()
 
         room_code = self.scope['url_route']['kwargs'].get('roomcode')
 
         if room_code:
+
             room = Room.objects.filter(room_code=room_code).first()
-            print(room, room_code, file=sys.stderr)
             if room:
+                self.scope['session']['room_code'] = room_code
                 self.room_group_name = room_code
                 room.user_count += 1
                 room.save()
@@ -32,12 +31,13 @@ class RoomConsumer(WebsocketConsumer):
             while True:
                 self.room_group_name = ''.join(
                 [room_code_chars[random.randint(0, len(room_code_chars)-1)] for i in range(6)])
-                print(self.room_group_name, not Room.objects.filter(room_code=self.room_group_name), file=sys.stderr)
+
                 if not Room.objects.filter(room_code=self.room_group_name):
+                    self.scope['session']['room_code'] = self.room_group_name
                     Room.objects.create(room_code=self.room_group_name, user_count=1)
                     break
-
-                
+        
+        self.scope['session'].save()
 
         async_to_sync(self.channel_layer.group_add)(
             self.room_group_name, 
@@ -50,14 +50,16 @@ class RoomConsumer(WebsocketConsumer):
         }))
 
     def disconnect(self, close_code):
-        room_id = self.scope['session'].get('room_id')
+        room_id = self.scope['session'].get('room_code')
         if room_id:
-            room = Room.objects.get(id=room_id)
+            room = Room.objects.get(room_code=room_id)
             if room.user_count == 1:
                 room.delete()
             else:
                 room.user_count -= 1
                 room.save()
+        
+        del self.scope['session']['room_code']
 
     def receive(self, text_data):
 

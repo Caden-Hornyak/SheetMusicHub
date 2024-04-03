@@ -102,4 +102,7 @@ a:hover {
         overflow: hidden;
     }
 
-
+.account-profimg {
+    height: 50px;
+    width: 50px;
+}
